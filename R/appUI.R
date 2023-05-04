@@ -32,8 +32,14 @@ ui <- function(request) {
         10,
         tags$h3(tags$b("Who is applying for asylum in the UK and who has been granted protection?")),
         
-        applicationsPlotUI("applicationsPlot")
-        # New graphs for this section would go here
+        fluidRow(
+          applicationsPlotUI("applicationsPlot")
+        ),
+        
+        # Each graph should have its own fluidRow()
+        fluidRow(
+          # The new graph would go here
+        )
       ),
       column(1)
     )
