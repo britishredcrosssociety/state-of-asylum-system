@@ -40,6 +40,10 @@ ui <- function(request) {
           grantRatesPlotUI("grantRatesPlot")
         ),
         
+        fluidRow(
+          awaitingDecisionPlotUI("awaitingDecisionPlot")
+        ),
+        
         # Each graph should have its own fluidRow()
         fluidRow(
           # The new graph would go here
