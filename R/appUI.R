@@ -19,7 +19,7 @@ ui <- function(request) {
         8,
         tags$p(
           tags$span(class = "phase-banner", "ALPHA"),
-          "This is a prototype for exploring potential content for State of the System - new graphs will be added soon."
+          "This is a prototype for exploring potential content for State of the System. There may be bugs, and these graphs need to be given BRC branding. New graphs will be added soon."
         )
       ),
       column(2)
