@@ -37,6 +37,7 @@ applicationsPlotServer <- function(id) {
           
           ggplot(aes(x = Date, y = Applications)) +
           geom_line() +
+          scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
           labs(
             y = "Total applications",
             title = "Total number of asylum applications"
@@ -53,6 +54,7 @@ applicationsPlotServer <- function(id) {
           
           ggplot(aes(x = Date, y = Applications, group = Nationality)) +
           geom_line(aes(colour = Nationality)) +
+          scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
           labs(
             title = "Number of asylum applications for selected countries"
           )
