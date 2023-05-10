@@ -36,6 +36,10 @@ ui <- function(request) {
           applicationsPlotUI("applicationsPlot")
         ),
         
+        fluidRow(
+          grantRatesPlotUI("grantRatesPlot")
+        ),
+        
         # Each graph should have its own fluidRow()
         fluidRow(
           # The new graph would go here
