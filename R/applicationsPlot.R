@@ -36,7 +36,11 @@ applicationsPlotServer <- function(id) {
           ungroup() |> 
           
           ggplot(aes(x = Date, y = Applications)) +
-          geom_line()
+          geom_line() +
+          labs(
+            y = "Total applications",
+            title = "Total number of asylum applications"
+          )
         
       } else {
         # User has selected nations/nationalities, so plot only those
@@ -48,7 +52,10 @@ applicationsPlotServer <- function(id) {
           ungroup() |> 
           
           ggplot(aes(x = Date, y = Applications, group = Nationality)) +
-          geom_line(aes(colour = Nationality))
+          geom_line(aes(colour = Nationality)) +
+          labs(
+            title = "Number of asylum applications for selected countries"
+          )
       }
       
       # Convert to an interactive plot
