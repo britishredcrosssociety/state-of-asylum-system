@@ -10,6 +10,13 @@ applicationsPlotUI <- function(id) {
       multiple = TRUE
     ),
     
+    selectizeInput(
+      NS(id, "selectAge"),
+      label = "Choose one or more age groups",
+      choices = sort(unique(asylum::applications$Age)),
+      multiple = TRUE
+    ),
+    
     # This is the plot to output
     plotlyOutput(
       NS(id, "plot"),
