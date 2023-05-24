@@ -2,19 +2,35 @@ applicationsPlotUI <- function(id) {
   tagList(
     tags$h4("Who is applying for asylum?"),
     
-    # Let the user choose one or more nations/nationalities
-    selectizeInput(
-      NS(id, "selectNation"),
-      label = "Choose one or more nations",
-      choices = sort(unique(asylum::applications$Nationality)),
-      multiple = TRUE
-    ),
-    
-    selectizeInput(
-      NS(id, "selectAge"),
-      label = "Choose one or more age groups",
-      choices = sort(unique(asylum::applications$Age)),
-      multiple = TRUE
+    # Using fluidRow to wrap the selectizeInput elements
+    fluidRow(
+      # Using column function to define each selectizeInput's space
+      column(4,
+             selectizeInput(
+               NS(id, "selectNation"),
+               label = "Choose one or more nations",
+               choices = sort(unique(asylum::applications$Nationality)),
+               multiple = TRUE
+             )
+      ),
+      
+      column(4,
+             selectizeInput(
+               NS(id, "selectAge"),
+               label = "Choose one or more age groups",
+               choices = sort(unique(asylum::applications$Age)),
+               multiple = TRUE
+             )
+      ),
+      
+      column(4,
+             selectizeInput(
+               NS(id, "selectSex"),
+               label = "Choose one or more sexes",
+               choices = sort(unique(asylum::applications$Sex)),
+               multiple = TRUE
+             )
+      )
     ),
     
     # This is the plot to output
