@@ -18,7 +18,8 @@ applicationsPlotUI <- function(id) {
              selectizeInput(
                NS(id, "selectAge"),
                label = "Choose one or more age groups",
-               choices = sort(unique(asylum::applications$Age)),
+               # choices = unique(asylum::applications$Age),
+               choices = c("Under 18", "18-29", "30-49", "50-69", "70+", "Unknown"),
                multiple = TRUE
              )
       ),
@@ -27,7 +28,8 @@ applicationsPlotUI <- function(id) {
              selectizeInput(
                NS(id, "selectSex"),
                label = "Choose one or more sexes",
-               choices = sort(unique(asylum::applications$Sex)),
+               # choices = sort(unique(asylum::applications$Sex)),
+               choices = c("Female", "Male", "Unknown Sex"),
                multiple = TRUE
              )
       )
