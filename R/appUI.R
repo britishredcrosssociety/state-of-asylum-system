@@ -46,7 +46,6 @@ ui <- function(request) {
         
         # Each graph should have its own fluidRow()
         fluidRow(
-          GenderPlotUI("GenderPlot")
           # The new graph would go here
         )
       ),
