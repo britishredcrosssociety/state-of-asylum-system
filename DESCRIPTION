@@ -15,9 +15,11 @@ Depends:
 Imports: 
     asylum,
     dplyr,
+    DT,
     ggplot2,
     gridlayout,
     pkgload,
     plotly,
-    shiny
+    shiny,
+    stringr
 LazyData: true

@@ -3,5 +3,6 @@ server <- function(input, output, session) {
   applicationsPlotServer("applicationsPlot")
   grantRatesPlotServer("grantRatesPlot")
   awaitingDecisionPlotServer("awaitingDecisionPlot")
+  inadmissibilityClaimsTableServer("inadmissibilityClaimsTable")
   
 }

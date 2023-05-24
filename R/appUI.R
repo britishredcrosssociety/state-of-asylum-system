@@ -44,6 +44,10 @@ ui <- function(request) {
           awaitingDecisionPlotUI("awaitingDecisionPlot")
         ),
         
+        fluidRow(
+          inadmissibilityClaimsTableUI("inadmissibilityClaimsTable")
+        ),
+        
         # Each graph should have its own fluidRow()
         fluidRow(
           # The new graph would go here
