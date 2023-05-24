@@ -94,7 +94,7 @@ applicationsPlotServer <- function(id) {
         
         scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
         labs(
-          title = "Number of asylum applications for selected countries"
+          title = "Number of asylum applications"
         )
       
       # # Check if the user has selected any nations/nationalities
