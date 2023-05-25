@@ -5,5 +5,5 @@ server <- function(input, output, session) {
   awaitingDecisionPlotServer("awaitingDecisionPlot")
   inadmissibilityClaimsTableServer("inadmissibilityClaimsTable")
   IrregularMigrrationPlotServer("IrregularMigrationPlot")
-  
+  ResettlementPlotServer("ResettlementPlot")
 }
