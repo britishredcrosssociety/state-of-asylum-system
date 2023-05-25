@@ -295,29 +295,20 @@ view(decisions_resettlement)
 
 colnames(decisions_resettlement)
 
-DecisionsAsylum <- decisions_resettlement %>%
-  select(Year, Age, Sex, Nationality, `Case type`, `Case outcome group`, `Case outcome`, Decisions) %>%
-  filter(Year > 2008)
+ResettlmentTotal <- decisions_resettlement %>%
+  select(Year, `Case outcome group`, Decisions) %>%
+  group_by(Year, `Case outcome group`) %>%
+  summarise(RTotal = sum(Decisions))
 
-view(DecisionsAsylum)
+view(ResettlmentTotal)
 
-DecisionsAsylumAge <- DecisionsAsylum %>%
-  group_by(Year, Age, Nationality, `Case outcome group`) %>%
-  summarise(caseoutcomesum = sum(Decisions))
+----##Resettlement Bar Graph##----
+ggplot(ResettlmentTotal, aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
+  geom_bar(position="stack", stat="identity") +
+  theme_classic() +
+  labs(title = "Resettlment Case Total", x = "Year", y = "Total Cases")
 
-view(DecisionsAsylumAge)
-
-DecisionsAsylumAge <- DecisionsAsylumAge %>%
-  group_by(Year, Age, `Case outcome group`) %>%
-  summarise(Total = sum(caseoutcomesum))
-
-DecisionsAsylumAge |>
-  ggplot(aes(Year, Total)) +
-  geom_line(aes(colour = Age), show.legend = TRUE) +
-  theme_classic()+
-  labs(title = "Resettlement: Asylum Case Outcome Totals", 
-       x = "Year", 
-       y = "Total Decisions")
+#should be a stacked bar chart that is interactive for Shiny Web App# 
 
 ----#Irregular Migration#----
 ----##Small Boat##----
@@ -348,10 +339,29 @@ smallboat %>%
        x = "Date", 
        y = "Number of Detections")
 
+----#Small Boat x Quarter#----
+Smallboatbyquarter <- smallboat %>% 
+  select(Date, Quarter, `Number of detections`) %>%
+  group_by(Date, Quarter) %>%
+  summarise(TotalQ = sum(`Number of detections`))
+
+view(Smallboatbyquarter)
+
+Smallboatbyquarter |>
+  ggplot(aes(Date, TotalQ, group = Quarter)) +
+  geom_line(aes(color = Quarter)) +
+  geom_point(aes(colour = Quarter)) +
+  theme_classic() +
+  labs(title = "Small Boat Arrivals by Quarter", 
+       x = "Year", 
+       y = "Number of Small Boat Detections")
+
+#colour need to be edited for this graph.#
+
 ----###Small Boat -To revise Nationalities###---- 
 smallboat %>%
-  select(Date, Year, Sex, `Age Group`, Nationality, `Number of detections`) %>%
   filter(Date > "2021-10-01")
+  select(Date, Nationality, `Number of detections`) %>%
   group_by(Date, Nationality) %>%
   summarise(TotalNationality = sum(`Number of detections`)) %>%
   ggplot(aes(Date, TotalNationality)) +
@@ -361,6 +371,8 @@ smallboat %>%
        x = "Date", 
        y = "Number of Detections")
 
+  
+----#Irregular Migration by Method of Entry#----  
 irregular_migration %>%
   select(Date, `Method of entry`, `Number of detections`) %>%
   group_by(Date, `Method of entry`) %>%
@@ -390,7 +402,6 @@ Totalfamreunion <- family_reunion %>%
        y = "Number of Visas Granted")
 
 Totalfamreunion + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
-
 
 ----#Cost & Productivity#----
 view(asylum_costs_and_productivity) 
