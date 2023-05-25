@@ -18,7 +18,7 @@ IrregularMigrationPlotUI <- function(id) {
              selectizeInput(
                NS(id, "selectAgeGroup"),
                label = "Choose one or more age groups",
-               choices = unique(asylum::irregular_migration$`Age Group`),
+               #choices = unique(asylum::irregular_migration$`Age Group`),
                choices = c("Under 18", "18-29", "30-49", "50-69", "70+", "Unknown"),
                multiple = TRUE
              )
@@ -28,7 +28,7 @@ IrregularMigrationPlotUI <- function(id) {
              selectizeInput(
                NS(id, "selectSex"),
                label = "Choose one or more sexes",
-               choices = sort(unique(asylum::irregular_migration$Sex)),
+               #choices = sort(unique(asylum::irregular_migration$Sex)),
                choices = c("Female", "Male", "Unknown Sex"),
                multiple = TRUE
              )
@@ -98,7 +98,7 @@ IrregularMigrrationPlotServer <- function(id) {
         )
       
       # Convert to an interactive plot
-      ggplotly(plt_applications)
+      ggplotly(plt_irregularmigration)
     })
   })
 }
