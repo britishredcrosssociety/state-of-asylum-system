@@ -50,6 +50,7 @@ ui <- function(request) {
         
         # Each graph should have its own fluidRow()
         fluidRow(
+          IrregularMigrationPlotUI("IrregularMigrationPlot")
           # The new graph would go here
         )
       ),
