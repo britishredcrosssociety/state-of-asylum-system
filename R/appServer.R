@@ -6,4 +6,5 @@ server <- function(input, output, session) {
   inadmissibilityClaimsTableServer("inadmissibilityClaimsTable")
   IrregularMigrrationPlotServer("IrregularMigrationPlot")
   ResettlementPlotServer("ResettlementPlot")
+  
 }
