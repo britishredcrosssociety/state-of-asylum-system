@@ -63,6 +63,20 @@ bind_rows(
 ) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
 
+# Age pyramid
+asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  
+  filter(Age != "Unknown") |> 
+  filter(Sex != "Unknown Sex") |> 
+
+  pivot_wider(names_from = Sex, values_from = Applications) |> 
+  mutate(Female = Female * -1) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
+
 # ---- Graph 3: Returns ----
 # How many and who have been returned
 asylum::returns |> 
