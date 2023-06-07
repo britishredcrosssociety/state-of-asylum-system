@@ -1,6 +1,28 @@
 library(tidyverse)
 library(asylum)
 
+# ---- Migration comparison/proportions ----
+# Total applications in 2022
+migration_asylum <- 
+  asylum::applications |> 
+  filter(Year == 2022) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  pull(Applications)
+
+# Small boats
+migration_small_boats <- 
+  asylum::irregular_migration |> 
+  filter(Year == 2022 & str_detect(`Method of entry`, "boat")) |> 
+  summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
+  pull(Boats)
+
+# Net migration figure from ONS
+# Source: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2022
+net_migration <- 606000 
+
+net_migration - migration_asylum
+migration_asylum - migration_small_boats
+
 # ---- Graph 1: Total annual applications over time ----
 asylum::applications |> 
   group_by(Date) |> 
@@ -153,9 +175,10 @@ asylum::returns_by_destination |>
 unique(asylum::inadmissibility_cases_considered$Stage)
 
 asylum::inadmissibility_cases_considered |> 
-  group_by(Year, Stage) |> 
+  group_by(Stage) |> 
   summarise(Cases = sum(Cases)) |> 
   ungroup()
+
 
 
 
