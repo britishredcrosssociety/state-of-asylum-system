@@ -62,3 +62,57 @@ bind_rows(
     mutate(Type = "UASC")
 ) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
+
+# ---- Graph 3: Returns ----
+# How many and who have been returned
+asylum::returns |> 
+  group_by(Year, `Return type group`) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  
+  pivot_wider(names_from = `Return type group`, values_from = `Number of returns`) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - overall.csv")
+
+asylum::returns |> 
+  group_by(Year, Age) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  filter(Age != "Unknown") |> 
+  pivot_wider(names_from = Age, values_from = `Number of returns`) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by age.csv")
+
+asylum::returns |> 
+  group_by(Year, Sex) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  filter(!str_detect(Sex, "Unknown")) |> 
+  pivot_wider(names_from = Sex, values_from = `Number of returns`) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by sex.csv")
+
+# Top five nations, by number of returns in the most recent year
+top_five_nations <- 
+  returns_by_destination |> 
+  filter(Year == max(Year)) |> 
+  group_by(Year, `Return destination`) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  arrange(desc(`Number of returns`)) |> 
+  slice(1:5) |> 
+  pull(`Return destination`)
+
+returns_by_destination |> 
+  group_by(`Return destination`) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  arrange(desc(`Number of returns`))
+
+# Make a wider version of returns quarterly data
+asylum::returns_by_destination |> 
+  select(Date, `Return destination`, `Number of returns`) |> 
+  
+  group_by(Date, `Return destination`) |> 
+  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+  
+  pivot_wider(names_from = `Return destination`, values_from = `Number of returns`) |> 
+  
+  # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+  relocate(Date, any_of(top_five_nations)) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
