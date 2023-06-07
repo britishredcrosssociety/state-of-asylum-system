@@ -1,0 +1,20 @@
+Category,Nationality,Type,Age,Sex,UASC
+Albania,12232,Nationality,NA,NA,NA
+Afghanistan,9077,Nationality,NA,NA,NA
+Iran,7751,Nationality,NA,NA,NA
+Iraq,4336,Nationality,NA,NA,NA
+India,3672,Nationality,NA,NA,NA
+Syria,3260,Nationality,NA,NA,NA
+Bangladesh,2979,Nationality,NA,NA,NA
+Pakistan,2451,Nationality,NA,NA,NA
+Sudan,2298,Nationality,NA,NA,NA
+Eritrea,2080,Nationality,NA,NA,NA
+18-29,NA,Age,34785,NA,NA
+30-49,NA,Age,22167,NA,NA
+50-69,NA,Age,2232,NA,NA
+70+,NA,Age,238,NA,NA
+Under 18,NA,Age,12790,NA,NA
+Female,NA,Sex,NA,16804,NA
+Male,NA,Sex,NA,54990,NA
+Non-UASC,NA,UASC,NA,NA,68291
+UASC,NA,UASC,NA,NA,3922
