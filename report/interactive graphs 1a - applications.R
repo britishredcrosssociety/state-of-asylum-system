@@ -77,6 +77,24 @@ asylum::applications |>
   mutate(Female = Female * -1) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
 
+# Top five countries applying for asylum over time
+asylum::applications |> 
+  group_by(Year, Region, Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  group_by(Year) |> 
+  slice_max(Applications, n = 5) |> 
+  ungroup() |> 
+  
+  mutate(Applications = as.character(Applications)) |> 
+  # mutate(Applications = replace_na(Applications, "")) |> 
+  
+  pivot_wider(names_from = Year, values_from = Applications) |> 
+  mutate(across(-(Region:Nationality), ~ replace_na(.x, ""))) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
+
 # ---- Graph 3: Returns ----
 # How many and who have been returned
 asylum::returns |> 
@@ -130,3 +148,14 @@ asylum::returns_by_destination |>
   relocate(Date, any_of(top_five_nations)) |> 
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
+
+# ---- Inadmissibility ----
+unique(asylum::inadmissibility_cases_considered$Stage)
+
+asylum::inadmissibility_cases_considered |> 
+  group_by(Year, Stage) |> 
+  summarise(Cases = sum(Cases)) |> 
+  ungroup()
+
+
+
