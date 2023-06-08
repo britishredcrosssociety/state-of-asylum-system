@@ -1,11 +1,4 @@
-##Applications and Questions#
-
-##Questions: 
-
-#Who is applying for asylum in the last 12 months?
-#age 
-#nationality
-#gender
+#Running Analyses by Question and Area#
 
 library(tidyverse)
 library(asylum)
@@ -16,9 +9,9 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 
 ----#Code that works without issue & creates good graphs#----
 
-
-----#QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, GENDER AND AGE)#----
-----##Age Analysis with Aesthetic Graph##----
+----#QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS)#----
+----#Age Analysis#----
+----##Age All Years Analysis#----
 AgeAnalysis <- applications %>%
   select(Year, Age, Applications) %>%
   filter(Year > '2008')
@@ -49,12 +42,12 @@ AllAgesAllYears <- AgeAnalysis |>
     title = "Asylum Application by Age Group All Years",
     x = "Year",
     y = "Number of Applicants",
-    caption = "British Red Cross analysis of Home Office data"
+    caption = "BRC Mock Analysis for 2023, Q1"
   )
 
-AllAgesAllYears 
+AllAgesAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
-----#Last 12 Months- Age Analysis#----
+----##Last 12 Months- Age Analysis#----
 AgeAnalysis12Months <- applications %>%
   select(Date, Year, Age, Applications) %>%
   filter(Year > '2021')
@@ -87,20 +80,18 @@ AllAge12Months <- AgeAnalysis12Months %>%
 
 AllAge12Months
   
-----##Sex Analysis with Aesthetic Graph##----
+----#Sex Analysis#----##----
 SexAnalysis <- applications %>%
   select(Year, Sex, Applications, Nationality, Age, Quarter) %>%
   filter(Year > '2008')
 
 view(SexAnalysis)
 
-SexAnalysis2 <- SexAnalysis %>%
+SexAnalysis <- SexAnalysis %>%
   group_by(Sex, Year) %>%
   summarise(SexGroupSum = sum(Applications))
 
-view(SexAnalysis2)
-
-AllSAllYears <- SexAnalysis2 |>
+AllSAllYears <- SexAnalysis |>
   ggplot(aes(Year, SexGroupSum)) +
   geom_line(aes(colour = Sex)) +
   geom_point(aes(colour = Sex), size = 1) +
@@ -120,11 +111,255 @@ AllSAllYears <- SexAnalysis2 |>
     title = str_glue("Asylum Application by Sex All Years",
                      x = "Year",
                      y = "Number of Applicants",
-                     caption = "British Red Cross analysis of Home Office data"
+                     caption = "BRC Mock Analysis 2023, Q1"
     ))
 
-AllSAllYears 
+AllSAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
+----#UASC#----#----
+UASC <- applications %>%
+  select(Year, Nationality, UASC, Applications) %>%
+  group_by(Year, UASC) %>%
+  summarise(TotalUASC = sum(Applications))
+
+view(UASC)
+
+UASCOnly <- UASC %>%
+  filter(Year > 2005, UASC == "UASC")
+
+view(UASCOnly)
+
+UASCOnly |>
+  ggplot(aes(Year, TotalUASC)) +
+  geom_line(colour = "red") +
+  geom_text(aes(label = scales::comma(TotalUASC)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_x_continuous(breaks = c(2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  labs(title = "Number of UASC Applications", 
+       x = "Year", 
+       y = "Total Number of Applications", 
+       caption = "BRC Mock analyses 2023, Q1")
+  
+----#Dependent Children#----#----
+
+DependentC <- applications %>%
+  select(Year, `Applicant type`, Applications) %>%
+  group_by(Year, `Applicant type`) %>%
+  summarise(TotalDC = sum(Applications))
+
+DependentC <- DependentC %>%
+  filter(`Applicant type` == "Dependant")
+
+view(DependentC)
+
+DependentC |>
+  ggplot(aes(Year, TotalDC)) +
+  geom_line(colour = "red") +
+  geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  labs(title = 'Number of Depedent Applications', 
+       x = 'Year', 
+       y = 'Total Number of Applications', 
+       caption = 'BRC Mock analyses 2023, Q1') +
+  scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+
+----#QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL?#----
+----#Grant Rate and Appeals#----
+GrantRatebyYear <- grant_rates_initial_annual %>%
+  select(Year, Grant, Refused) %>%
+  group_by(Year) %>%
+  summarise(TGrant = sum(Grant),TRefused = sum(Refused))
+
+GrantRatebyYear <- GrantRatebyYear %>%
+     mutate(TotalCases = TGrant + TRefused) %>%
+     mutate(GrantRate = TGrant / TotalCases) %>%
+     mutate(GrantRate = (GrantRate <- GrantRate*100))
+
+GrantRatebyYear |>
+  ggplot(aes(Year, GrantRate)) +
+  geom_line(aes(colour = "red"), show.legend = NULL) +
+  geom_point(aes(size = GrantRate, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(GrantRate)), show.legend = FALSE, size = rel(4)) + 
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  theme_classic() +
+  guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
+  theme(
+    legend.position = "right",
+    # legend.box = "vertical",
+      # legend.margin = margin(),
+      plot.title.position = "plot",
+      plot.title = element_textbox_simple(size = 12)) +
+      labs(
+         title = "Grant Rates Initial -Annual",
+         x = "Year",
+         y = "Grant Rate (%)",
+        caption = "BRC Mock Analyses")
+
+#Appeals#
+AppealsLodgedTotal <- appeals_lodged %>%
+  select(Year,`Appeals lodged`) %>%
+  group_by(Year) %>%
+  summarise(TotalLodged = sum(`Appeals lodged`))
+
+AppealsLodgedTotal |>
+  ggplot(aes(Year, TotalLodged)) +
+  geom_line(aes(colour = "red"), show.legend = NULL) +
+  geom_point(aes(size = TotalLodged, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(TotalLodged)), show.legend = FALSE, size = rel(4)) + 
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  theme_classic() +
+  guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
+  theme(
+    legend.position = "right",
+    # legend.box = "vertical",
+    # legend.margin = margin(),
+    plot.title.position = "plot",
+    plot.title = element_textbox_simple(size = 12)) +
+  labs(
+    title = "Total Appeals Lodged",
+    x = "Year",
+    y = "Total Appeals Lodged",
+    caption = "BRC Mock Analyses 2023, Q1") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+
+#Appeals Determined#
+ADetermined <- appeals_determined %>%
+  select(Year, Outcome, `Appeals determined`) %>%
+  group_by(Year, Outcome) %>%
+  summarise(TDetermined = sum(`Appeals determined`))
+
+ADetermined |>
+  ggplot(aes(Year, TDetermined)) +
+  geom_line(aes(colour = Outcome)) +
+  geom_point(aes(colour = Outcome)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  theme_classic() +
+  labs(title = "Appeals Determined by Outcome", 
+       x = "Year", 
+       y = "Total Number of Appeals Determined", 
+       caption = "BRC Mock Analyses 2023, Q1")
+
+#Appeals Non-Suspensive#
+
+Nonsuspensive <- appeals_non_suspensive %>%
+  select(Year, `Initial decisions from designated states`, `Refusals from designated states`, `Clearly unfounded refusals (designated states)`, `Clearly unfounded refusals (non-designated states)`, `Total eligible for the NSA process`) %>%
+  group_by(Year) %>%
+  summarise(IDDS = sum(`Initial decisions from designated states`), RDS = sum(`Refusals from designated states`), CDS = sum(`Clearly unfounded refusals (designated states)`), CNDS = sum(`Clearly unfounded refusals (non-designated states)`), NSATotal = sum(`Total eligible for the NSA process`))
+
+#To revise and examine how to plot non-suspensive and where the focus should be- ie the total number of NSA or other?#
+
+
+----#QUESTION: HOW MANY PEOPLE HAVE BEEN RETURNED? AND TO WHERE?#----
+----#Returned#----
+#Returned Total#
+
+ReturnTotal <- returns %>%
+  select(Year, `Number of returns`) %>%
+  group_by(Year) %>%
+  summarise(TotalReturn = sum(`Number of returns`))
+
+ReturnTotal |>
+  ggplot(aes(Year, TotalReturn)) +
+  geom_line(aes(colour = "red"), show.legend = NULL) +
+  geom_text(aes(label = scales::comma(TotalReturn)), show.legend = FALSE, size = rel(4)) +
+  scale_x_continuous(breaks = c(2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
+  theme_classic() +
+  labs(title = 'Total Numbers of Returns per Year', 
+       x = 'Date', 
+       y = 'Number of Returns', 
+       caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
+
+#Returns by Type#
+ReturnbyType <- returns %>%
+  select(Year, `Return type`, `Number of returns`) %>%
+  group_by(Year, `Return type`) %>%
+  summarise(TotalReturnbyType = sum(`Number of returns`))
+
+view(ReturnbyType)
+
+ReturnbyType |>
+  ggplot(aes(Year, TotalReturnbyType)) +
+  geom_line(aes(colour = `Return type`)) +
+  #geom_text(aes(label = scales::comma(TotalReturnbyType)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  labs(title = 'Returns by Return Type', 
+       x = 'Date', 
+       y = 'Total Number of Returns', 
+       caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
+
+#check to see if they would prefer return by group- simplified# 
+
+ReturnbyType <- returns %>%
+  select(Year, `Return type group`, `Number of returns`) %>%
+  group_by(Year, `Return type group`) %>%
+  summarise(TotalReturnbyType = sum(`Number of returns`))
+
+ReturnbyType |>
+  ggplot(aes(Year, TotalReturnbyType)) +
+  geom_line(aes(colour = `Return type group`)) +
+  #geom_text(aes(label = scales::comma(TotalReturnbyType)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  labs(title = 'Returns by Return Type Group- Simplified', 
+       x = 'Date', 
+       y = 'Total Number of Returns', 
+       caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
+
+#Return by Destination Group#
+ReturnbyDestination <- returns %>%
+  select(Year, `Return destination group`, `Number of returns`) %>%
+  group_by(Year, `Return destination group`) %>%
+  summarise(TotalDG = sum(`Number of returns`))
+
+ReturnbyDestination |>
+  ggplot(aes(Year, TotalDG)) +
+  geom_line(aes(colour = `Return destination group`)) +
+  theme_classic() +
+  labs(title = 'Returns by Destination Type', 
+       x = 'Year', 
+       y = 'Total Number of Returns', 
+       caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
+  
+#Returns by Destination Country#
+
+returns_by_destination %>%
+  select(Year, `Return destination`, `Number of returns`) %>%
+  group_by(Year, `Return destination`) %>%
+  summarise(DestinationTotal = sum(`Number of returns`))
+
+#Ask if Nationality graph specifically wanted or if there can be analysis by regions?#
+
+----#QUESTION: HOW MANY CLAIMS HAVE BEEN DEEMED INADMISSABLE?#---- 
+#Inadmissible- to discuss with the team if this revised graph is better?#
+Inadmissable <- inadmissibility_cases_considered %>%
+  select(Date, Year, Stage, Cases, Quarter) %>%
+  group_by(Date, Year, Quarter, Stage) %>%
+  summarise(TotalCases = sum(Cases))
+  
+Inadmissable |>
+  ggplot(aes(Date, TotalCases)) +
+  geom_line(aes(group = Stage, colour = Stage)) +
+  geom_point(aes(colour = Stage), size = 1) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_color_manual(values = c(get_brc_colours()$teal, get_brc_colours()$green, get_brc_colours()$red, get_brc_colours()$blue_light, get_brc_colours()$black)) +
+  scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$green, get_brc_colours()$red, get_brc_colours()$blue_light, get_brc_colours()$black)) +
+  theme_classic() +
+  guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
+  theme(
+    legend.position = "right",
+    # legend.box = "vertical",
+    # legend.margin = margin(),
+    plot.title.position = "plot",
+    plot.title = element_textbox_simple(size = 12)
+  ) +
+  labs(
+    title = "Inadmissable Cases by Stage",
+    x = "6 Month Intervals",
+    y = "Number of Cases",
+    caption = "British Red Cross Mock Analyses."
+  )
+
+----#TO ADD: QUESTION: HOW MANY PEOPLE HAVE BEEN DETAINED AND REMOVED SINCE MARCH 7 2023?#----
 ----#QUESTION: HOW LONG IS IT TAKING FOR DECISIONS TO BE MADE?#---- 
 ----#Backlog Analyses#----
 
@@ -134,7 +369,7 @@ AllSAllYears
 Backlog <- asylum_work_in_progress %>%
   select( Date , `Total Work In Progress`) 
   
- ----##Graph: Backlog Overall##---- 
+----##Graph: Backlog Overall##---- 
   Backlog |>
     ggplot(aes(Date, `Total Work In Progress`)) +
     geom_line(aes(colour = 'red'), show.legend = FALSE) +
@@ -286,7 +521,7 @@ DependantMorethan6Month |>
   filter(Morethan6monthtotal > 1000) |>
   ggplot(aes(Nationality, Morethan6monthtotal)) +
   geom_line(aes(Nationality), alpha = 0.5, colour = "red")
-
+#this graph needs to be updated- does not work as well. 
 
 ----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES?#----
 ----#Safe Routes Analysis- Resettlement Asylum Case#----
@@ -358,6 +593,27 @@ Smallboatbyquarter |>
 
 #colour need to be edited for this graph.#
 
+----#Small Boat x Asylum Applications#----
+
+SmallboatAsylum <- small_boat_asylum_applications %>%
+  select(Year, `Age Group`, Sex, Region, Applications, `Asylum application`)
+  filter("Asylum application" != "No asylum application raised")
+
+SmallboatAsylum %>%
+  select(Year, `Age Group`, Applications) %>%
+  group_by(Year, `Age Group`) %>%
+  summarise(SBAsyTotal = sum(Applications)) |>
+  ggplot(aes(Year, SBAsyTotal)) +
+  geom_line(aes(colour = `Age Group`)) +
+  theme_classic() +
+  labs(title = "Asylum Applications from Small Boat Arrivals",
+       x = "Year", 
+       y = "Number of Applications")
+
+
+
+
+
 ----###Small Boat -To revise Nationalities###---- 
 smallboat %>%
   filter(Date > "2021-10-01")
@@ -401,41 +657,227 @@ Totalfamreunion <- family_reunion %>%
        x = "Year",
        y = "Number of Visas Granted")
 
-Totalfamreunion + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+Totalfamreunion + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023.1))
 
-----#Cost & Productivity#----
+----#QUESTION: WHAT IS THE STATE OF DETENTION?
+----#Detention Overall Analyses#----
+
+#People Entering Detention#
+OverallEnteringDetention <- people_entering_detention %>%
+  select(Year, Nationality, Sex, Age, `First place of detention`, Entering) %>%
+  group_by(Year) %>%
+  summarise(TotalinDetention = sum(Entering))
+
+OEDG <- OverallEnteringDetention |>
+  ggplot(aes(Year, TotalinDetention)) +
+  geom_line(aes(colour = "red"), show.legend = FALSE) +
+  geom_point(aes(colour = "red", alpha = 0.5, size = TotalinDetention), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(TotalinDetention)), show.legend = FALSE, size = rel(2)) +
+  theme_classic() +
+  labs(title = "People Entering Detention (2010 - 2022)",
+       x = "Year",
+       y = "Number of People Entering")
+OEDG + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+
+#People in Detention#
+OverallinDetention <- people_in_detention %>%
+  select(Year, Age, Sex, `Length of detention`, People) %>%
+  group_by(Year) %>%
+  summarise(TotalinDetention = sum(People))
+
+OverallinDetention |>
+  ggplot(aes(Year, TotalinDetention)) +
+  geom_line(aes(colour = "red"), show.legend = FALSE) +
+  geom_point(aes(colour = "red", alpha = 0.5, size = TotalinDetention), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(TotalinDetention)), show.legend = FALSE, size = rel(2)) +
+  theme_classic() +
+  labs(title = "People in Detention (2010 - 2022)",
+       x = "Year",
+       y = "Number of People") +
+scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+
+#Length of Detention#
+LengthinDetention <- people_in_detention %>%
+  select(Year, `Length of detention`, People) %>%
+  group_by(Year, `Length of detention`) %>%
+  summarise(LengthTotal = sum(People))
+
+LengthinDetention |>
+  ggplot(aes(Year, LengthTotal)) +
+  geom_line(aes(colour = `Length of detention`)) +
+  theme_classic() +
+  labs(title = "Length in Detention",
+        x = "Year",
+        y = "Number of People") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+#To revise length and colours for graph as too messy- discuss with team on what time periods to include#
+
+#Detention and Age# 
+
+AgeDetention <- people_in_detention %>%
+  select(Year, Age, People) %>%
+  group_by(Year, Age) %>%
+  summarise(AgeTotal = sum(People))
+
+AgeDetention |>
+  ggplot(aes(Year, AgeTotal)) +
+  geom_line(aes(colour = Age)) +
+  theme_classic() +
+  labs(title = "Age of those in Detention",
+       x = "Year", 
+       y = "Number of People", 
+       caption = "BRC Mock Analysis")
+
+#Detention by Sex#
+DetentionbySex <- people_in_detention %>%
+  select(Year, Sex, People) %>%
+  group_by(Year, Sex) %>%
+  summarise(Total = sum(People))
+
+DetentionbySex |>
+  ggplot(aes(Year, Total)) +
+  geom_line(aes(colour = Sex)) +
+  theme_classic() +
+  labs(title = "Sex of those in Detention", 
+       x = "Year", 
+       y = "Number of People", 
+       caption = "BRC Mock Analysis") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+
+#Detention Pregnant Women#
+
+detention_pregnant_women %>%
+  select(Year, `Number of pregnant women detained in the immigration detention estate`) %>%
+  group_by(Year) %>%
+  summarise(Total = sum(`Number of pregnant women detained in the immigration detention estate`)) |>
+  ggplot(aes(Year, Total)) +
+  geom_line(aes(colour = "red")) +
+  geom_point(aes(colour = "red")) +
+  theme_classic() +
+  labs(title = "Number of Pregnant Women in Detention",
+       xlab = "Year", 
+       ylab = "Number")
+
+
+
+
+
+
+
+----#TO BE REVISED CODE#----
+----#Cost & Productivity- to be revised#----
 view(asylum_costs_and_productivity) 
 
-asylum_costs_and_productivity %>%
-  pivot_longer()
-
-#Setting up data frame#
-
 asylum_costs_and_productivity |>
-  ggplot() +
-  geom_bar()
-  ggplot(aes(x =`Financial Year`), colour = "red") +
-  geom_line(aes(y = `Total Asylum Costs`), colour = "green") +
-  geom_line(aes(y = Productivity), colour = "blue") +
-  geom_line(aes(y = `Asylum Caseworking Staff`), colour = "black")
+  ggplot(aes(`Financial Year`, `Total Asylum Costs`)) +
+  geom_point() +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Total Asylum System Cost", x = "Financial Year", y = "Cost")
   
+----#Local Authority and Refugee Support#----
 
-----#CODE THAT DOESNT WORK WELL YET- TO BE REVISED#----
-----#Nationalities x Age x Sex#----##REVIESE THIS!!!!!######
-ByThree <- applications %>%
-  select(Year, Age, Sex, Nationality, Applications) %>%
-  filter(Year > '2008')
+----##Map of Refugee Support and Local Authority- taken from Ukraine analysis##----
 
-AllThree <- ByThree %>%
-  group_by(Year, Sex, Nationality) %>%
-  summarise(ByThreeSum = sum(Applications))
+library(demographr)
+library(geographr)
+library(viridis)
+library(sf)
 
-view(AllThree)
+colnames(local_authority_support)
 
-AllThreeonGraph <- AllThree |>
-  ggplot(aes(Year, Nationality), group = 'Sex') +
-  geom_point(aes(colour = Sex), size = 1)
-AllThreeonGraph
+local_authority_support |>
+  select(`LAD Code`, People) |>
+  left_join(demographr::households21_ltla21)
 
-##----would be best to take away nationality from the report and keep it on the interactive website alone----#
+  homelessness_24feb_24mar |> 
+  select(lad_code, homeless = `Total Ukrainian households owed a prevention or relief duty`) |> 
+  left_join(demographr::households21_ltla21, by = c("lad_code" = "ltla21_code")) |> 
+  mutate(homeless_per_100000 = homeless / households * 100000)
+
+homelessness_latest_shp <- 
+  geographr::boundaries_ltla21 |> 
+  filter(str_detect(ltla21_code, "^E")) |> 
+  left_join(homelessness_latest, by = c("ltla21_code" = "lad_code"))
+
+----#Map showing absolute numbers of Ukraine homelessness by Local Authority ----
+homelessness_latest_shp |> 
+  ggplot() +
+  geom_sf(
+    aes(fill = homeless),
+    colour = "#5c747a"
+  ) +
+  scale_fill_gradient(low = "#f6f6f6", high = "#ee2a24") +
+  # scale_fill_viridis(
+  #   na.value = "transparent",
+  #   option = "magma",
+  #   alpha = 0.7,
+  #   begin = 0.1,
+  #   end = 0.9,
+  #   discrete = FALSE,
+  #   direction = -1
+  # ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "#ffffff", color = NA),
+    panel.background = element_rect(fill = "#ffffff", color = NA),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      margin = margin(
+        b = 0.3,
+        t = 0.2,
+        l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.caption = element_text(hjust = 0.5)
+  ) +
+  labs(
+    # title = "Local Authorities potentially requiring deeper support with homelessness",
+    # subtitle = str_wrap("Showing the subset of Local Authorities where people arriving on the Ukraine visa schemes are living and rates of homelessness (including people in temporary accommodation) were already high, housing stock is low, and waiting lists for housing are long. Local Authorities are shaded by number of Ukranian arrivals (darker colours mean more people).\n", 100),
+    fill = "Number of Ukrainian households at risk of homelessness",
+    caption = "Source: British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/homelessness map for PRA spotlight - absolute count.png", width = 180, height = 160, units = "mm")
+
+----#Map showing Ukraine homelessness as a proportion of all households, by Local Authority ----
+homelessness_latest_shp |> 
+  # Drop Scilly - clearly there's some error in the data
+  filter(ltla21_code != "E06000053") |> 
+  
+  ggplot() +
+  geom_sf(
+    aes(fill = homeless_per_100000),
+    colour = "#5c747a"
+  ) +
+  scale_fill_gradient(low = "#f6f6f6", high = "#ee2a24") +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "#ffffff", color = NA),
+    panel.background = element_rect(fill = "#ffffff", color = NA),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(
+      hjust = 0.5,
+      margin = margin(
+        b = 0.3,
+        t = 0.2,
+        l = 2,
+        unit = "cm"
+      )
+    ),
+    plot.caption = element_text(hjust = 0.5)
+  ) +
+  labs(
+    # title = "Local Authorities potentially requiring deeper support with homelessness",
+    # subtitle = str_wrap("Showing the subset of Local Authorities where people arriving on the Ukraine visa schemes are living and rates of homelessness (including people in temporary accommodation) were already high, housing stock is low, and waiting lists for housing are long. Local Authorities are shaded by number of Ukranian arrivals (darker colours mean more people).\n", 100),
+    fill = "Proportion of Ukrainian households at risk of homelessness \n(per 100,000 households)",
+    caption = "Source: British Red Cross analysis of DLUHC data"
+  )
+
+ggsave("images/homelessness map for PRA spotlight - proportion.png", width = 180, height = 160, units = "mm")
+
 
