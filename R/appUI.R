@@ -59,4 +59,5 @@ ui <- function(request) {
       column(1)
     )
   )
+  )
 }
