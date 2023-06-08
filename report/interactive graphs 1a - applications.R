@@ -179,6 +179,5 @@ asylum::inadmissibility_cases_considered |>
   summarise(Cases = sum(Cases)) |> 
   ungroup()
 
-
-
-
+asylum::notices_of_intent |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
