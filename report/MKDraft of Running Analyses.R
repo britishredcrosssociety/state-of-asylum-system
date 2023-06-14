@@ -10,6 +10,106 @@ source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 ----#Code that works without issue & creates good graphs#----
 
 ----#QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS)#----
+----#Total Asylum Applications#----
+
+TotalApps <- applications %>%
+  group_by(Year) %>%
+  summarise(Total = sum(Applications))
+
+view(TotalApps)
+
+TotalApps |>
+  ggplot(aes(Year, Total)) +
+  geom_line(colour = "red") +
+  geom_point(aes(size = Total, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Total Number of Asylum Applications", 
+       x = "Year", 
+       y = "Total Number of Applications", 
+       caption = "BRC Mock analyses 2023, Q1")
+
+----#Total Asylum Applications Quarterly Analysis#----
+
+TotalQApps <- applications %>%
+  select(Quarter, Year, Applications) %>%
+  filter(Year > 2021) %>%
+  group_by(Quarter) %>%
+  summarise(Total = sum(Applications))
+
+view(TotalQApps)
+
+TotalQApps |>
+  ggplot(aes(Quarter, Total, group = 1)) +
+  geom_line(aes (colour = "red"), show.legend = FALSE) +
+  geom_point(aes(size = Total, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Total Number of Asylum Applications, by Quarter", 
+       x = "Quarter", 
+       y = "Total Number of Applications", 
+       caption = "BRC Mock analyses 2023, Q1")
+
+----#Top 5 Nationalities 2020 - 2023#----
+
+ByNationality <- applications %>%
+  group_by(Nationality, Year) %>%
+  summarise(Total = sum(Applications))
+
+view(ByNationality)
+
+Top20 <- ByNationality |>
+  filter(Year == 2020, Total>2000) |>
+  ggplot(aes(Nationality, Total)) +
+  geom_point(aes(colour = "red"), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Top 5 Nationalities Applying for Asylum in 2020", 
+       x = "Nationalities", 
+       y = "Number of Applications")
+
+Top21 <- ByNationality |>
+  filter(Year == 2021, Total >3500) |>
+  ggplot(aes(Nationality, Total)) +
+  geom_point(aes(colour = "red"), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Top 5 Nationalities Applying for Asylum in 2021", 
+       x = "Nationalities", 
+       y = "Number of Applications")
+
+Top22 <- ByNationality |>
+  filter(Year == 2022, Total>4500) |>
+  ggplot(aes(Nationality, Total)) +
+  geom_point(aes(colour = "red")) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Top 5 Nationalities Applying for Asylum in 2022", 
+       x = "Nationalities", 
+       y = "Number of Applications")
+
+Top23 <- ByNationality |>
+  filter(Year == 2023, Total>1000) |>
+  ggplot(aes(Nationality, Total)) +
+  geom_point(aes(colour = "red"), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Top Nationalities Applying for Asylum in 2023, Q1", 
+       x = "Nationalities", 
+       y = "Number of Applications")
+
+install.packages("cowplot")
+
+
+cowplot::plot_grid(Top20, Top21, Top22, Top23, labels = c(), label_size = 12)
+
 ----#Age Analysis#----
 ----##Age All Years Analysis#----
 AgeAnalysis <- applications %>%
@@ -83,7 +183,7 @@ AllAge12Months
 ----#Sex Analysis#----##----
 SexAnalysis <- applications %>%
   select(Year, Sex, Applications, Nationality, Age, Quarter) %>%
-  filter(Year > '2008')
+  filter(Year > '2008', Sex != 'Unknown Sex')
 
 view(SexAnalysis)
 
@@ -96,17 +196,16 @@ AllSAllYears <- SexAnalysis |>
   geom_line(aes(colour = Sex)) +
   geom_point(aes(colour = Sex), size = 1) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  scale_color_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red, get_brc_colours()$blue)) +
-  scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red, get_brc_colours()$blue)) +
+  scale_color_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red)) +
+  scale_fill_manual(values = c(get_brc_colours()$teal, get_brc_colours()$red)) +
   theme_classic() +
-  guides(fill=guide_legend(nrow=3,byrow=TRUE), color = guide_legend(nrow=3,byrow=TRUE))+
+  guides(fill=guide_legend(nrow=3,byrow=TRUE), color = guide_legend(nrow=3,byrow=TRUE)) +
   theme(
     legend.position = "right",
     # legend.box = "vertical",
     # legend.margin = margin(),
     plot.title.position = "plot",
-    plot.title = element_textbox_simple(size = 12)
-  ) +
+    plot.title = element_textbox_simple(size = 12)) +
   labs(
     title = str_glue("Asylum Application by Sex All Years",
                      x = "Year",
@@ -114,8 +213,7 @@ AllSAllYears <- SexAnalysis |>
                      caption = "BRC Mock Analysis 2023, Q1"
     ))
 
-AllSAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
-
+AllSAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) + labs(x = "Year", y = "Number of Applicants")
 ----#UASC#----#----
 UASC <- applications %>%
   select(Year, Nationality, UASC, Applications) %>%
@@ -143,12 +241,12 @@ UASCOnly |>
 ----#Dependent Children#----#----
 
 DependentC <- applications %>%
-  select(Year, `Applicant type`, Applications) %>%
-  group_by(Year, `Applicant type`) %>%
+  select(Year, `Applicant type`, Age, Applications) %>%
+  group_by(Year, `Applicant type`, Age) %>%
   summarise(TotalDC = sum(Applications))
 
 DependentC <- DependentC %>%
-  filter(`Applicant type` == "Dependant")
+  filter(`Applicant type` == "Dependant", Age == "Under 18")
 
 view(DependentC)
 
@@ -175,12 +273,15 @@ GrantRatebyYear <- GrantRatebyYear %>%
      mutate(GrantRate = TGrant / TotalCases) %>%
      mutate(GrantRate = (GrantRate <- GrantRate*100))
 
+GrantRatebyYear <- ceiling(GrantRatebyYear) 
+
 GrantRatebyYear |>
   ggplot(aes(Year, GrantRate)) +
   geom_line(aes(colour = "red"), show.legend = NULL) +
   geom_point(aes(size = GrantRate, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(GrantRate)), show.legend = FALSE, size = rel(4)) + 
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   theme_classic() +
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
@@ -193,9 +294,16 @@ GrantRatebyYear |>
          title = "Grant Rates Initial -Annual",
          x = "Year",
          y = "Grant Rate (%)",
-        caption = "BRC Mock Analyses")
+        caption = "BRC Mock Analyses until 2023, Q1")
 
-#Appeals#
+
+#Grant Rate Top Nationalities#
+GrantRateNationality <- grant_rates_initial_annual %>%
+  filter(Year == 2023, Grant > 0, Refused > 0)
+  #To discuss with the team on how they want to go by this?#
+
+
+----#Appeals#----
 AppealsLodgedTotal <- appeals_lodged %>%
   select(Year,`Appeals lodged`) %>%
   group_by(Year) %>%
@@ -222,7 +330,7 @@ AppealsLodgedTotal |>
     caption = "BRC Mock Analyses 2023, Q1") +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
-#Appeals Determined#
+----#Appeals Determined#----
 ADetermined <- appeals_determined %>%
   select(Year, Outcome, `Appeals determined`) %>%
   group_by(Year, Outcome) %>%
@@ -681,8 +789,8 @@ OEDG + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2
 
 #People in Detention#
 OverallinDetention <- people_in_detention %>%
-  select(Year, Age, Sex, `Length of detention`, People) %>%
-  group_by(Year) %>%
+  select(Year, Quarter, Age, Sex, `Length of detention`, People) %>%
+  group_by(Year, Quarter) %>%
   summarise(TotalinDetention = sum(People))
 
 OverallinDetention |>
@@ -695,6 +803,34 @@ OverallinDetention |>
        x = "Year",
        y = "Number of People") +
 scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+
+
+#Detention by Quarter- Stacked bar chart#
+OverallinDetention %>%
+  #filter(Year > 2021) |>
+  ggplot(aes(fill = Quarter, y = TotalinDetention, x = Year)) + 
+  geom_bar(position="stack", stat="identity") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  #scale_x_continuous(breaks = c(2022, 2023)) +
+  theme_classic() +
+  labs(title = "People in Detention by Quarter", x = "Year", y = "Total Cases")
+
+#Detention Last 12 months
+
+Detention12M <- people_in_detention %>%
+  filter(Year > 2021) %>%
+  select(Year, Date, Quarter, People) %>%
+  group_by(Date) %>%
+  summarise(Total12M = sum(People))
+
+Detention12M |>
+  ggplot(aes(Date, Total12M)) +
+  geom_line() +
+  geom_point() +
+  theme_classic() 
+  
+
+
 
 #Length of Detention#
 LengthinDetention <- people_in_detention %>%
