@@ -2,8 +2,6 @@ library(tidyverse)
 library(asylum)
 
 # ---- How many people have been granted protection in the UK having arrived through a safe route? ----
-unique(asylum::decisions_resettlement$`Case type`)
-
 asylum::decisions_resettlement |> 
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
   group_by(Date) |> 
@@ -52,6 +50,7 @@ visas_scraped |>
   ungroup() |> 
   filter(str_detect(Stage, "arrival")) |> 
   select(Date, Scheme, Arrivals = Visas_imputed) |> 
+  pivot_wider(names_from = Scheme, values_from = Arrivals) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
 
 # ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ by nationality, age and gender and what are the trends e.g. month by month/by quarter? ----
