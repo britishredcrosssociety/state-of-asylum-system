@@ -71,3 +71,35 @@ grant_rates_at_appeal |>
   write_csv("data-raw/flourish/3b - Decision-making/grant rates at appeal - by nationality.csv")
 
 # ---- How many people have been age disputed in the last 12 months by nationality and gender and what was the outcome of the dispute? ----
+# - Data doesn't contain gender/sex ----
+age_disputes_nation <- 
+  asylum::age_disputes |> 
+  # Filter within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Nationality, `Raised or resolved`, `Raised type / Resolved outcome`) |> 
+  summarise(`Age disputes` = sum(`Age disputes`, na.rm = TRUE)) |> 
+  ungroup()
+
+# Get top five nations for 'raised' and for 'resolved'
+top_five_raised <- 
+  age_disputes_nation |> 
+  filter(`Raised or resolved` == "Raised") |> 
+  arrange(desc(`Age disputes`)) |> 
+  slice(1:10) |> 
+  pull(Nationality)
+  
+top_five_resolved <- 
+  age_disputes_nation |> 
+  filter(`Raised or resolved` == "Resolved") |> 
+  arrange(desc(`Age disputes`)) |> 
+  slice(1:10) |> 
+  pull(Nationality)
+
+age_disputes_nation |> 
+  filter(Nationality %in% c(top_five_raised, top_five_resolved)) |> 
+  #   (`Raised or resolved` == "Raised" & Nationality %in% top_five_raised) |
+  #     (`Raised or resolved` == "Resolved" & Nationality %in% top_five_resolved)
+  # ) |> 
+  pivot_wider(names_from = `Raised type / Resolved outcome`, values_from = `Age disputes`) |> 
+  
+  write_csv("data-raw/flourish/3b - Decision-making/age disputes.csv")
