@@ -39,12 +39,12 @@ asylum::applications |>
   arrange(desc(Applications))
 
 # ---- Graph 2: Breakdown of applications within last 12 months ----
-asylum::applications |> 
-  # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
-  group_by(Nationality, Age, Sex, UASC) |> 
-  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
+# asylum::applications |> 
+#   # Filter applications within the last 12 months
+#   filter(Date >= today() - dmonths(12)) |> 
+#   group_by(Nationality, Age, Sex, UASC) |> 
+#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
   
 bind_rows(
   asylum::applications |> 
