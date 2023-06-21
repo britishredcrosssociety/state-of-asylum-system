@@ -1,0 +1,19 @@
+Category,Nationality,Type,Age,Sex
+Afghanistan,2472,Nationality,NA,NA
+Syria,312,Nationality,NA,NA
+Sudan,103,Nationality,NA,NA
+Iraq,77,Nationality,NA,NA
+Refugee,43,Nationality,NA,NA
+Somalia,33,Nationality,NA,NA
+Pakistan,32,Nationality,NA,NA
+Ethiopia,25,Nationality,NA,NA
+Sudan (South),15,Nationality,NA,NA
+Eritrea,14,Nationality,NA,NA
+18-29,NA,Age,472,NA
+30-49,NA,Age,803,NA
+50-69,NA,Age,156,NA
+70+,NA,Age,8,NA
+Under 18,NA,Age,1729,NA
+Female,NA,Sex,NA,1603
+Male,NA,Sex,NA,1548
+Unknown,NA,Sex,NA,17
