@@ -117,6 +117,42 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
 
+# ---- Initial grant rates ----
+# Top ten nations, by number of grants and grant rate in the most recent year
+top_ten_nations <- 
+  grant_rates_initial_annual |> 
+  filter(Year == max(Year)) |> 
+  arrange(desc(Grant), desc(`Initial grant rate`)) |> 
+  slice(1:10) |> 
+  pull(Nationality)
+
+grant_rates_initial_annual |> 
+  filter(Year >= max(Year) - 2) |> 
+  filter(Nationality %in% top_ten_nations) |> 
+  select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
+
+grant_rates_initial_annual |> 
+  group_by(Year) |> 
+  summarise(
+    Grant = sum(Grant, na.rm = TRUE),
+    Refused = sum(Refused, na.rm = TRUE)
+  ) |> 
+  ungroup() |>
+  mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
+  select(Year, `Initial grant rate`) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-total.csv")
+
+# Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
+grant_rates_initial_quarterly |> 
+  select(Date, Quarter, Nationality, `Initial grant rate`) |> 
+  pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |> 
+  
+  # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+  relocate(Date, Quarter, any_of(top_ten_nations)) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
+
 # ---- Graph 3: Returns ----
 # How many and who have been returned
 asylum::returns |> 
