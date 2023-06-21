@@ -2,9 +2,68 @@ library(tidyverse)
 library(asylum)
 
 # ---- How many people have been and are in detention in the last 12 months? ----
+leaving_detention <- 
+  asylum::people_leaving_detention |> 
+  # Filter visas within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Nationality, Age, Sex) |> 
+  summarise(`People leaving detention` = sum(Leaving, na.rm = TRUE))
+
+in_detention <- 
+  asylum::people_in_detention |> 
+  filter(Date == max(Date)) |> 
+  group_by(Nationality, Age, Sex) |> 
+  summarise(`People in detention` = sum(People, na.rm = TRUE))
+
+sum(leaving_detention$`People leaving detention`)
+sum(in_detention$`People in detention`)
 
 # ---- Who is in immigration detention (nationality, age, gender w/ focus on number of women in detention- and pregnant women) ----
+# - Nationality -
+in_detention |> 
+  group_by(Nationality) |> 
+  summarise(`People in detention` = sum(`People in detention`)) |> 
+  arrange(desc(`People in detention`)) |> 
+  slice(1:20) |> 
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by nationality.csv")
+
+round(438/1591 * 100, 0)
+
+# - Age and sex -
+in_detention |> 
+  group_by(Age, Sex) |> 
+  summarise(`People in detention` = sum(`People in detention`)) |> 
+  
+  filter(Age != "Unknown") |> 
+  filter(Sex != "Unknown Sex") |> 
+  
+  pivot_wider(names_from = Sex, values_from = `People in detention`) |> 
+  mutate(Female = Female * -1) |> 
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex.csv")
+
+# How many pregnant women are currently in detention?
+asylum::detention_pregnant_women |> 
+  filter(Date == max(Date))
 
 # ---- How long have people been in immigration detention? How many detained for more than 28 days? ----
+detention_length <- 
+  asylum::people_leaving_detention |>
+  filter(Date == max(Date)) |> 
+  group_by(`Length of detention`) |> 
+  summarise(People = sum(Leaving, na.rm = TRUE)) |> 
 
+  # Remove initial letter and colon  
+  mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
+
+detention_length |> 
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by length.csv")
+
+# Number detained for longer than 28 days
+detention_length |> 
+  filter(!`Length of detention` %in% c("3 days or less", "4 to 7 days", "8 to 14 days", "15 to 28 days")) |> 
+  summarise(sum(People))
+  
 # ---- How many people are in immigration detention and what is the size of immigration detention estate? Baseline from previous years ----
+asylum::detention_cost_per_day |> 
+  select(Date, Cost) |> 
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")
