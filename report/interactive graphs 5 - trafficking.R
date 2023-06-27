@@ -86,6 +86,25 @@ nrm_conclusive_grounds |>
   
   write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age.csv")
 
-# ---- How many people were the HomeOffice notified through the Duty to Notify (DtN) process by nationality? ----
+# ---- How many people were the Home Office notified through the Duty to Notify (DtN) process by nationality? ----
+dtn <- 
+  bind_rows(
+  nrm_duty_to_notify_2022_q2,
+  nrm_duty_to_notify_2022_q3,
+  nrm_duty_to_notify_2022_q4,
+  nrm_duty_to_notify_2023_q1
+) |> 
+  group_by(Nationality) |> 
+  summarise(Total = sum(Total)) |> 
+  arrange(desc(Total)) |> 
+  filter(Nationality != "Total")
+
+dtn |> 
+  write_csv("data-raw/flourish/5 - Trafficking/duty to notify.csv")
+
+# What proportion of DtNs are from the top five countries?
+scales::percent(
+  dtn |> slice(1:4) |> summarise(Total = sum(Total)) |> pull(Total) / dtn |> summarise(Total = sum(Total)) |> pull(Total)
+)
 
 # ---- How many people were detained for removal having consented to enter the NRM? ----
