@@ -169,4 +169,22 @@ eu_grants |>
   write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - grants.csv")
 
 # ---- What are the top 5 countries globally that currently have the most asylum seekers? ----
+# Source: https://popstats.unhcr.org/refugee-statistics/download/
+# Direct link to data query: https://www.unhcr.org/refugee-statistics/download/?url=5VGvnQ
+tf <- compositr::download_file("https://api.unhcr.org/population/v1/asylum-applications/?limit=20&dataset=asylum-applications&displayType=totals&yearFrom=2001&yearTo=2022&coa_all=true&columns%5B%5D=procedure_type&columns%5B%5D=app_type&columns%5B%5D=app_pc&columns%5B%5D=app_size&columns%5B%5D=dec_level&columns%5B%5D=applied&sort%5Byear%5D=desc&download=true&_gl=1*4410k5*_rup_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_rup_ga_EVDQTJ4LMY*MTY4Nzg2NDYyNC4xLjAuMTY4Nzg2NDYyNC4wLjAuMA..*_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_ga_X2YZPJ1XWR*MTY4Nzg2NDYyNC4xLjAuMTY4Nzg2NDYyNC4wLjAuMA..", file_extension = ".zip")
 
+unzip(tf, exdir = tempdir())
+
+global_asylum <- read_csv(file.path(tempdir(), "asylum-applications.csv"))
+
+global_asylum |> 
+  group_by(`Country of asylum`, Year) |> 
+  summarise(applied = sum(applied, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  pivot_wider(names_from = Year, values_from = applied) |> 
+  
+  mutate(across(-`Country of asylum`, as.character)) |> 
+  mutate(across(-`Country of asylum`, ~ replace_na(.x, ""))) |> 
+  
+  write_csv("data-raw/flourish/1b - International comparisons/Global comparison.csv")
