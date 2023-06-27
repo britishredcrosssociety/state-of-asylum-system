@@ -40,4 +40,38 @@ EUTop5 <- (EU_stat_ %>%
 
 EUTop5 
 
+#EU Grant Rate & Top 5
 
+EUGrant <- (EU_Grant_Rates %>%
+              ggplot(aes(Country, Grant)) +
+              geom_bar(stat = "identity") +
+              geom_text(aes(label = Grant), position = position_dodge(width=0.5), vjust=-0.25) +
+              theme_classic() +
+              labs(title = "EU Initial Grants vs United Kingdom", 
+                   x = "Country", 
+                   y = "Asylum Grants") +
+              scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
+  
+
+EUGrant + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+
+EU_Grant_Rates <- EU_Grant_Rates %>%
+  mutate(GrantRate1 = (Grant/Total)*100) %>%
+ 
+  view(EU_Grant_Rates)
+
+round(data = EU_Grant_Rates::GrantRate1, digits = 0)
+
+ceiling(EU_Grant_Rates::GrantRate1)
+
+PerEUGrant <- (EU_Grant_Rates %>%
+  ggplot(aes(Country, GrantRate)) +
+  geom_bar(stat = "identity") +
+  #geom_text(aes(label = GrantRate), position = position_dodge(width=0.5), vjust=-0.25) +
+  theme_classic() +
+  labs(title = "EU Grant Rate and United Kingdom Grant Rate", 
+                x = "Country", 
+                y = "Grant Rate (%)") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
+
+PerEUGrant + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
