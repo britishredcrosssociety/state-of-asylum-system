@@ -51,9 +51,61 @@ nrm_referrals |>
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality.csv")
 
 # ---- How many people received a positive reasonable grounds decision by age, gender, nationality and setting of referral? ----
+nrm_reasonable_grounds |> 
+  filter(Quarter == "Total") |> 
+  select(-Quarter) |> 
+  
+  # Turn each separate "Age - Decision" column into a single column, and remove Totals
+  pivot_longer(cols = -Year) |> 
+  filter(name != "Total") |> 
+  
+  # Split Age and Decision into separate columns, and remove totals
+  separate_wider_delim(name, delim = " - ", names = c("Age", "Decision")) |> 
+  filter(Decision != "Total") |> 
+  
+  # Turn Age back into separate columns
+  pivot_wider(names_from = Decision, values_from = value) |> 
+  
+  write_csv("data-raw/flourish/5 - Trafficking/reasonable grounds by age.csv")
 
 # ---- How many people received positive conclusive grounds decision by age, gender, nationality and competent authority? ----
+nrm_conclusive_grounds |> 
+  filter(Quarter == "Total") |> 
+  select(-Quarter) |> 
+  
+  # Turn each separate "Age - Decision" column into a single column, and remove Totals
+  pivot_longer(cols = -Year) |> 
+  filter(name != "Total") |> 
+  
+  # Split Age and Decision into separate columns, and remove totals
+  separate_wider_delim(name, delim = " - ", names = c("Age", "Decision")) |> 
+  filter(Decision != "Total") |> 
+  
+  # Turn Age back into separate columns
+  pivot_wider(names_from = Decision, values_from = value) |> 
+  
+  write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age.csv")
 
-# ---- How many people were the HomeOffice notified through the Duty to Notify (DtN) process by nationality? ----
+# ---- How many people were the Home Office notified through the Duty to Notify (DtN) process by nationality? ----
+dtn <- 
+  bind_rows(
+  nrm_duty_to_notify_2022_q2,
+  nrm_duty_to_notify_2022_q3,
+  nrm_duty_to_notify_2022_q4,
+  nrm_duty_to_notify_2023_q1
+) |> 
+  group_by(Nationality) |> 
+  summarise(Total = sum(Total)) |> 
+  arrange(desc(Total)) |> 
+  filter(Nationality != "Total")
+
+dtn |> 
+  write_csv("data-raw/flourish/5 - Trafficking/duty to notify.csv")
+
+# What proportion of DtNs are from the top five countries?
+scales::percent(
+  dtn |> slice(1:4) |> summarise(Total = sum(Total)) |> pull(Total) / dtn |> summarise(Total = sum(Total)) |> pull(Total)
+)
 
 # ---- How many people were detained for removal having consented to enter the NRM? ----
+# Not sure data exists

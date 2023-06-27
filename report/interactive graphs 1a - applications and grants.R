@@ -117,6 +117,18 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
 
+# Asylum over time, by nationality
+asylum::applications |> 
+  group_by(Year, Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  pivot_wider(names_from = Nationality, values_from = Applications) |> 
+  mutate(across(-(Year), as.character)) |> 
+  mutate(across(-(Year), ~ replace_na(.x, ""))) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation.csv")
+
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
 top_ten_nations <- 
