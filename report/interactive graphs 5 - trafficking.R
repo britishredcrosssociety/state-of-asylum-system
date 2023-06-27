@@ -51,8 +51,40 @@ nrm_referrals |>
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality.csv")
 
 # ---- How many people received a positive reasonable grounds decision by age, gender, nationality and setting of referral? ----
+nrm_reasonable_grounds |> 
+  filter(Quarter == "Total") |> 
+  select(-Quarter) |> 
+  
+  # Turn each separate "Age - Decision" column into a single column, and remove Totals
+  pivot_longer(cols = -Year) |> 
+  filter(name != "Total") |> 
+  
+  # Split Age and Decision into separate columns, and remove totals
+  separate_wider_delim(name, delim = " - ", names = c("Age", "Decision")) |> 
+  filter(Decision != "Total") |> 
+  
+  # Turn Age back into separate columns
+  pivot_wider(names_from = Decision, values_from = value) |> 
+  
+  write_csv("data-raw/flourish/5 - Trafficking/reasonable grounds by age.csv")
 
 # ---- How many people received positive conclusive grounds decision by age, gender, nationality and competent authority? ----
+nrm_conclusive_grounds |> 
+  filter(Quarter == "Total") |> 
+  select(-Quarter) |> 
+  
+  # Turn each separate "Age - Decision" column into a single column, and remove Totals
+  pivot_longer(cols = -Year) |> 
+  filter(name != "Total") |> 
+  
+  # Split Age and Decision into separate columns, and remove totals
+  separate_wider_delim(name, delim = " - ", names = c("Age", "Decision")) |> 
+  filter(Decision != "Total") |> 
+  
+  # Turn Age back into separate columns
+  pivot_wider(names_from = Decision, values_from = value) |> 
+  
+  write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age.csv")
 
 # ---- How many people were the HomeOffice notified through the Duty to Notify (DtN) process by nationality? ----
 
