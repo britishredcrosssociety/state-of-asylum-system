@@ -102,8 +102,89 @@ eu_asylum <-
 
 # Save
 eu_asylum |> 
-  write_csv("data-raw/flourish/1b - International comparisons/Europe comparison.csv")
+  write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - applications.csv")
 
 # ---- Which countries in the EU have granted the most asylum claims? ----
+# Final decisions on asylum applications - annual data (tps00193)
+# Source: https://ec.europa.eu/eurostat/web/migration-asylum/asylum/database
+tf <- download_file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00193.tsv.gz", file_extension = ".tsv.gz")
+
+eu_grants_raw <- read_tsv(tf)
+
+# Wrangling
+eu_grants <- 
+  eu_grants_raw |> 
+  
+  # Separate out the elements of the long single first column
+  separate_wider_delim(`unit,citizen,sex,age,decision,geo\\time`, delim = ",", names = c("unit", "citizen", "sex", "age", "decision", "geo")) |> 
+  
+  filter(decision == "TOTAL_POS") |>  # Keep only positive decisions
+  filter(geo != "EU27_2020") |>     # Don't need the EU27 total
+  
+  mutate(across(starts_with("20"), as.integer)) |> 
+  
+  mutate(Nation = case_country_lookup(geo)) |> 
+  arrange(desc(`2022`)) |> 
+  
+  select(-c(unit:decision)) |> 
+  relocate(Nation)
+
+# - Add UK totals for 2020 to latest year -
+# What's the latest year in the EU dataset?
+first_year <- 
+  str_extract(names(eu_grants), "20[0-9]+") |> 
+  as.integer() |> 
+  min(na.rm = TRUE)
+
+most_recent_year <- 
+  str_extract(names(eu_grants), "20[0-9]+") |> 
+  as.integer() |> 
+  max(na.rm = TRUE)
+
+uk_grants <- 
+  asylum::decisions_resettlement |> 
+  filter(`Case type` == "Asylum Case" & str_detect(`Case outcome group`, "Grant")) |> 
+  
+  group_by(Year) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  filter(Year >= first_year & Year <= most_recent_year) |> 
+  
+  mutate(Nation = "United Kingdom", geo = "UK") |> 
+  pivot_wider(names_from = Year, values_from = Decisions)
+
+eu_grants <- 
+  eu_grants |> 
+  filter(Nation != "United Kingdom") |> 
+  bind_rows(uk_grants) |> 
+  arrange(desc(`2022`))
+
+# Turn each nation's geo code into one of Flourish's URLs for flags
+eu_grants <- 
+  eu_grants |> 
+  mutate(geo = str_glue("https://public.flourish.studio/country-flags/svg/{tolower(geo)}.svg")) |> 
+  rename(`Flag URL` = geo)
+
+# Save
+eu_grants |> 
+  write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - grants.csv")
 
 # ---- What are the top 5 countries globally that currently have the most asylum seekers? ----
+# Source: https://popstats.unhcr.org/refugee-statistics/download/
+# Direct link to data query: https://www.unhcr.org/refugee-statistics/download/?url=5VGvnQ
+tf <- compositr::download_file("https://api.unhcr.org/population/v1/asylum-applications/?limit=20&dataset=asylum-applications&displayType=totals&yearFrom=2001&yearTo=2022&coa_all=true&columns%5B%5D=procedure_type&columns%5B%5D=app_type&columns%5B%5D=app_pc&columns%5B%5D=app_size&columns%5B%5D=dec_level&columns%5B%5D=applied&sort%5Byear%5D=desc&download=true&_gl=1*4410k5*_rup_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_rup_ga_EVDQTJ4LMY*MTY4Nzg2NDYyNC4xLjAuMTY4Nzg2NDYyNC4wLjAuMA..*_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_ga_X2YZPJ1XWR*MTY4Nzg2NDYyNC4xLjAuMTY4Nzg2NDYyNC4wLjAuMA..", file_extension = ".zip")
+
+unzip(tf, exdir = tempdir())
+
+global_asylum <- read_csv(file.path(tempdir(), "asylum-applications.csv"))
+
+global_asylum |> 
+  group_by(`Country of asylum`, Year) |> 
+  summarise(applied = sum(applied, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  pivot_wider(names_from = Year, values_from = applied) |> 
+  
+  mutate(across(-`Country of asylum`, as.character)) |> 
+  mutate(across(-`Country of asylum`, ~ replace_na(.x, ""))) |> 
+  
+  write_csv("data-raw/flourish/1b - International comparisons/Global comparison.csv")
