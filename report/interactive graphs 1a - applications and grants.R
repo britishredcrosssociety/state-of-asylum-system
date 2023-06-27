@@ -16,12 +16,24 @@ migration_small_boats <-
   summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
   pull(Boats)
 
+resettlement <- 
+  asylum::decisions_resettlement |> 
+  filter(Year == 2022 & str_detect(`Case type`, "Resettlement")) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  pull(Decisions)
+
 # Net migration figure from ONS
 # Source: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2022
 net_migration <- 606000 
+immigration_2022 <- 1163000
 
-net_migration - migration_asylum
+ukraine <- 114000
+bno <- 52000  # British Nationals Overseas - BN(O)
+
+immigration_2022 - ukraine - bno - migration_asylum - resettlement
 migration_asylum - migration_small_boats
+migration_small_boats
+resettlement
 
 # ---- Graph 1: Total annual applications over time ----
 asylum::applications |> 
