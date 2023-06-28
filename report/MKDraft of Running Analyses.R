@@ -305,6 +305,7 @@ DependentC |>
        caption = 'BRC Mock analyses 2023, Q1') +
   scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
+
 ----#QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL?#----
 ----#Grant Rate and Appeals#----
 GrantRatebyYear <- grant_rates_initial_annual %>%
@@ -806,7 +807,7 @@ UKResettlementNat%>%
   sg_legend(show=TRUE, label="Nationalities: ")
   
 
-----#Resettlement by Local Authority Map 
+----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED THROUGH "IRREGULAR" ENTRY?  
 
 ----#Irregular Migration#----
 
@@ -1051,12 +1052,6 @@ detention_pregnant_women %>%
   labs(title = "Number of Pregnant Women in Detention",
        xlab = "Year", 
        ylab = "Number")
-
-
-
-
-
-
 
 ----#Age Dispute#----
 
@@ -1405,7 +1400,7 @@ DTNTotal %>%
 
 
 
-----##---- 
+
 ----#TO BE REVISED CODE#----
 ----#Cost & Productivity- to be revised#----
 view(asylum_costs_and_productivity) 
