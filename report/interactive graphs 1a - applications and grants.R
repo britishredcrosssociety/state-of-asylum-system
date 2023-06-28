@@ -241,6 +241,19 @@ asylum::returns_by_destination |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
 
+# Returns by whether the person was seeking asylum or not
+asylum::returns_asylum |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
+
+asylum::returns_asylum |>
+  mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
+  
+  group_by(Category) |> 
+  summarise(Total = sum(Total)) |> 
+  ungroup() |> 
+  
+  mutate(prop = scales::percent(Total / sum(Total)))
+
 # ---- Inadmissibility ----
 unique(asylum::inadmissibility_cases_considered$Stage)
 
