@@ -12,14 +12,20 @@ library(choroplethr)
 library(leaflet)
 library(raster)
 library(rgdal)
-source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 
-----#Code that works without issue & creates good graphs#----
+source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
+source("report/theme_brc.R")
+source("report/brc_colours.R")
+
+conflicted::conflict_prefer("select", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
+
+# ---- Code that works without issue & creates good graphs ----
 
 library(tidyverse)
 library(asylum)
-----#QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS)#----
-----#Total Asylum Applications#----
+# ---- QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS) ----
+# ---- Total Asylum Applications ----
 
 TotalApps <- applications %>%
   group_by(Year) %>%
@@ -29,18 +35,25 @@ view(TotalApps)
 
 TotalApps |>
   ggplot(aes(Year, Total)) +
-  geom_line(colour = "red") +
-  geom_point(aes(size = Total, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
-  theme_classic() +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_point(aes(size = Total, alpha = 0.4, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
+  # theme_classic() +
+  # scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  labs(title = "Total Number of Asylum Applications", 
-       x = "Year", 
-       y = "Total Number of Applications", 
-       caption = "BRC Mock analyses 2023, Q1")
+  labs(title = "People applying for asylum", 
+       x = NULL, 
+       y = "Number of people", 
+       caption = "BRC Mock analyses 2023, Q1")+
+  theme_brc() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank()
+  )
 
-----#Total Asylum Applications Quarterly Analysis#----
+ggsave("report/output/1 - Who is applying for asylum in the last 12 months/total people applying.pdf", height = 180, width = 250, units = "mm")
+
+# ---- Total Asylum Applications Quarterly Analysis ----
 
 TotalQApps <- applications %>%
   select(Quarter, Year, Applications) %>%
@@ -62,7 +75,7 @@ TotalQApps |>
        y = "Total Number of Applications", 
        caption = "BRC Mock analyses 2023, Q1")
 
-----#Top 5 Nationalities 2020 - 2023# TO BE REVISED----
+# ---- Top 5 Nationalities 2020 - 2023# TO BE REVISED----
 
 ByNationality <- applications %>%
   group_by(Nationality, Year) %>%
@@ -119,7 +132,7 @@ install.packages("cowplot")
 
 cowplot::plot_grid(Top20, Top21, Top22, Top23, labels = c(), label_size = 12)
 
-----#Nationalities Stream Plot#----
+# ---- Nationalities Stream Plot ----
 
 NationalitiesTotal <- applications %>%
   group_by(Date, Year, Quarter, Nationality) %>%
@@ -154,8 +167,8 @@ ggplot(Nat22, aes(x = Date, y = Total, fill = Nationality)) +
   geom_area(show.legend = FALSE) +
   theme_classic()
 
-----#Age Analysis#----
-----##Age All Years Analysis#----
+# ---- Age Analysis ----
+# ---- #Age All Years Analysis ----
 AgeAnalysis <- applications %>%
   select(Year, Age, Applications) %>%
   filter(Year > '2008')
@@ -191,7 +204,7 @@ AllAgesAllYears <- AgeAnalysis |>
 
 AllAgesAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
-----##Last 12 Months- Age Analysis#----
+# ---- #Last 12 Months- Age Analysis ----
 AgeAnalysis12Months <- applications %>%
   select(Date, Year, Age, Applications) %>%
   filter(Year > '2021')
@@ -224,7 +237,7 @@ AllAge12Months <- AgeAnalysis12Months %>%
 
 AllAge12Months
   
-----#Sex Analysis#----##----
+# ---- Sex Analysis # ----  ----
 SexAnalysis <- applications %>%
   select(Year, Sex, Applications, Nationality, Age, Quarter) %>%
   filter(Year > '2008', Sex != 'Unknown Sex')
@@ -258,7 +271,7 @@ AllSAllYears <- SexAnalysis |>
     ))
 
 AllSAllYears + scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) + labs(x = "Year", y = "Number of Applicants")
-----#UASC#----#----
+# ---- UASC ---- ----
 UASC <- applications %>%
   select(Year, Nationality, UASC, Applications) %>%
   group_by(Year, UASC) %>%
@@ -282,7 +295,7 @@ UASCOnly |>
        y = "Total Number of Applications", 
        caption = "BRC Mock analyses 2023, Q1")
   
-----#Dependent Children#----#----
+# ---- Dependent Children ---- ----
 
 DependentC <- applications %>%
   select(Year, `Applicant type`, Age, Applications) %>%
@@ -305,9 +318,14 @@ DependentC |>
        caption = 'BRC Mock analyses 2023, Q1') +
   scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
+<<<<<<< HEAD
 
 ----#QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL?#----
 ----#Grant Rate and Appeals#----
+=======
+# ---- QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL? ----
+# ---- Grant Rate and Appeals ----
+>>>>>>> be704cf2fbbac5ab95ccb3b35af7633a7f1af5c4
 GrantRatebyYear <- grant_rates_initial_annual %>%
   select(Year, Grant, Refused) %>%
   group_by(Year) %>%
@@ -348,7 +366,7 @@ GrantRateNationality <- grant_rates_initial_annual %>%
   #To discuss with the team on how they want to go by this?#
 
 
-----#Appeals#----
+# ---- Appeals ----
 AppealsLodgedTotal <- appeals_lodged %>%
   select(Year,`Appeals lodged`) %>%
   group_by(Year) %>%
@@ -375,7 +393,7 @@ AppealsLodgedTotal |>
     caption = "BRC Mock Analyses 2023, Q1") +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
-----#Appeals Determined#----
+# ---- Appeals Determined ----
 ADetermined <- appeals_determined %>%
   select(Year, Outcome, `Appeals determined`) %>%
   group_by(Year, Outcome) %>%
@@ -403,8 +421,8 @@ Nonsuspensive <- appeals_non_suspensive %>%
 #To revise and examine how to plot non-suspensive and where the focus should be- ie the total number of NSA or other?#
 
 
-----#QUESTION: HOW MANY PEOPLE HAVE BEEN RETURNED? AND TO WHERE?#----
-----#Returned#----
+# ---- QUESTION: HOW MANY PEOPLE HAVE BEEN RETURNED? AND TO WHERE? ----
+# ---- Returned ----
 #Returned Total#
 
 ReturnTotal <- returns %>%
@@ -446,7 +464,7 @@ ReturnsQ %>%
        caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
   
 # Can examine what nationalities we see at different quarters, but may just be a better question to pose to team.#
-----#QUESTION: HOW MANY CLAIMS HAVE BEEN DEEMED INADMISSABLE?#---- 
+# ---- QUESTION: HOW MANY CLAIMS HAVE BEEN DEEMED INADMISSABLE? ---- 
 
 #Inadmissible- to discuss with the team if this revised graph is better?#
 Inadmissable <- inadmissibility_cases_considered %>%
@@ -491,11 +509,11 @@ InadmissibleforSankey <- data.frame(inadmissibility_cases_considered,
 sankey(data, from = country, to = stage, weight = count)
 
 
-----#QUESTION: HOW MANY PEOPLE HAVE BEEN GRANTED PROTECTION IN THE UK HAVING ARRIVED THROUGH SAFE ROUTES? 
+# ---- QUESTION: HOW MANY PEOPLE HAVE BEEN GRANTED PROTECTION IN THE UK HAVING ARRIVED THROUGH SAFE ROUTES? 
 
-----#TO ADD: QUESTION: HOW MANY PEOPLE HAVE BEEN DETAINED AND REMOVED SINCE MARCH 7 2023?#----
-----#QUESTION: HOW LONG IS IT TAKING FOR DECISIONS TO BE MADE?#---- 
-----#Backlog Analyses#----
+# ---- TO ADD: QUESTION: HOW MANY PEOPLE HAVE BEEN DETAINED AND REMOVED SINCE MARCH 7 2023? ----
+# ---- QUESTION: HOW LONG IS IT TAKING FOR DECISIONS TO BE MADE? ---- 
+# ---- Backlog Analyses ----
 
 #Note from their own data release, it looks like they only include age groups and gender. No nationality. Does not break down each reason by age or gender though.#
 #Backlog analyses only released during Q2!!!!!#
@@ -503,7 +521,7 @@ sankey(data, from = country, to = stage, weight = count)
 Backlog <- asylum_work_in_progress %>%
   select( Date , `Total Work In Progress`) 
   
-----##Graph: Backlog Overall##---- 
+# ---- #Graph: Backlog Overall# ----  
   Backlog |>
     ggplot(aes(Date, `Total Work In Progress`)) +
     geom_line(aes(colour = 'red'), show.legend = FALSE) +
@@ -516,7 +534,7 @@ Backlog <- asylum_work_in_progress %>%
          caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
   
   
-----##Backlog Reason##----
+# ---- #Backlog Reason# ---- 
 backlogbyreason <- asylum_work_in_progress %>%
   select(Date, `Awaiting Initial Asylum Decision`,`Post Decision`,`Asylum Appeal Outstanding`,
          `Subject to Removal Action`,`On Hold`,`Further Leave Application Outstanding`)
@@ -534,13 +552,13 @@ class(asylum_work_in_progress$`On Hold`)
 class(asylum_work_in_progress$`Further Leave Application Outstanding`)
 
 
-----##Backlog by Age##----
+# ---- #Backlog by Age# ---- 
 backlogbyage <- asylum_work_in_progress %>%
   select(Date, `Case Age: 0:12 Months`,`Case Age: 12:24 Months`,`Case Age: 24:36 Months`,`Case Age: 36+ Months`)
 
 view(backlogbyage)
 
-----##Backlog by Age Graph, which needs legend edited##----   
+# ---- #Backlog by Age Graph, which needs legend edited# ----    
   
 ###To get rid of the backlog by agegroup legend and to make it BRC colours, add bracket between y=case...),colour..##
   #Trouble shoot this issue with Matt#
@@ -567,7 +585,7 @@ backlogxage +
                     caption = "British Red Cross analysis of Home Office data")
   
 
-----##Backlog by Sex##----
+# ---- #Backlog by Sex# ---- 
 BacklogbySex <- asylum_work_in_progress %>%
   select(Date, `Gender: Male`, `Gender: Female`, `Gender: Unknown`)
 
@@ -577,7 +595,7 @@ BacklogbySex <- asylum_work_in_progress %>%
 
 #asylum_work_in_progress$`Gender: Unknown` <- as.numeric(asylum_work_in_progress$`Gender: Unknown`)
 
-----###By Sex Graph###----
+# ---- ##By Sex Graph## ---- 
 ggplot(BacklogbySex) +
   geom_line(aes(x = Date, y = `Gender: Male`), colour = "red") +
   geom_point(aes(x = Date, y = `Gender: Male`), colour = "red") +
@@ -590,10 +608,10 @@ ggplot(BacklogbySex) +
        y = "Number of Applications in Progress",
        caption = "British Red Cross analysis of Home Office data")
 
-----#Applicants Awaiting Decisions#----
+# ---- Applicants Awaiting Decisions ----
 #This has been included in the interactive graph- would this be easier to do 
 #high level: countries with the highest numbers awaiting decisions?# 
-----##Graph of Overall Time for Initial Decisions##----
+# ---- #Graph of Overall Time for Initial Decisions# ---- 
 view(DecisionTime)
 
 DecisionTime <- awaiting_decision %>%
@@ -614,7 +632,7 @@ DecisionTime |>
        x = "Date", 
        y = "Total Applications")
 
-----##Applicants Waiting Over 6 Months##----  
+# ---- #Applicants Waiting Over 6 Months# ----   
 
 AwaitingDecisions6Mon <- awaiting_decision %>%
   select(Date, Nationality, Duration, Applications) %>%
@@ -638,7 +656,7 @@ AwaitingDecisions6Mon %>%
   theme_classic()+
   labs(title = "Albania is the country with the highest number of applicants waiting for a decision over 6 months", x = "Date", y = "Number of Applications")
 
-----###Awaiting Decisions- Dependent###----
+# ---- ##Awaiting Decisions- Dependent## ---- 
 
 AwaitingDecisionsDependant <- awaiting_decision %>%
   select(Date, Nationality, Duration, Applications, `Applicant type`) %>%
@@ -657,8 +675,8 @@ DependantMorethan6Month |>
   geom_line(aes(Nationality), alpha = 0.5, colour = "red")
 #this graph needs to be updated- does not work as well. 
 
-----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES?#----
-----#Safe Routes Analysis- Resettlement Asylum Case#----
+# ---- QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES? ----
+# ---- Safe Routes Analysis- Resettlement Asylum Case ----
 
 view(decisions_resettlement)
 
@@ -671,7 +689,7 @@ ResettlmentTotal <- decisions_resettlement %>%
 
 view(ResettlmentTotal)
 
-----##Resettlement Bar Graph##----
+# ---- #Resettlement Bar Graph# ---- 
 ggplot(ResettlmentTotal, aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   theme_classic() +
@@ -681,7 +699,7 @@ ggplot(ResettlmentTotal, aes(fill = `Case outcome group`, y = RTotal, x = Year))
 
 
 
-----##Resettlement Case Outcome##----
+# ---- #Resettlement Case Outcome# ---- 
 
 CaseOutcome <- decisions_resettlement %>%
   select(Year, `Case outcome`, Decisions) %>%
@@ -721,7 +739,7 @@ ggplot(aes(Year, Total)) +
 
 
 #To discuss with the team on what they would like to have included in the Safe Routes graph. 
-----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? What is the Age, Sex, Nationality?#----
+# ---- QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? What is the Age, Sex, Nationality? ----
 
 #Safe Routes# COME BACK TO THIS 
 
@@ -742,7 +760,7 @@ SafeRoutes <- SafeRoutes %>%
   
 
 
-----#UK Resettlement Scheme#----
+# ---- UK Resettlement Scheme ----
 
 UKResettlement <- decisions_resettlement %>%
   filter(`Case outcome` == "Resettlement - UK Resettlement Scheme")
@@ -807,18 +825,22 @@ UKResettlementNat%>%
   sg_legend(show=TRUE, label="Nationalities: ")
   
 
+<<<<<<< HEAD
 ----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED THROUGH "IRREGULAR" ENTRY?  
+=======
+# ---- Resettlement by Local Authority Map 
+>>>>>>> be704cf2fbbac5ab95ccb3b35af7633a7f1af5c4
 
-----#Irregular Migration#----
+# ---- Irregular Migration ----
 
-----##Small Boat##----
+# ---- #Small Boat# ---- 
 smallboat <- irregular_migration %>%
   filter(`Method of entry`== "Small boat arrivals") 
   
 view(smallboat)
 
 
-----#Small Boat x Gender#----
+# ---- Small Boat x Gender ----
 smallboat %>%
   select(Date, Sex, `Age Group`, Nationality, `Number of detections`)%>%
   group_by(Date, Sex) %>%
@@ -828,7 +850,7 @@ smallboat %>%
   theme_classic() +
   labs(title = "Small Boat Crossing by Gender", x = "Date", y = "Number of Detections")
   
-----#Small Boat x Age Group#----
+# ---- Small Boat x Age Group ----
 smallboat %>%
   select(Date, Sex, `Age Group`, Nationality, `Number of detections`) %>%
   group_by(Date, `Age Group`) %>%
@@ -841,7 +863,7 @@ smallboat %>%
        y = "Number of Detections")
 
 
-----#Small Boat x Quarter#----
+# ---- Small Boat x Quarter ----
 Smallboatbyquarter <- smallboat %>% 
   select(Date, Quarter, `Number of detections`) %>%
   group_by(Date, Quarter) %>%
@@ -860,7 +882,7 @@ Smallboatbyquarter |>
 
 #colour need to be edited for this graph.#
 
-----#Small Boat x Asylum Applications#----
+# ---- Small Boat x Asylum Applications ----
 
 SmallboatAsylum <- small_boat_asylum_applications %>%
   select(Year, `Age Group`, Sex, Region, Applications, `Asylum application`)
@@ -881,7 +903,7 @@ SmallboatAsylum %>%
 
 
 
-----###Small Boat -To revise Nationalities###---- 
+# ---- ##Small Boat -To revise Nationalities## ----  
 smallboat %>%
   filter(Date > "2021-10-01")
   select(Date, Nationality, `Number of detections`) %>%
@@ -895,7 +917,7 @@ smallboat %>%
        y = "Number of Detections")
 
   
-----#Irregular Migration by Method of Entry#----  
+# ---- Irregular Migration by Method of Entry ----  
 irregular_migration %>%
   select(Date, `Method of entry`, `Number of detections`) %>%
   group_by(Date, `Method of entry`) %>%
@@ -907,7 +929,7 @@ irregular_migration %>%
        x = "Date",
        y = "Number of Detections")
 
-----#Family Reunification#----
+# ---- Family Reunification ----
 
 view(family_reunion)
 
@@ -926,8 +948,8 @@ Totalfamreunion <- family_reunion %>%
 
 Totalfamreunion + scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023.1))
 
-----#QUESTION: WHAT IS THE STATE OF DETENTION?
-----#Detention Overall Analyses#----
+# ---- QUESTION: WHAT IS THE STATE OF DETENTION?
+# ---- Detention Overall Analyses ----
 
 #People Entering Detention#
 OverallEnteringDetention <- people_entering_detention %>%
@@ -1053,7 +1075,17 @@ detention_pregnant_women %>%
        xlab = "Year", 
        ylab = "Number")
 
+<<<<<<< HEAD
 ----#Age Dispute#----
+=======
+
+
+
+
+
+
+# ---- Age Dispute ----
+>>>>>>> be704cf2fbbac5ab95ccb3b35af7633a7f1af5c4
 
 AgeDispute12Month <- age_disputes %>%
   filter(Year > 2021)
@@ -1121,8 +1153,8 @@ AgeDispute12Month %>%
   guides(color = guide_legend(override.aes = list(size = 0.5)))
 
 
-----#Section 95 Support#----
-----##Support Applications#----
+# ---- Section 95 Support ----
+# ---- #Support Applications ----
 
 Section95Apps <- support_applications %>%
   select(Year, Nationality, `Support type granted`, `Group type`, Applications) %>%
@@ -1167,7 +1199,7 @@ Nationalities95 <- Section95Apps %>%
 
 #In 2020 and 2022, of all the Section95 applications made, Unknown was the highest group in Nationality. Does this even fit with the narrative? 
 
-----##Section 95 Received##----
+# ---- #Section 95 Received# ---- 
 view(support_received)
 
 Section95Recieved <- support_received %>%
@@ -1224,7 +1256,7 @@ SupportType %>%
   guides(color = guide_legend(override.aes = list(size = 0.5)))
 
 
-----#Destitution#----
+# ---- Destitution ----
 
 Destitution <- support_received %>%
   select(Date, `Support Type`, `Accommodation Type`, "UK Region" , People) 
@@ -1248,9 +1280,9 @@ ggplot(aes(x = Year,
   scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
-----#QUESTION: What is the scale of human trafficking in the UK and what is the provision of support to survivors?#----
+# ---- QUESTION: What is the scale of human trafficking in the UK and what is the provision of support to survivors? ----
 
-----#Referral to NRM:----
+# ---- Referral to NRM:----
 nrm_referrals <- 
   bind_rows(
     asylum::nrm_referrals_2023_q1,
@@ -1366,7 +1398,7 @@ RGPlot <- scale_colour_manual("",
   
 #Fix the legend
 
-----##NRM Duty to Notify#----
+# ---- #NRM Duty to Notify ----
 
 view(nrm_duty_to_notify_2022_q2)
 
@@ -1400,9 +1432,15 @@ DTNTotal %>%
 
 
 
+<<<<<<< HEAD
 
 ----#TO BE REVISED CODE#----
 ----#Cost & Productivity- to be revised#----
+=======
+# ----  ---- 
+# ---- TO BE REVISED CODE ----
+# ---- Cost & Productivity- to be revised ----
+>>>>>>> be704cf2fbbac5ab95ccb3b35af7633a7f1af5c4
 view(asylum_costs_and_productivity) 
 
 asylum_costs_and_productivity |>
@@ -1412,9 +1450,9 @@ asylum_costs_and_productivity |>
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   labs(title = "Total Asylum System Cost", x = "Financial Year", y = "Cost")
   
-----#Local Authority and Refugee Support#----
+# ---- Local Authority and Refugee Support ----
 
-----##Map of Refugee Support and Local Authority- taken from Ukraine analysis##----
+# ---- #Map of Refugee Support and Local Authority- taken from Ukraine analysis# ---- 
 
 library(demographr)
 library(geographr)
@@ -1437,7 +1475,7 @@ homelessness_latest_shp <-
   filter(str_detect(ltla21_code, "^E")) |> 
   left_join(homelessness_latest, by = c("ltla21_code" = "lad_code"))
 
-----#Map showing absolute numbers of Ukraine homelessness by Local Authority ----
+# ---- Map showing absolute numbers of Ukraine homelessness by Local Authority ----
 homelessness_latest_shp |> 
   ggplot() +
   geom_sf(
@@ -1480,7 +1518,7 @@ homelessness_latest_shp |>
 
 ggsave("images/homelessness map for PRA spotlight - absolute count.png", width = 180, height = 160, units = "mm")
 
-----#Map showing Ukraine homelessness as a proportion of all households, by Local Authority ----
+# ---- Map showing Ukraine homelessness as a proportion of all households, by Local Authority ----
 homelessness_latest_shp |> 
   # Drop Scilly - clearly there's some error in the data
   filter(ltla21_code != "E06000053") |> 
@@ -1519,8 +1557,8 @@ ggsave("images/homelessness map for PRA spotlight - proportion.png", width = 180
 
 
 
-----#CODE THAT IS REMOVED#----
-----#Returns Graphs that the team stated to remove#----
+# ---- CODE THAT IS REMOVED ----
+# ---- Returns Graphs that the team stated to remove ----
 #Returns by Type#
 ReturnbyType <- returns %>%
   select(Year, `Return type`, `Number of returns`) %>%

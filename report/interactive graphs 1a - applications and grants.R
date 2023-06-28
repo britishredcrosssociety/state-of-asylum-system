@@ -9,12 +9,17 @@ migration_asylum <-
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   pull(Applications)
 
-# Small boats
+# People arriving on small boats who claimed asylum
 migration_small_boats <- 
-  asylum::irregular_migration |> 
-  filter(Year == 2022 & str_detect(`Method of entry`, "boat")) |> 
-  summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
-  pull(Boats)
+  asylum::small_boat_asylum_applications |> 
+  filter(Year == 2022 & `Asylum application` == "Asylum application raised") |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  pull(Applications)
+
+# asylum::irregular_migration |> 
+#   filter(Year == 2022 & str_detect(`Method of entry`, "boat")) |>   
+#   summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   pull(Boats)
 
 resettlement <- 
   asylum::decisions_resettlement |> 
@@ -22,18 +27,23 @@ resettlement <-
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   pull(Decisions)
 
-# Net migration figure from ONS
+# These migration figures are taken from ONS
 # Source: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2022
 net_migration <- 606000 
 immigration_2022 <- 1163000
-
 ukraine <- 114000
 bno <- 52000  # British Nationals Overseas - BN(O)
 
-immigration_2022 - ukraine - bno - migration_asylum - resettlement
-migration_asylum - migration_small_boats
-migration_small_boats
-resettlement
+tribble(
+  ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
+  "Immigration", "Non-asylum migration", "Non-asylum migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
+  "Immigration", "Non-asylum migration", "Ukraine visas", ukraine,
+  "Immigration", "Non-asylum migration", "British Nationals Overseas", bno,
+  "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
+  "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
+  "Immigration", "Non-asylum migration", "Resettlement", resettlement
+) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/immigration.csv")
 
 # ---- Graph 1: Total annual applications over time ----
 asylum::applications |> 
@@ -230,6 +240,19 @@ asylum::returns_by_destination |>
   relocate(Date, any_of(top_five_nations)) |> 
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
+
+# Returns by whether the person was seeking asylum or not
+asylum::returns_asylum |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
+
+asylum::returns_asylum |>
+  mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
+  
+  group_by(Category) |> 
+  summarise(Total = sum(Total)) |> 
+  ungroup() |> 
+  
+  mutate(prop = scales::percent(Total / sum(Total)))
 
 # ---- Inadmissibility ----
 unique(asylum::inadmissibility_cases_considered$Stage)
