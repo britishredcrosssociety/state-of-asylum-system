@@ -12,7 +12,10 @@ library(choroplethr)
 library(leaflet)
 library(raster)
 library(rgdal)
+
 source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
+source("report/theme_brc.R")
+source("report/brc_colours.R")
 
 conflicted::conflict_prefer("select", "dplyr")
 conflicted::conflict_prefer("filter", "dplyr")
@@ -32,16 +35,23 @@ view(TotalApps)
 
 TotalApps |>
   ggplot(aes(Year, Total)) +
-  geom_line(colour = "red") +
-  geom_point(aes(size = Total, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_point(aes(size = Total, alpha = 0.4, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  # scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  labs(title = "Total Number of Asylum Applications", 
-       x = "Year", 
-       y = "Total Number of Applications", 
-       caption = "BRC Mock analyses 2023, Q1")
+  labs(title = "People applying for asylum", 
+       x = NULL, 
+       y = "Number of people", 
+       caption = "BRC Mock analyses 2023, Q1")+
+  theme_brc() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank()
+  )
+
+ggsave("report/output/1 - Who is applying for asylum in the last 12 months/total people applying.pdf", height = 180, width = 250, units = "mm")
 
 # ---- Total Asylum Applications Quarterly Analysis ----
 
