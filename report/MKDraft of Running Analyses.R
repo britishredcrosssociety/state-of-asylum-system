@@ -38,7 +38,7 @@ TotalApps |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_point(aes(size = Total, alpha = 0.4, colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
-  theme_classic() +
+  # theme_classic() +
   # scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   labs(title = "People applying for asylum", 
