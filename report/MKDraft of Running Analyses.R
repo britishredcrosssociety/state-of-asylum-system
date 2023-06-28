@@ -14,6 +14,9 @@ library(raster)
 library(rgdal)
 source("https://github.com/matthewgthomas/brclib/raw/master/R/colours.R")
 
+conflicted::conflict_prefer("select", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
+
 # ---- Code that works without issue & creates good graphs ----
 
 library(tidyverse)
