@@ -6,17 +6,38 @@ leaving_detention <-
   asylum::people_leaving_detention |> 
   # Filter visas within the last 12 months
   filter(Date >= today() - dmonths(12)) |> 
-  group_by(Nationality, Age, Sex) |> 
-  summarise(`People leaving detention` = sum(Leaving, na.rm = TRUE))
+  group_by(`Reason for leaving detention`) |> 
+  summarise(`Number of people` = sum(Leaving, na.rm = TRUE)) |> 
+  
+  mutate(`Reason for leaving detention` = case_when(
+    `Reason for leaving detention` == "Bailed (IJ)" ~ "Bailed (First-tier Tribunal)",
+    `Reason for leaving detention` == "Bailed (SoS)" ~ "Bailed (Secretary of State)",
+    `Reason for leaving detention` == "Granted LTE/LTR" ~ "Granted leave to enter/remain",
+    `Reason for leaving detention` == "Other" ~ "Other",
+    `Reason for leaving detention` == "Returned" ~ "Removed"
+  )) |> 
+  
+  mutate(`Detention status` = "Left detention in last 12 months") |> 
+  relocate(`Detention status`)
 
 in_detention <- 
   asylum::people_in_detention |> 
   filter(Date == max(Date)) |> 
-  group_by(Nationality, Age, Sex) |> 
-  summarise(`People in detention` = sum(People, na.rm = TRUE))
+  summarise(`Number of people` = sum(People, na.rm = TRUE)) |> 
+  
+  mutate(
+    `Detention status` = "In detention, as of March 2023",
+    `Reason for leaving detention` = "In detention",
+  ) |> 
+  relocate(`Detention status`, `Reason for leaving detention`)
 
-sum(leaving_detention$`People leaving detention`)
-sum(in_detention$`People in detention`)
+bind_rows(leaving_detention, in_detention) |> 
+  # mutate(`Reason for leaving detention` = replace_na(`Reason for leaving detention`, "")) |> 
+  arrange(desc(`Number of people`)) |> 
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - totals.csv")
+
+# sum(leaving_detention$`People leaving detention`)
+# sum(in_detention$`People in detention`)
 
 # ---- Who is in immigration detention (nationality, age, gender w/ focus on number of women in detention- and pregnant women) ----
 # - Nationality -
