@@ -133,3 +133,18 @@ asylum::family_reunion |>
   group_by(Date) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
+
+# Age/sex pyramid
+asylum::family_reunion |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Age, Sex) |> 
+  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
+  
+  filter(Age != "Unknown") |> 
+  filter(Sex != "Unknown Sex") |> 
+  
+  pivot_wider(names_from = Sex, values_from = `Visas granted`) |> 
+  mutate(Female = Female * -1) |> 
+  
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion - by age and sex.csv")
