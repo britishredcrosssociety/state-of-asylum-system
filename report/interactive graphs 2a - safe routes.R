@@ -4,6 +4,7 @@ library(asylum)
 # ---- How many people have been granted protection in the UK having arrived through a safe route? ----
 asylum::decisions_resettlement |> 
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
+  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total.csv")
