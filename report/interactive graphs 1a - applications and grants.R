@@ -261,6 +261,16 @@ asylum::returns_asylum |>
   
   mutate(prop = scales::percent(Total / sum(Total)))
 
+# Asylum-related returns over time
+asylum::returns_asylum_longitudinal |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum - over time.csv")
+
+asylum::returns_asylum_longitudinal |> 
+  filter(Category == "Asylum") |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only - over time.csv")
+
 # ---- Inadmissibility ----
 unique(asylum::inadmissibility_cases_considered$Stage)
 
