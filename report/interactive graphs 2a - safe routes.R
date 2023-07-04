@@ -38,11 +38,40 @@ bind_rows(
     filter(Date >= today() - dmonths(12)) |> 
     group_by(Sex) |> 
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
-    filter(Sex != "Unknown Sex") |> 
+    filter(Sex != "Unknown") |> 
     rename(Category = Sex, Sex = Decisions) |> 
     mutate(Type = "Sex")
 ) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - What safe routes have been available in the last 12 months - by category.csv")
+
+asylum::decisions_resettlement |> 
+  filter(`Case type` == "Resettlement Case") |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Age) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  filter(Age != "Unknown") |> 
+  rename(Category = Age, Age = Decisions) |> 
+  mutate(Type = "Resettled") |> 
+  relocate(Type) |> 
+  mutate(Age = Age / sum(Age)) |> 
+  pivot_wider(names_from = Category, values_from = Age) |> 
+  relocate(`Under 18`, .after = Type) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
+
+asylum::decisions_resettlement |> 
+  filter(`Case type` == "Resettlement Case") |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Sex) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  filter(Sex != "Unknown") |> 
+  rename(Category = Sex, Sex = Decisions) |> 
+  mutate(Type = "Resettled") |> 
+  relocate(Type) |> 
+  mutate(Sex = Sex / sum(Sex)) |> 
+  pivot_wider(names_from = Category, values_from = Sex) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
 
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
 source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")

@@ -1,19 +1,18 @@
 Category,Nationality,Type,Age,Sex
-Afghanistan,2472,Nationality,NA,NA
-Syria,312,Nationality,NA,NA
-Sudan,103,Nationality,NA,NA
-Iraq,77,Nationality,NA,NA
+Afghanistan,901,Nationality,NA,NA
+Syria,204,Nationality,NA,NA
 Refugee,43,Nationality,NA,NA
-Somalia,33,Nationality,NA,NA
-Pakistan,32,Nationality,NA,NA
-Ethiopia,25,Nationality,NA,NA
-Sudan (South),15,Nationality,NA,NA
-Eritrea,14,Nationality,NA,NA
-18-29,NA,Age,472,NA
-30-49,NA,Age,803,NA
-50-69,NA,Age,156,NA
-70+,NA,Age,8,NA
-Under 18,NA,Age,1729,NA
-Female,NA,Sex,NA,1603
-Male,NA,Sex,NA,1548
-Unknown,NA,Sex,NA,17
+Sudan,37,Nationality,NA,NA
+Iraq,34,Nationality,NA,NA
+Somalia,24,Nationality,NA,NA
+Ethiopia,23,Nationality,NA,NA
+Other and unknown,14,Nationality,NA,NA
+Eritrea,11,Nationality,NA,NA
+Pakistan,9,Nationality,NA,NA
+18-29,NA,Age,194,NA
+30-49,NA,Age,341,NA
+50-69,NA,Age,70,NA
+70+,NA,Age,7,NA
+Under 18,NA,Age,711,NA
+Female,NA,Sex,NA,665
+Male,NA,Sex,NA,651
