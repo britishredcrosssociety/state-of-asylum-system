@@ -161,9 +161,10 @@ top_ten_nations <-
   pull(Nationality)
 
 grant_rates_initial_annual |> 
-  filter(Year >= max(Year) - 2) |> 
+  filter(Year >= max(Year) - 1) |> 
   filter(Nationality %in% top_ten_nations) |> 
   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
+  sort(desc(`Initial grant rate`)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
 
 grant_rates_initial_annual |> 
