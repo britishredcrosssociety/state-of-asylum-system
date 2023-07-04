@@ -70,10 +70,22 @@ asylum::detention_pregnant_women |>
 detention_length <- 
   asylum::people_leaving_detention |>
   filter(Date == max(Date)) |> 
+  
+  # Remove initial letter and colon
+  mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s")) |> 
+
+  # Group into fewer categories
+  mutate(`Length of detention` = case_match(
+    `Length of detention`,
+    c("3 days or less", "4 to 7 days", "8 to 14 days") ~ "A: Up to two weeks",
+    c("15 to 28 days") ~ "B: 15 to 28 days",
+    .default = "C: 29 days or more"
+  )) |> 
+  
   group_by(`Length of detention`) |> 
   summarise(People = sum(Leaving, na.rm = TRUE)) |> 
-
-  # Remove initial letter and colon  
+  
+  # Remove initial letter and colon
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
 
 detention_length |> 
