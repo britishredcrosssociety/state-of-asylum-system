@@ -54,3 +54,17 @@ scales::percent(sum(receiving_support$People) / backlog)
 
 # ---- How many people seeking asylum have been granted the right to work? (related – how many vacancies are there in the UK job market?) ----
 # Not sure data exists
+
+# ---- Backlog over time ----
+asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage) |> 
+  summarise(Backlog = sum(Applications)) |> 
+  
+  pivot_wider(names_from = Stage, values_from = Backlog) |> 
+  
+  write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
