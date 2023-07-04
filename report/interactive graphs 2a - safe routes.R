@@ -84,6 +84,15 @@ visas_scraped |>
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
 
 # ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ by nationality, age and gender and what are the trends e.g. month by month/by quarter? ----
+# Cumulative arrivals
+asylum::irregular_migration |> 
+  group_by(Year, `Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  pivot_wider(names_from = `Method of entry`, values_from = `Number of detections`) |> 
+  mutate(across(-Year, cumsum)) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - trend.csv")
+
 # Top five nations, by number of returns in the most recent year
 top_five_nations <- 
   asylum::irregular_migration |> 
