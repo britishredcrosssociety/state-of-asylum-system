@@ -161,9 +161,10 @@ top_ten_nations <-
   pull(Nationality)
 
 grant_rates_initial_annual |> 
-  filter(Year >= max(Year) - 2) |> 
+  filter(Year >= max(Year) - 1) |> 
   filter(Nationality %in% top_ten_nations) |> 
   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
+  sort(desc(`Initial grant rate`)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
 
 grant_rates_initial_annual |> 
@@ -243,7 +244,13 @@ asylum::returns_by_destination |>
 
 # Returns by whether the person was seeking asylum or not
 asylum::returns_asylum |> 
+  relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
+
+asylum::returns_asylum |> 
+  filter(Category == "Asylum-related") |> 
+  relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only.csv")
 
 asylum::returns_asylum |>
   mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
@@ -253,6 +260,16 @@ asylum::returns_asylum |>
   ungroup() |> 
   
   mutate(prop = scales::percent(Total / sum(Total)))
+
+# Asylum-related returns over time
+asylum::returns_asylum_longitudinal |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum - over time.csv")
+
+asylum::returns_asylum_longitudinal |> 
+  filter(Category == "Asylum") |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only - over time.csv")
 
 # ---- Inadmissibility ----
 unique(asylum::inadmissibility_cases_considered$Stage)

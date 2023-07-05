@@ -22,8 +22,9 @@ asylum::support_received |>
 receiving_support <- 
   asylum::support_received |> 
   filter(Date == max(Date)) |> 
-  summarise(People = sum(People)) |> 
-  pull(People)
+  mutate(`Accommodation Type` = if_else(`Accommodation Type` == "Subsistence Only", "Receiving asylum support (subsistence only)", "Receiving asylum support (accommodation)")) |> 
+  group_by(`Accommodation Type`) |> 
+  summarise(People = sum(People))
 
 # Total waiting for a decision
 backlog <- 
@@ -32,10 +33,18 @@ backlog <-
   summarise(Backlog = sum(Applications)) |> 
   pull(Backlog)
 
-receiving_support
-backlog
-backlog - receiving_support
-scales::percent(receiving_support / backlog)
+receiving_support |> 
+  rename(Category = `Accommodation Type`) |> 
+  add_row(
+    Category = "Awaiting decision but not receiving asylum support", 
+    People = backlog - sum(receiving_support$People)
+  ) |> 
+  write_csv("data-raw/flourish/4a - Asylum support/destitution rate.csv")
+
+# receiving_support
+# backlog
+# backlog - receiving_support
+scales::percent(sum(receiving_support$People) / backlog)
 
 # ---- How many people deemed inadmissible are in receipt of support? ----
 # Not sure data exists
@@ -45,3 +54,17 @@ scales::percent(receiving_support / backlog)
 
 # ---- How many people seeking asylum have been granted the right to work? (related – how many vacancies are there in the UK job market?) ----
 # Not sure data exists
+
+# ---- Backlog over time ----
+asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage) |> 
+  summarise(Backlog = sum(Applications)) |> 
+  
+  pivot_wider(names_from = Stage, values_from = Backlog) |> 
+  
+  write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
