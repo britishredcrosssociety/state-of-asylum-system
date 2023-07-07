@@ -188,3 +188,32 @@ global_asylum |>
   mutate(across(-`Country of asylum`, ~ replace_na(.x, ""))) |> 
   
   write_csv("data-raw/flourish/1b - International comparisons/Global comparison.csv")
+
+# ---- Flows between countries ----
+# Source: https://www.unhcr.org/refugee-statistics/download/?url=705UgZ
+tf <- compositr::download_file("https://api.unhcr.org/population/v1/population/?limit=20&dataset=population&displayType=totals&columns%5B%5D=refugees&columns%5B%5D=asylum_seekers&columns%5B%5D=idps&columns%5B%5D=oip&columns%5B%5D=stateless&columns%5B%5D=hst&columns%5B%5D=ooc&yearFrom=2001&yearTo=2022&coo_all=true&coa_all=true&download=true&_gl=1*yos0bt*_rup_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_rup_ga_EVDQTJ4LMY*MTY4ODcyNjEyMi40LjEuMTY4ODcyODUzMy4wLjAuMA..*_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_ga_X2YZPJ1XWR*MTY4ODcyNjEyMi40LjEuMTY4ODcyODUzMy4wLjAuMA..", ".zip")
+
+unzip(tf, exdir = tempdir())
+
+flows <- read_csv(file.path(tempdir(), "population.csv"), skip = 14)
+
+flows <- 
+  flows |> 
+  mutate(across(`Refugees under UNHCR's mandate`:`Others of concern`, as.integer))
+
+flows <- 
+  flows |>
+  rowwise() |> 
+  mutate(`People displaced internationally` = sum(c_across(`Refugees under UNHCR's mandate`:`Others of concern`), na.rm = TRUE))
+
+# Internally displaced persons
+flows_idp <- 
+  flows |> 
+  filter(`Country of origin (ISO)` == `Country of asylum (ISO)`)
+
+flows_international <- 
+  flows |> 
+  filter(`Country of origin (ISO)` != `Country of asylum (ISO)`)
+
+flows_international |> 
+  write_csv("data-raw/flourish/1b - International comparisons/Global flows.csv")
