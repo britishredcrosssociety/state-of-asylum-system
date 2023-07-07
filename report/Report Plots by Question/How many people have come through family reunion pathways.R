@@ -34,14 +34,22 @@ FamilyReunion %>%
   ggplot(aes(Year, TotalbySex)) +
   geom_line(aes(colour = Sex))
 
-FambyAS <- FamilyReunion %>%
+FamReuinion22 <- FamilyReunion %>%
   filter(Year == 2022) %>%
   group_by(Sex, Age) %>%
-  summarise(TotalbyAge = sum(Total)) |>
+  summarise(TotalbyAge = sum(Total)) 
+
+arrange(FamReuinion22)
+
+FambyAS <- (FamReuinion22 %>% 
+  arrange(factor(Age, levels = c('Under 18', '18-29', '30-49', '50-69', '70+'))) %>%
   ggplot(aes(fill = Age, x = Sex, y = TotalbyAge)) +
-  geom_bar(position="stack", stat="identity") +
+  geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Family Reunion by Sex and Age Group, 2022", x = "Sex", y = "Total Visas")
+  labs(title = "Family Reunion Visas Granted by Sex and Age Group, 2022", 
+       x = "Sex", 
+       y = "Total Visas Granted", 
+       caption = "BRC Analyses of HO Data, March 2023"))
 
 FambyAS + scale_fill_manual(values = c("#9d1f21",
                                        "#651713",

@@ -20,6 +20,17 @@ Backlog |>
        caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
 
 
+BacklogGraph <- (ggplot(Backlog) +
+  geom_col(aes(x = Date, y = `Total Work In Progress`), colour = brc_colours$red_dunant, fill = brc_colours$red_dunant)  +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Backlog of Cases", 
+       subtitle = "In 2022, the backlog reached 166,085 cases",
+       x = NULL, 
+       y = " Total Cases", 
+       caption = "BRC Analyses of HO Data, March 2023")) 
+
+
 ----##Backlog Reason##----
 backlogbyreason <- asylum_work_in_progress %>%
   select(Date, `Awaiting Initial Asylum Decision`,`Post Decision`,`Asylum Appeal Outstanding`,
@@ -108,57 +119,49 @@ DecisionTime <- awaiting_decision %>%
   summarise(Total = sum(Applications))
 
 DecisionTime <- DecisionTime %>%
-  group_by(Date, Duration) %>%
+  dplyr::mutate(year = lubridate::year(Date))
+
+DecisionTime <- DecisionTime %>%
+  group_by(year, Duration) %>%
   summarise(Total = sum(Total))
 
-DecisionTime |>
-  ggplot(aes(Date, Total)) +
-  geom_line(aes(colour = Duration)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  theme_classic()+
-  labs(title = "Duration for Decision on Applications", 
-       x = "Date", 
-       y = "Total Applications")
+DecisionTime <- DecisionTime %>%
+  filter(Duration != 	"N/A - Further review")
+
+#Decision Plot 
+DecisionTimeG <- ggplot(DecisionTime, aes(fill = Duration, x = year, y = Total)) +
+  geom_bar(position="stack", stat="identity") +
+  theme_classic() +
+  labs(title = "Length of Time for an Initial Decision on Asylum Applications", 
+       x = NULL, 
+       y = "Applications", 
+       caption = "BRC Analyses of HO Data, March 2023")
+
+DecisionTimeG <- DecisionTimeG + scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+
+DecisionTimeG + scale_fill_manual(values = c(brc_colours$red_dunant,
+                                            brc_colours$red_deep)) +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+
+
+view(awaiting_decision)
+
 
 ----##Applicants Waiting Over 6 Months##----  
 
+awaiting_decision <-  awaiting_decision %>%
+  dplyr::mutate(Year = lubridate::year(Date))
+
 AwaitingDecisions6Mon <- awaiting_decision %>%
-  select(Date, Nationality, Duration, Applications) %>%
+  select(Year, Nationality, Duration, Applications) %>%
   filter(Duration == 'More than 6 months')
 
 AwaitingDecisions6Mon <- AwaitingDecisions6Mon %>%
-  group_by(Date, Nationality) %>%
+  group_by(Year, Nationality) %>%
   summarise(ByNationality = sum(Applications))
 
 AwaitingDecisions6Mon %>%
-  group_by(Date)%>%
-  filter(ByNationality > 10000)
+  group_by(Year)%>%
+  filter(Year == 2023)
 
 #Albania is the country that continuously has the greatest number of applicants over 6 months.) 
-
-AwaitingDecisions6Mon %>%
-  filter(Nationality == 'Albania') %>%
-  ggplot(aes(Date, ByNationality)) +
-  geom_line(aes(colour = "red")) +
-  geom_point(aes(colour = "red")) +
-  theme_classic()+
-  labs(title = "Albania is the country with the highest number of applicants waiting for a decision over 6 months", x = "Date", y = "Number of Applications")
-
-----###Awaiting Decisions- Dependent###----
-
-AwaitingDecisionsDependant <- awaiting_decision %>%
-  select(Date, Nationality, Duration, Applications, `Applicant type`) %>%
-  filter(`Applicant type` == 'Dependant')
-
-DependantMorethan6Month <- AwaitingDecisionsDependant %>%
-  filter(Duration == 'More than 6 months')%>%
-  group_by(Date, Nationality) %>%
-  summarise(Morethan6monthtotal = sum(Applications))
-
-view(DependantMorethan6Month)
-
-DependantMorethan6Month |>
-  filter(Morethan6monthtotal > 1000) |>
-  ggplot(aes(Nationality, Morethan6monthtotal)) +
-  geom_line(aes(Nationality), alpha = 0.5, colour = "red")
-#this graph needs to be updated- does not work as well. 

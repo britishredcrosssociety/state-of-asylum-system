@@ -29,6 +29,11 @@ CaseOutcome <- decisions_resettlement %>%
   group_by(Year,`Case outcome`) %>%
   summarise(Total = sum(Decisions))
 
+CaseOutcome <- CaseOutcome %>%
+  filter(Year > 2021)
+
+write_csv(CaseOutcome, "C:\\Users\\MathuraKugan\\Desktop\\SafeRoutes.csv")
+
 #Case Outcome Overall
 CaseOutcome %>%
   filter(Year > 2021) |>
@@ -50,7 +55,9 @@ CaseOutcomeRecent <- CaseOutcomeRecent %>%
   filter(`Case outcome` !=  "Other Withdrawal") %>%
   filter(`Case outcome` != "UASC Leave") %>%
   filter(`Case outcome` != "Refugee Permission") %>%
-  filter
+  filter(`Case outcome` != "UASC Leave") %>%
+  filter(`Case outcome` != "Temporary Refugee Permission") %>%
+  
 
 CaseOutcomeRecent |>
   ggplot(aes(Year, Total)) +
@@ -79,8 +86,17 @@ SafeRoutes <- SafeRoutes %>%
   filter(`Case outcome` == "Resettlement - UK Resettlement Scheme") %>%
   filter(`Case outcome` == "Resettlement - Community Sponsorship Scheme") %>%
   filter(`Case outcome` == "Resettlement - Mandate Scheme") %>%
-  filter()
+  filter(`Case outcome` == "Resettlement - Vulnerable Children Resettlement Scheme") %>%
+  filter(`Case outcome` == "Resettlement - Vulnerable Persons Resettlement Scheme") %>%
+  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Accommodation not recorded") %>%
+  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Settled accommodation") %>%
+  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship") %>%
+  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Temporary accommodation") %>%
+  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Accommodation not recorded") %>%
+  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Settled accommodation") %>%
+  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Temporary accommodation")
 
+bind_rows(SafeRoutes)
 
 
 ----#UK Resettlement Scheme#----
@@ -146,4 +162,5 @@ UKResettlementNat%>%
   sg_axis_x(1, "Date", "%Y") %>%
   sg_fill_brewer("PuOr") %>%
   sg_legend(show=TRUE, label="Nationalities: ")
+
 
