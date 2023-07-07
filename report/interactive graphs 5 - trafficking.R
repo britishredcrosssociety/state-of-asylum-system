@@ -1,6 +1,14 @@
 library(tidyverse)
 library(asylum)
 
+# ---- NRM referrals over time ----
+nrm_referrals_longitudinal |> 
+  mutate(Date = paste0(Year, " ", Quarter)) |> 
+  relocate(Date) |> 
+  pivot_wider(names_from = `Location of exploitation`, values_from = `NRM referrals`) |> 
+  select(-Total) |> 
+  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals over time.csv")
+
 # ---- How many people have been referred into the NRM in the last 12 months by nationality, age and setting of referral? ----
 nrm_referrals <- 
   bind_rows(
@@ -85,6 +93,12 @@ nrm_conclusive_grounds |>
   pivot_wider(names_from = Decision, values_from = value) |> 
   
   write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age.csv")
+
+# ---- Referrals via Duty to Notify over time ----
+nrm_duty_to_notify_longitudinal |> 
+  mutate(Date = yq(paste(Year, Quarter, sep = "-"))) |> 
+  select(Date, `Referrals through Duty to Notify process` = Total) |> 
+  write_csv("data-raw/flourish/5 - Trafficking/duty to notify - longitudinal.csv")
 
 # ---- How many people were the Home Office notified through the Duty to Notify (DtN) process by nationality? ----
 dtn <- 
