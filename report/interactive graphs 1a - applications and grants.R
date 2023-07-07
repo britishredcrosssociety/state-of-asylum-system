@@ -34,7 +34,8 @@ immigration_2022 <- 1163000
 ukraine <- 114000
 bno <- 52000  # British Nationals Overseas - BN(O)
 
-tribble(
+immigration <- 
+  tribble(
   ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
   "Immigration", "Non-asylum migration", "Non-asylum migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
   "Immigration", "Non-asylum migration", "Ukraine visas", ukraine,
@@ -42,10 +43,19 @@ tribble(
   "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
   "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
   "Immigration", "Non-asylum migration", "Resettlement", resettlement
-) |> 
+)
+
+immigration |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/immigration.csv")
 
-# ---- Graph 1: Total annual applications over time ----
+# - CAPTION -
+immigration |> 
+  group_by(`Sub-category`) |> 
+  summarise(Total = sum(`Number of people`)) |> 
+  ungroup() |> 
+  mutate(Proportion = scales::percent(Total / sum(Total)))
+
+# ---- Total annual applications over time ----
 asylum::applications |> 
   group_by(Date) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -60,54 +70,92 @@ asylum::applications |>
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   arrange(desc(Applications))
 
-# ---- Graph 2: Breakdown of applications within last 12 months ----
-# asylum::applications |> 
-#   # Filter applications within the last 12 months
-#   filter(Date >= today() - dmonths(12)) |> 
-#   group_by(Nationality, Age, Sex, UASC) |> 
-#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
-  
+# ---- Breakdown of applications within last 12 months ----
+applications_nationality <- 
+  asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  arrange(desc(Applications)) |> 
+  slice(1:10) |> 
+  rename(Category = Nationality, Nationality = Applications) |> 
+  mutate(Type = "Nationality")
+
+applications_age <- 
+  asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Age) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  filter(Age != "Unknown") |> 
+  rename(Category = Age, Age = Applications) |> 
+  mutate(Type = "Age")
+
+applications_sex <- 
+  asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  filter(Sex != "Unknown Sex") |> 
+  rename(Category = Sex, Sex = Applications) |> 
+  mutate(Type = "Sex")
+
+applications_uasc <- 
+  asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(UASC) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  rename(Category = UASC, UASC = Applications) |> 
+  mutate(Type = "Unaccompanied asylum-seeking children (UASC)")
+
+# Combine into a single dataframe and save
 bind_rows(
-  asylum::applications |> 
-    # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
-    group_by(Nationality) |> 
-    summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-    arrange(desc(Applications)) |> 
-    slice(1:10) |> 
-    rename(Category = Nationality, Nationality = Applications) |> 
-    mutate(Type = "Nationality"),
-  
-  asylum::applications |> 
-    # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
-    group_by(Age) |> 
-    summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-    filter(Age != "Unknown") |> 
-    rename(Category = Age, Age = Applications) |> 
-    mutate(Type = "Age"),
-  
-  asylum::applications |> 
-    # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
-    group_by(Sex) |> 
-    summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-    filter(Sex != "Unknown Sex") |> 
-    rename(Category = Sex, Sex = Applications) |> 
-    mutate(Type = "Sex"),
-  
-  asylum::applications |> 
-    # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
-    group_by(UASC) |> 
-    summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-    rename(Category = UASC, UASC = Applications) |> 
-    mutate(Type = "UASC")
+  applications_nationality,
+  applications_age,
+  applications_sex,
+  applications_uasc
 ) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
 
-# Age pyramid
+# - CAPTION - 
+# Nationality
+applications_nationality <- 
+  asylum::applications |> 
+  filter(Date >= today() - dmonths(12)) |> # Filter applications within the last 12 months
+  group_by(Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Percent = scales::percent(Applications / sum(Applications))) |> 
+  arrange(desc(Applications))
+
+# How many applications in total?
+sum(applications_nationality$Applications)
+
+# Top five nationalities
+applications_nationality |> 
+  slice(1:5)
+
+# What % of the total were from the top 5 nationalities
+applications_nationality |> 
+  slice(1:5) |> 
+  summarise(Total = sum(Applications)) |> 
+  pull(Total) / sum(applications_nationality$Applications)
+
+# Age %
+applications_age |> 
+  mutate(Percent = scales::percent(Age / sum(Age)))
+
+# Sex %
+applications_sex |> 
+  mutate(Percent = scales::percent(Sex / sum(Sex)))
+
+# UASC
+applications_uasc
+
+# ---- Age and sex pyramid ----
 asylum::applications |> 
   # Filter applications within the last 12 months
   filter(Date >= today() - dmonths(12)) |> 
@@ -119,9 +167,28 @@ asylum::applications |>
 
   pivot_wider(names_from = Sex, values_from = Applications) |> 
   mutate(Female = Female * -1) |> 
+  
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
 
-# Top five countries applying for asylum over time
+# - CAPTION -
+# Percentage of people applying for asylum over the last year, by age and sex
+asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  
+  # Make a single age group for working age people
+  mutate(Age = case_when(
+    Age %in% c("18-29", "30-49") ~ "18-49",
+    .default = Age
+  )) |> 
+  
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Percent = scales::percent(Applications / sum(Applications)))
+
+# ---- Top five countries applying for asylum over time ----
 asylum::applications |> 
   group_by(Year, Region, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -188,7 +255,7 @@ grant_rates_initial_quarterly |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
 
-# ---- Graph 3: Returns ----
+# ---- Returns ----
 # How many and who have been returned
 asylum::returns |> 
   group_by(Year, `Return type group`) |> 
@@ -242,7 +309,7 @@ asylum::returns_by_destination |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
 
-# Returns by whether the person was seeking asylum or not
+# ---- Asylum and non-asylum returns in 2022 ----
 asylum::returns_asylum |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
@@ -252,6 +319,8 @@ asylum::returns_asylum |>
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only.csv")
 
+# - CAPTION -
+# What % of all returns were asylum-related?
 asylum::returns_asylum |>
   mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
   
@@ -260,6 +329,11 @@ asylum::returns_asylum |>
   ungroup() |> 
   
   mutate(prop = scales::percent(Total / sum(Total)))
+
+# How many returns in total?
+asylum::returns_asylum |>
+  mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
+  summarise(sum(Total))
 
 # Asylum-related returns over time
 asylum::returns_asylum_longitudinal |> 

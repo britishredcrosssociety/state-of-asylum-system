@@ -97,6 +97,12 @@ eu_asylum <-
 # Turn each nation's geo code into one of Flourish's URLs for flags
 eu_asylum <- 
   eu_asylum |> 
+  # Manually tweak country codes to match Flourish's .svg filenames
+  mutate(geo = case_when(
+    geo == "UK" ~ "GB",  # United Kingdom
+    geo == "EL" ~ "GR",  # Greece
+    .default = geo
+  )) |> 
   mutate(geo = str_glue("https://public.flourish.studio/country-flags/svg/{tolower(geo)}.svg")) |> 
   rename(`Flag URL` = geo)
 
@@ -161,6 +167,12 @@ eu_grants <-
 # Turn each nation's geo code into one of Flourish's URLs for flags
 eu_grants <- 
   eu_grants |> 
+  # Manually tweak country codes to match Flourish's .svg filenames
+  mutate(geo = case_when(
+    geo == "UK" ~ "GB",  # United Kingdom
+    geo == "EL" ~ "GR",  # Greece
+    .default = geo
+  )) |> 
   mutate(geo = str_glue("https://public.flourish.studio/country-flags/svg/{tolower(geo)}.svg")) |> 
   rename(`Flag URL` = geo)
 
@@ -217,3 +229,19 @@ flows_international <-
 
 flows_international |> 
   write_csv("data-raw/flourish/1b - International comparisons/Global flows.csv")
+
+# flows_idp_total <- 
+#   flows_idp |> 
+#   group_by(Year) |> 
+#   summarise(`People displaced internally` = sum(`IDPs of concern to UNHCR`, na.rm = TRUE))
+# 
+# flows_international_total <- 
+#   flows_international |> 
+#   group_by(Year) |> 
+#   summarise(`People displaced internationally` = sum(`People displaced internationally`))
+# 
+# left_join(flows_idp_total, flows_international_total) |> 
+#   mutate(`IDP %` = `People displaced internally` / (`People displaced internally` + `People displaced internationally`)) |> 
+#   ggplot(aes(x = Year, y = `IDP %`)) +
+#   geom_line()
+  
