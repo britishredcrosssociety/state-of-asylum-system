@@ -27,13 +27,6 @@ FamilyReunion <- family_reunion %>%
   group_by(Year, Nationality, Sex, Age) %>%
   summarise(Total = sum(`Visas granted`))
 
-#For reference, review of trends of Fam Reunion by Sex over last decade 
-FamilyReunion %>%
-  group_by(Year, Sex) %>%
-  summarise(TotalbySex = sum(Total)) |>
-  ggplot(aes(Year, TotalbySex)) +
-  geom_line(aes(colour = Sex))
-
 FamReuinion22 <- FamilyReunion %>%
   filter(Year == 2022) %>%
   group_by(Sex, Age) %>%
@@ -41,18 +34,20 @@ FamReuinion22 <- FamilyReunion %>%
 
 arrange(FamReuinion22)
 
-FambyAS <- (FamReuinion22 %>% 
-  arrange(factor(Age, levels = c('Under 18', '18-29', '30-49', '50-69', '70+'))) %>%
+FamReuinion22$Age <- factor(FamReuinion22$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
+
+FamAS <- (FamReuinion22 |>
   ggplot(aes(fill = Age, x = Sex, y = TotalbyAge)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
   labs(title = "Family Reunion Visas Granted by Sex and Age Group, 2022", 
        x = "Sex", 
        y = "Total Visas Granted", 
-       caption = "BRC Analyses of HO Data, March 2023"))
+       caption = "British Red Cross Analyses of Home Office Data, March 2023"))
 
-FambyAS + scale_fill_manual(values = c("#9d1f21",
-                                       "#651713",
-                                       "#e95351",
-                                       "#d0011b",
-                                       "#ee2a24"))
+
+FamAS + scale_fill_manual(values = c(brc_colours$red_deep,
+                                     brc_colours$red_light,
+                                     brc_colours$red_dunant,
+                                     brc_colours$red_mercer,
+                                     brc_colours$red_earth))
