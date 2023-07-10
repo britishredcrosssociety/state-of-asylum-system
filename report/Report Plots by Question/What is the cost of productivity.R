@@ -7,7 +7,6 @@ view(asylum_costs_and_productivity)
 
 ggplot(asylum_costs_and_productivity) +
   geom_col(aes(x = `Financial Year`, y = `Total Asylum Costs`), colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
-  geom_text() +
   theme_classic() +
   scale_y_continuous(labels = unit_format(unit = "B", scale = 1e-9)) +
   labs(title = "Cost of the Asylum System", 
