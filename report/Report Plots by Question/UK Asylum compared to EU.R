@@ -13,13 +13,15 @@ AppsQ1T <- applications %>%
 
 #EU Bar Graph -2022 Total
 
-Plot <- EU_stat_ |>
-ggplot(aes(Country,`2022 Total`, colour = "red")) +
-  geom_bar(stat = "identity") +
+Plot <- EU_stat_ %>%
+  filter(Country != "EU Total 2022") %>%
+ggplot(aes(Country,`2022 Total`, colour = brc_colours$red_dunant, show.legend = FALSE)) +
+  geom_bar(stat = "identity", fill = brc_colours$red_dunant, show.legend = FALSE) +
   theme_classic() +
-  labs(title = "Asylum Applications to EU and UK", 
+  labs(title = "Asylum Applications for the European Union and United Kindom", 
        x = "Country", 
-       y = "Asylum Applications") +
+       y = "Asylum Applications", 
+       caption = "British Red Cross Analyses of EuroStat, August 2022- May 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
 Plot + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
@@ -29,8 +31,9 @@ Plot + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 EUTop5 <- (EU_stat_ %>%
   filter(`2022 Total` > 70000) %>%
+  filter(Country != "EU Total 2022") %>%
   ggplot(aes(Country,`2022 Total`)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = brc_colours$red_mercer, show.legend = FALSE) +
   geom_text(aes(label = `2022 Total`), position=position_dodge(width=0.5), vjust=-0.25) +
   theme_classic() +
   labs(title = "Countries with the Most Asylum Applications and the UK", 
@@ -66,7 +69,7 @@ ceiling(EU_Grant_Rates::GrantRate1)
 
 PerEUGrant <- (EU_Grant_Rates %>%
   ggplot(aes(Country, GrantRate)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = brc_colours$red_mercer) +
   #geom_text(aes(label = GrantRate), position = position_dodge(width=0.5), vjust=-0.25) +
   theme_classic() +
   labs(title = "EU Grant Rate and United Kingdom Grant Rate", 
