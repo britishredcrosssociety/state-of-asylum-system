@@ -75,7 +75,7 @@ grant_rates_at_appeal |>
 age_disputes_nation <- 
   asylum::age_disputes |> 
   # Filter within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality, `Raised or resolved`, `Raised type / Resolved outcome`) |> 
   summarise(`Age disputes` = sum(`Age disputes`, na.rm = TRUE)) |> 
   ungroup()
