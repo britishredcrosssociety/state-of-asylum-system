@@ -1,20 +1,20 @@
 Category,Nationality,Type,Age,Sex,UASC
-Afghanistan,6227,Nationality,NA,NA,NA
-Iran,5090,Nationality,NA,NA,NA
-Albania,3714,Nationality,NA,NA,NA
-India,2961,Nationality,NA,NA,NA
-Iraq,2668,Nationality,NA,NA,NA
-Bangladesh,1952,Nationality,NA,NA,NA
-Syria,1872,Nationality,NA,NA,NA
-Pakistan,1807,Nationality,NA,NA,NA
-Sudan,1201,Nationality,NA,NA,NA
-Eritrea,1192,Nationality,NA,NA,NA
-18-29,NA,Age,20239,NA,NA
-30-49,NA,Age,13607,NA,NA
-50-69,NA,Age,1508,NA,NA
-70+,NA,Age,158,NA,NA
-Under 18,NA,Age,7954,NA,NA
-Female,NA,Sex,NA,10989,NA
-Male,NA,Sex,NA,32301,NA
-Non-UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,41246
-UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,2221
+Albania,15521,Nationality,NA,NA,NA
+Afghanistan,10555,Nationality,NA,NA,NA
+Iran,9485,Nationality,NA,NA,NA
+Iraq,5788,Nationality,NA,NA,NA
+India,4408,Nationality,NA,NA,NA
+Syria,4048,Nationality,NA,NA,NA
+Bangladesh,3988,Nationality,NA,NA,NA
+Pakistan,3049,Nationality,NA,NA,NA
+Sudan,3016,Nationality,NA,NA,NA
+Eritrea,2855,Nationality,NA,NA,NA
+18-29,NA,Age,43516,NA,NA
+30-49,NA,Age,28061,NA,NA
+50-69,NA,Age,2974,NA,NA
+70+,NA,Age,311,NA,NA
+Under 18,NA,Age,16183,NA,NA
+Female,NA,Sex,NA,21419,NA
+Male,NA,Sex,NA,69005,NA
+Non-UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,86037
+UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,5010
