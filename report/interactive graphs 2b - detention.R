@@ -5,7 +5,7 @@ library(asylum)
 leaving_detention <- 
   asylum::people_leaving_detention |> 
   # Filter visas within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(`Reason for leaving detention`) |> 
   summarise(`Number of people` = sum(Leaving, na.rm = TRUE)) |> 
   
@@ -36,35 +36,64 @@ bind_rows(leaving_detention, in_detention) |>
   arrange(desc(`Number of people`)) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - totals.csv")
 
+# - Caption -
+leaving_detention |> 
+  mutate(Proportion = `Number of people` / sum(`Number of people`)) |> 
+  mutate(Proportion_cumulative = cumsum(Proportion))
+
 # sum(leaving_detention$`People leaving detention`)
 # sum(in_detention$`People in detention`)
 
 # ---- Who is in immigration detention (nationality, age, gender w/ focus on number of women in detention- and pregnant women) ----
 # - Nationality -
-in_detention |> 
+people_in_detention_by_nationality <- 
+  asylum::people_in_detention |> 
+  filter(Date == max(Date)) |> 
   group_by(Nationality) |> 
-  summarise(`People in detention` = sum(`People in detention`)) |> 
-  arrange(desc(`People in detention`)) |> 
+  summarise(`People in detention` = sum(People)) |> 
+  ungroup() |> 
+  arrange(desc(`People in detention`))
+
+people_in_detention_by_nationality |>
   slice(1:20) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - by nationality.csv")
 
+# - Caption -
+people_in_detention_by_nationality |> 
+  mutate(Proportion = `People in detention` / sum(`People in detention`)) |> 
+  mutate(Proportion_cumulative = cumsum(Proportion))
 round(438/1591 * 100, 0)
 
-# - Age and sex -
-in_detention |> 
+# ---- People in detention, by age and sex ----
+people_in_detention_by_age_sex <- 
+  asylum::people_in_detention |> 
+  filter(Date == max(Date)) |> 
   group_by(Age, Sex) |> 
-  summarise(`People in detention` = sum(`People in detention`)) |> 
+  summarise(`People in detention` = sum(People)) |> 
   
   filter(Age != "Unknown") |> 
   filter(Sex != "Unknown Sex") |> 
   
   pivot_wider(names_from = Sex, values_from = `People in detention`) |> 
-  mutate(Female = Female * -1) |> 
+  mutate(Female = Female * -1)
+
+people_in_detention_by_age_sex |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex.csv")
 
 # How many pregnant women are currently in detention?
 asylum::detention_pregnant_women |> 
   filter(Date == max(Date))
+
+# - Caption -
+people_in_detention_by_age_sex |> 
+  ungroup() |> 
+  mutate(Female = Female * -1) |> 
+  summarise(
+    Female = sum(Female),
+    Male = sum(Male),
+    Total = sum(Female) + sum(Male)
+  ) |> 
+  mutate(Proportion = Male / (Male + Female))
 
 # ---- How long have people been in immigration detention? How many detained for more than 28 days? ----
 detention_length <- 
