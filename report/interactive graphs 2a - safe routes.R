@@ -2,11 +2,13 @@ library(tidyverse)
 library(asylum)
 library(zoo)
 
-# ---- How many people have been granted protection in the UK having arrived through a safe route? ----
-asylum::decisions_resettlement |> 
+resettlement_grants_without_ARAP <- 
+  asylum::decisions_resettlement |> 
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
-  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
-  
+  filter(!str_detect(`Case outcome`, "Relocation - ARAP"))
+
+# ---- How many people have been granted protection in the UK having arrived through a safe route? ----
+resettlement_grants_without_ARAP |> 
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -20,9 +22,7 @@ asylum::decisions_resettlement |>
   write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total.csv")
 
 # Check the spike in decisions in Q2 2021
-asylum::decisions_resettlement |> 
-  filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
-  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+resettlement_grants_without_ARAP |> 
   filter(Date == ymd("2021-07-01")) |> 
   
   group_by(`Case outcome`, Nationality) |> 
@@ -33,9 +33,8 @@ asylum::decisions_resettlement |>
 
 # - How do current levels of resettlement compare to historical levels? -
 resettlement_by_quarter <- 
-  asylum::decisions_resettlement |> 
-  filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
-  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+  resettlement_grants_without_ARAP |> 
+  
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -56,8 +55,7 @@ resettlement_by_quarter |>
 
 # ---- What safe routes have been available in the last 12 months and how many people (and age, nationality and gender) have arrived through each? ----
 bind_rows(
-  asylum::decisions_resettlement |> 
-    filter(`Case type` == "Resettlement Case") |> 
+  resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
     filter(Date >= today() - dmonths(12)) |> 
     group_by(Nationality) |> 
@@ -67,8 +65,7 @@ bind_rows(
     rename(Category = Nationality, Nationality = Decisions) |> 
     mutate(Type = "Nationality"),
   
-  asylum::decisions_resettlement |> 
-    filter(`Case type` == "Resettlement Case") |> 
+  resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
     filter(Date >= today() - dmonths(12)) |> 
     group_by(Age) |> 
@@ -77,8 +74,7 @@ bind_rows(
     rename(Category = Age, Age = Decisions) |> 
     mutate(Type = "Age"),
   
-  asylum::decisions_resettlement |> 
-    filter(`Case type` == "Resettlement Case") |> 
+  resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
     filter(Date >= today() - dmonths(12)) |> 
     group_by(Sex) |> 
@@ -89,8 +85,18 @@ bind_rows(
 ) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - What safe routes have been available in the last 12 months - by category.csv")
 
-asylum::decisions_resettlement |> 
-  filter(`Case type` == "Resettlement Case") |> 
+# resettlement_by_nationality
+resettlement_grants_without_ARAP |> 
+  # Filter applications within the last 12 months
+  filter(Date >= today() - dmonths(12)) |> 
+  group_by(Nationality) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  arrange(desc(Decisions)) |> 
+  mutate(Prop = Decisions / sum(Decisions))
+
+resettlement_by_age <- 
+  resettlement_grants_without_ARAP |> 
   # Filter applications within the last 12 months
   filter(Date >= today() - dmonths(12)) |> 
   group_by(Age) |> 
@@ -101,11 +107,15 @@ asylum::decisions_resettlement |>
   relocate(Type) |> 
   mutate(Age = Age / sum(Age)) |> 
   pivot_wider(names_from = Category, values_from = Age) |> 
-  relocate(`Under 18`, .after = Type) |> 
+  relocate(`Under 18`, .after = Type)
+
+resettlement_by_age
+
+resettlement_by_age |> 
   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
 
-asylum::decisions_resettlement |> 
-  filter(`Case type` == "Resettlement Case") |> 
+resettlement_by_sex <- 
+  resettlement_grants_without_ARAP |> 
   # Filter applications within the last 12 months
   filter(Date >= today() - dmonths(12)) |> 
   group_by(Sex) |> 
@@ -115,7 +125,11 @@ asylum::decisions_resettlement |>
   mutate(Type = "Resettled") |> 
   relocate(Type) |> 
   mutate(Sex = Sex / sum(Sex)) |> 
-  pivot_wider(names_from = Category, values_from = Sex) |> 
+  pivot_wider(names_from = Category, values_from = Sex)
+
+resettlement_by_sex
+
+resettlement_by_sex |> 
   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
 
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----

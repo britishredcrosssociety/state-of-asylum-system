@@ -1,6 +1,6 @@
 Category,Nationality,Type,Age,Sex
-Afghanistan,901,Nationality,NA,NA
 Syria,204,Nationality,NA,NA
+Afghanistan,102,Nationality,NA,NA
 Refugee,43,Nationality,NA,NA
 Sudan,37,Nationality,NA,NA
 Iraq,34,Nationality,NA,NA
@@ -9,10 +9,10 @@ Ethiopia,23,Nationality,NA,NA
 Other and unknown,14,Nationality,NA,NA
 Eritrea,11,Nationality,NA,NA
 Pakistan,9,Nationality,NA,NA
-18-29,NA,Age,194,NA
-30-49,NA,Age,341,NA
-50-69,NA,Age,70,NA
+18-29,NA,Age,91,NA
+30-49,NA,Age,146,NA
+50-69,NA,Age,40,NA
 70+,NA,Age,7,NA
-Under 18,NA,Age,711,NA
-Female,NA,Sex,NA,665
-Male,NA,Sex,NA,651
+Under 18,NA,Age,240,NA
+Female,NA,Sex,NA,275
+Male,NA,Sex,NA,248
