@@ -103,3 +103,14 @@ age_disputes_nation |>
   pivot_wider(names_from = `Raised type / Resolved outcome`, values_from = `Age disputes`) |> 
   
   write_csv("data-raw/flourish/3b - Decision-making/age disputes.csv")
+
+age_disputes_nation |> 
+  ungroup() |> 
+  group_by(`Raised or resolved`, Nationality) |> 
+  summarise(`Age disputes` = sum(`Age disputes`)) |> 
+  ungroup() |> 
+  
+  group_by(`Raised or resolved`) |> 
+  mutate(Proportion = `Age disputes` / sum(`Age disputes`)) |> 
+  
+  View()
