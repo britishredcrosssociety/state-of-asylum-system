@@ -9,6 +9,12 @@ nrm_referrals_longitudinal |>
   select(-Total) |> 
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals over time.csv")
 
+# - Caption -
+nrm_referrals_longitudinal |> 
+  mutate(Date = yq(paste0(Year, " ", Quarter))) |> 
+  filter(Date >= max(Date) - dmonths(11)) |>  # Filter last 12 months
+  summarise(`Total NRM referrals` = sum(`NRM referrals`))
+
 # ---- How many people have been referred into the NRM in the last 12 months by nationality, age and setting of referral? ----
 nrm_referrals <- 
   bind_rows(
