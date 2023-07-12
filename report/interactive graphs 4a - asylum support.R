@@ -1,6 +1,27 @@
 library(tidyverse)
 library(asylum)
 
+# ---- Backlog over time ----
+backlog <- 
+  asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage) |> 
+  summarise(Backlog = sum(Applications))
+
+backlog |> 
+  pivot_wider(names_from = Stage, values_from = Backlog) |> 
+  write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
+
+# - Caption -
+backlog |> 
+  ungroup() |>
+  filter(Date == max(Date)) |> 
+  summarise(Backlog = sum(Backlog))
+
 # ---- How many people seeking asylum are in receipt of asylum support, and which kind of support? ----
 # Trend
 asylum::support_received |> 
@@ -10,11 +31,21 @@ asylum::support_received |>
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - longitudinal.csv")
 
 # Most recent stats
-asylum::support_received |> 
+support_received_recently <- 
+  asylum::support_received |> 
   filter(Date == max(Date)) |> 
   group_by(`Support Type`, `Accommodation Type`) |> 
   summarise(People = sum(People)) |> 
+  ungroup()
+
+support_received_recently |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
+
+# - Caption -
+# What proportion of people receiving Section 95 support only receive subsistence?
+support_received_recently |> 
+  filter(`Support Type` == "Section 95") |> 
+  mutate(Proportion = People / sum(People))
 
 # ---- What is the rate of destitution among people seeking asylum in the UK? ----
 # - Could this be number receiving support divided by total number of people on the backlog? -
@@ -55,16 +86,3 @@ scales::percent(sum(receiving_support$People) / backlog)
 # ---- How many people seeking asylum have been granted the right to work? (related – how many vacancies are there in the UK job market?) ----
 # Not sure data exists
 
-# ---- Backlog over time ----
-asylum::awaiting_decision |> 
-  mutate(Stage = case_when(
-    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
-    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
-    Duration == "N/A - Further review" ~ "Pending further review"
-  )) |> 
-  group_by(Date, Stage) |> 
-  summarise(Backlog = sum(Applications)) |> 
-  
-  pivot_wider(names_from = Stage, values_from = Backlog) |> 
-  
-  write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
