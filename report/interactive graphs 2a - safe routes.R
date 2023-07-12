@@ -1,13 +1,58 @@
 library(tidyverse)
 library(asylum)
+library(zoo)
 
 # ---- How many people have been granted protection in the UK having arrived through a safe route? ----
 asylum::decisions_resettlement |> 
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
   filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+  
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  # Manually add missing rows - no resettlement during lockdowns
+  add_row(Date = ymd("2020-07-01"), Decisions = 0) |>
+  add_row(Date = ymd("2020-04-01"), Decisions = 0) |>
+  
+  arrange(Date) |> 
+  
   write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total.csv")
+
+# Check the spike in decisions in Q2 2021
+asylum::decisions_resettlement |> 
+  filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
+  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+  filter(Date == ymd("2021-07-01")) |> 
+  
+  group_by(`Case outcome`, Nationality) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  arrange(desc(Decisions))
+
+# - How do current levels of resettlement compare to historical levels? -
+resettlement_by_quarter <- 
+  asylum::decisions_resettlement |> 
+  filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
+  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+  group_by(Date) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  # Manually add missing rows - no resettlement during lockdowns
+  add_row(Date = ymd("2020-07-01"), Decisions = 0) |>
+  add_row(Date = ymd("2020-04-01"), Decisions = 0) |>
+  
+  arrange(desc(Date))
+  
+# Calculate the annual sum over each set of 12 months, starting from the most recently available quarter
+resettlement_by_quarter |> 
+  # Calculate the annual rolling sum, starting with the most recent quarter
+  mutate(RollSum = rollsum(Decisions, k = 4, na.pad = TRUE)) |> 
+  
+  # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
+  slice(seq(2, n(), by = 4))
 
 # ---- What safe routes have been available in the last 12 months and how many people (and age, nationality and gender) have arrived through each? ----
 bind_rows(
