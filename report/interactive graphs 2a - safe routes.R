@@ -57,7 +57,7 @@ resettlement_by_quarter |>
 bind_rows(
   resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
+    filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Nationality) |> 
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
     arrange(desc(Decisions)) |> 
@@ -67,7 +67,7 @@ bind_rows(
   
   resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
+    filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Age) |> 
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
     filter(Age != "Unknown") |> 
@@ -76,7 +76,7 @@ bind_rows(
   
   resettlement_grants_without_ARAP |> 
     # Filter applications within the last 12 months
-    filter(Date >= today() - dmonths(12)) |> 
+    filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Sex) |> 
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
     filter(Sex != "Unknown") |> 
@@ -88,7 +88,7 @@ bind_rows(
 # resettlement_by_nationality
 resettlement_grants_without_ARAP |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -98,7 +98,7 @@ resettlement_grants_without_ARAP |>
 resettlement_by_age <- 
   resettlement_grants_without_ARAP |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   filter(Age != "Unknown") |> 
@@ -117,7 +117,7 @@ resettlement_by_age |>
 resettlement_by_sex <- 
   resettlement_grants_without_ARAP |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Sex) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   filter(Sex != "Unknown") |> 
@@ -163,7 +163,7 @@ asylum::irregular_migration |>
 # - Caption -
 irregular_migration_last_12_months <- 
   asylum::irregular_migration |> 
-  filter(Date >= today() - dmonths(12)) |>  # Filter within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(`Method of entry`) |> 
   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -175,7 +175,7 @@ sum(irregular_migration_last_12_months$`Number of detections`)
 # ---- 'Irregular' migration by nationality ----
 irregular_migration_by_nationality <- 
   asylum::irregular_migration |> 
-  filter(Date >= today() - dmonths(12)) |>  # Filter within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
   arrange(desc(`Number of detections`))
@@ -247,7 +247,8 @@ ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +
 
 # ---- Family reunion by age and sex ----
 # Age/sex pyramid
-asylum::family_reunion |> 
+family_reunion_age_sex <- 
+  asylum::family_reunion |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age, Sex) |> 
@@ -259,6 +260,23 @@ asylum::family_reunion |>
   pivot_wider(names_from = Sex, values_from = `Visas granted`) |> 
   mutate(Female = Female * -1) |> 
   
-  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
-  
+  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) 
+
+family_reunion_age_sex |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion - by age and sex.csv")
+
+# - Caption -
+# % within age groups
+family_reunion_age_sex |> 
+  mutate(Female = Female * -1) |> 
+  mutate(Proportion_female = Female / (Female + Male))
+
+# % overall
+family_reunion_age_sex |> 
+  mutate(Female = Female * -1) |> 
+  ungroup() |> 
+  summarise(
+    Female = sum(Female),
+    Male = sum(Male)
+  ) |> 
+  mutate(Proportion_female = Female / (Female + Male))
