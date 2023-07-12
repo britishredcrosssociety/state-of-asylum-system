@@ -135,14 +135,22 @@ resettlement_by_sex |>
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
 source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")
 
-visas_scraped |> 
+ukraine <- 
+  visas_scraped |> 
   ungroup() |> 
   filter(str_detect(Stage, "arrival")) |> 
   select(Date, Scheme, Arrivals = Visas_imputed) |> 
-  pivot_wider(names_from = Scheme, values_from = Arrivals) |> 
+  pivot_wider(names_from = Scheme, values_from = Arrivals)
+
+ukraine |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
 
-# ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ by nationality, age and gender and what are the trends e.g. month by month/by quarter? ----
+# - Caption -
+ukraine |> 
+  filter(Date == max(Date)) |> 
+  mutate(Proportion_Sponsorship = `Ukraine Sponsorship Scheme` / (`Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`))
+
+# ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
 # Cumulative arrivals
 asylum::irregular_migration |> 
   group_by(Year, `Method of entry`) |> 
@@ -152,13 +160,29 @@ asylum::irregular_migration |>
   mutate(across(-Year, cumsum)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - trend.csv")
 
+# - Caption -
+irregular_migration_last_12_months <- 
+  asylum::irregular_migration |> 
+  filter(Date >= today() - dmonths(12)) |>  # Filter within the last 12 months
+  group_by(`Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`))
+
+irregular_migration_last_12_months
+sum(irregular_migration_last_12_months$`Number of detections`)
+
+# ---- 'Irregular' migration by nationality ----
+irregular_migration_by_nationality <- 
+  asylum::irregular_migration |> 
+  filter(Date >= today() - dmonths(12)) |>  # Filter within the last 12 months
+  group_by(Nationality) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  arrange(desc(`Number of detections`))
+
 # Top five nations, by number of returns in the most recent year
 top_five_nations <- 
-  asylum::irregular_migration |> 
-  filter(Year == max(Year)) |> 
-  group_by(Year, Nationality) |> 
-  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
-  arrange(desc(`Number of detections`)) |> 
+  irregular_migration_by_nationality |> 
   slice(1:5) |> 
   pull(Nationality)
 
@@ -176,7 +200,12 @@ asylum::irregular_migration |>
   
   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by nationality.csv")
 
-# By age/sex
+# - Caption -
+irregular_migration_by_nationality |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`)) |> 
+  mutate(Proportion_cumulative = cumsum(Proportion))
+
+# ---- 'Irregular' migration by age/sex ----
 asylum::irregular_migration |> 
   group_by(Date, `Age Group`, Sex) |> 
   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
@@ -184,19 +213,43 @@ asylum::irregular_migration |>
 
 # ---- How many people have arrived in the UK in the last 12 months through family reunion pathways? ----
 asylum::family_reunion |> 
-  # Filter visas within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
-  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE))
-
-asylum::family_reunion |> 
   group_by(Date) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
 
+# - Caption -
+asylum::family_reunion |> 
+  # Filter visas within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE))
+
+# - How do current levels of visa grants compare to historical levels? -
+family_reunion_rolling_sum <- 
+  asylum::family_reunion |> 
+  group_by(Date) |> 
+  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
+  ungroup() |>
+  
+  arrange(desc(Date)) |> 
+
+  # Calculate the annual sum over each set of 12 months, starting from the most recently available quarter
+  mutate(RollSum = rollsum(`Visas granted`, k = 4, na.pad = TRUE)) |> 
+  
+  # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
+  slice(seq(2, n(), by = 4))
+
+family_reunion_rolling_sum
+
+# Check trend in rolling sum
+ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA))
+
+# ---- Family reunion by age and sex ----
 # Age/sex pyramid
 asylum::family_reunion |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age, Sex) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   
@@ -205,5 +258,7 @@ asylum::family_reunion |>
   
   pivot_wider(names_from = Sex, values_from = `Visas granted`) |> 
   mutate(Female = Female * -1) |> 
+  
+  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion - by age and sex.csv")
