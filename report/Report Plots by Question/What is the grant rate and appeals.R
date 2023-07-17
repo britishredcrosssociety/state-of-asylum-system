@@ -60,8 +60,8 @@ GrantRate + theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1))
 
 ----#Appeals#----
 AppealsLodgedTotal <- appeals_lodged %>%
-  select(Nationality, Year,`Appeals lodged`) %>%
-  group_by(Year, Nationality) %>%
+  select(Date, Nationality, Year,`Appeals lodged`) %>%
+  group_by(Date, Year, Nationality) %>%
   summarise(TotalLodged = sum(`Appeals lodged`))
 
 AppealsLodgedTotal |>
@@ -86,20 +86,23 @@ AppealsLodgedTotal |>
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
 ----#Appeals Lodged by Nationality#----
-Appeals2023 <- AppealsLodgedTotal %>%
-  filter(Year > 2022) %>%
+Appeals2022 <- AppealsLodgedTotal %>%
+  filter(Date > "2022-01-01") %>%
+  group_by(Nationality) %>%
+  summarise(TotalN = sum(TotalLodged))
   
-Appeals2023 %>%
-  filter(TotalLodged > 20) %>%
-  ggplot(aes(x = Nationality, y = TotalLodged, fill = brc_colours$red_dunant), show.legend = NULL) +
-  geom_col() +
+Appeals2022 %>%
+  filter(TotalN > 111) %>%
+  ggplot(aes(x = Nationality, y = TotalN)) +
+  geom_col(fill = brc_colours$red_mercer, show.legend = NULL) +
+  geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1)) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=0.5)) +
   labs(title = "Nationalities with Highest Appeals Lodged, 2023 Q1", 
        subtitle = "Appeals lodged at the First-Tier Tribunal",
        x = "Nationality", 
-       y = "Appeals")
-
+       y = "Appeals", 
+       caption = "British Red Cross Analyses of Home Office Data, April 2022 - April 2023")
 
 
 ----#Appeals Determined#----
@@ -108,19 +111,23 @@ ADetermined <- appeals_determined %>%
   group_by(Year, Outcome) %>%
   summarise(TDetermined = sum(`Appeals determined`))
 
-ADetermined |>
-  ggplot(aes(Year, TDetermined)) +
-  geom_line(aes(colour = Outcome)) +
-  geom_point(aes(colour = Outcome)) +
+AppealOutcomes <- (ADetermined |>
+  ggplot(aes(fill = Outcome, x = Year, y = TDetermined)) +
+  geom_bar(position = "stack", stat = "identity") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   theme_classic() +
   labs(title = "Outcome of Asylum Appeals",
-       subtitle = "Outcome of asylum appeals raised at the First-Tier Tribunal",
+       subtitle = "Outcome of asylum appeals raised at the First-Tier Tribunal, grouped by whether the appeal was allowed, dismissed or withdrawn",
        x = NULL, 
        y = "Appeals", 
-       caption = "British Red Cross Analyses 2023, Q1") +
-  scale_fill_continuous(brc_colours$red_dunant, brc_colours$red_deep, brc_colours$red_light)
+       caption = "British Red Cross Analyses until 2023, Q1"))
 
-#Need to determine why the colour is not being applied- speak with Matt
+AppealOutcomes + scale_fill_manual(values = c(brc_colours$red_light,
+                                              brc_colours$red_mercer,
+                                              brc_colours$red_deep))
+
+                                    
+  
+
 

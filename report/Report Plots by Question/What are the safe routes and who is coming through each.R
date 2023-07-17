@@ -78,12 +78,31 @@ SafeRoutes <- decisions_resettlement %>%
   group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) %>%
   summarise(TotalperCat = sum(Decisions))
 
-SafeRoutesTotal <- SafeRoutes %>%
-  group_by(Date, Year, Quarter, `Case outcome`) %>%
-  summarise(TotalinSafeRoutes = sum(TotalperCat))
+SF2022 <- SafeRoutes %>%
+  filter(Year > 2021) %>%
+  group_by(Year, `Case outcome`) %>%
+  summarise(Total = sum(TotalperCat)) 
+
+SF2022 %>%
+  filter(`Case outcome` != "3rd Country Refusal") %>%	
+  filter(`Case outcome` !=  "Certified Refusal") %>%
+  filter(`Case outcome` != "Discretionary Leave") %>%
+  filter(`Case outcome` != "Humanitarian Protection") %>%
+  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%
+  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%      
+  filter(`Case outcome` != "Other Grants") %>% 
+  filter(`Case outcome` != "Other Refusals") %>%
+  filter(`Case outcome` !=  "Other Withdrawal") %>%
+  filter(`Case outcome` != "UASC Leave") %>%
+  filter(`Case outcome` != "Refugee Permission") %>%
+  filter(`Case outcome` != "UASC Leave") %>%
+  filter(`Case outcome` != "Temporary Refugee Permission") %>%
+  filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") %>%
+  filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") %>%
+  filter()
 
 SafeRoutes <- SafeRoutes %>%
-  filter(`Case outcome` == "Resettlement - UK Resettlement Scheme") %>%
+  filter(`Case outcome` == "Resettlement - UK Resettlement Scheme") +
   filter(`Case outcome` == "Resettlement - Community Sponsorship Scheme") %>%
   filter(`Case outcome` == "Resettlement - Mandate Scheme") %>%
   filter(`Case outcome` == "Resettlement - Vulnerable Children Resettlement Scheme") %>%

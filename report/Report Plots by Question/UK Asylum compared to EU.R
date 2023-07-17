@@ -78,3 +78,19 @@ PerEUGrant <- (EU_Grant_Rates %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
 
 PerEUGrant + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+
+----#EU Across 10 Years#----
+
+EU10Years <- (EU_Stats_10_Years %>%
+  ggplot(aes(fill = Country, x = Year, y = Applications)) +
+  geom_bar(position = "stack", stat = "identity") + 
+  theme_classic() +
+  labs(title = "Asylum Applications to the European Union over Last 10 Years", 
+       x = NULL, 
+       y = "Asylum Applications", 
+       caption = "British Red Cross Analysis of EUroStat Data, year ending 2022") +
+  scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+  scale_x_continuous(breaks = c(2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)))
+  
+#To Discuss with Matt about the colours- too many countries for palettes to work?? including BRC.  
+  
