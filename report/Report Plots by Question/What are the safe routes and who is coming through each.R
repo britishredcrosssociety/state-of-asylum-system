@@ -13,77 +13,38 @@ ResettlmentTotal <- decisions_resettlement %>%
 view(ResettlmentTotal)
 
 ----##Resettlement Bar Graph##----
-ggplot(ResettlmentTotal, aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
+ResettlmentTotal %>%
+ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   theme_classic() +
-  labs(title = "Resettlment Case Total", x = "Year", y = "Total Cases")
+  labs(title = "Resettlement Outcomes of Asylum Applications at Initial Decision",
+       subtitle = "Resettlement grouped by case outcome",
+       x = NULL, 
+       y = "Decisions", 
+       caption = "British Red Cross Analysis of Home Office Data, until 2022") +
+  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) + 
+  scale_fill_manual(values = c(brc_colours$red_deep,
+                               brc_colours$red_mercer,
+                               brc_colours$red_dunant,
+                               brc_colours$red_light))
 
-#should be a stacked bar chart that is interactive for Shiny Web App# 
+ 
+----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS?#----
 
-
-
-----##Resettlement Case Outcome##----
-
-CaseOutcome <- decisions_resettlement %>%
-  select(Year, `Case outcome`, Decisions) %>%
-  group_by(Year,`Case outcome`) %>%
-  summarise(Total = sum(Decisions))
-
-CaseOutcome <- CaseOutcome %>%
-  filter(Year > 2021)
-
-write_csv(CaseOutcome, "C:\\Users\\MathuraKugan\\Desktop\\SafeRoutes.csv")
-
-#Case Outcome Overall
-CaseOutcome %>%
-  filter(Year > 2021) |>
-  ggplot(aes(Year, Total)) +
-  geom_point(aes(colour = `Case outcome`)) +
-  geom_line(aes(colour = `Case outcome`)) +
-  theme_classic() 
-
-#Safe Routes#
-CaseOutcomeRecent <- CaseOutcomeRecent %>%
-  filter(`Case outcome` != "3rd Country Refusal") %>%	
-  filter(`Case outcome` !=  "Certified Refusal") %>%
-  filter(`Case outcome` != "Discretionary Leave") %>%
-  filter(`Case outcome` != "Humanitarian Protection") %>%
-  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%
-  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%      
-  filter(`Case outcome` != "Other Grants") %>% 
-  filter(`Case outcome` != "Other Refusals") %>%
-  filter(`Case outcome` !=  "Other Withdrawal") %>%
-  filter(`Case outcome` != "UASC Leave") %>%
-  filter(`Case outcome` != "Refugee Permission") %>%
-  filter(`Case outcome` != "UASC Leave") %>%
-  filter(`Case outcome` != "Temporary Refugee Permission") %>%
-  
-
-CaseOutcomeRecent |>
-  ggplot(aes(Year, Total)) +
-  geom_point(aes(colour = `Case outcome`)) +
-  geom_line(aes(colour = `Case outcome`)) +
-  theme_classic()
-
-
-
-
-#To discuss with the team on what they would like to have included in the Safe Routes graph. 
-----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? What is the Age, Sex, Nationality?#----
-
-#Safe Routes# COME BACK TO THIS 
+#Safe Routes#  
 
 SafeRoutes <- decisions_resettlement %>%
   select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) %>%
   group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) %>%
-  summarise(TotalperCat = sum(Decisions))
+  summarise(Total = sum(Decisions))
 
 SF2022 <- SafeRoutes %>%
   filter(Year > 2021) %>%
   group_by(Year, `Case outcome`) %>%
-  summarise(Total = sum(TotalperCat)) 
-
-SF2022 %>%
+  summarise(Total = sum(TotalF)) 
+  
+SF2022 <- SF2022 %>%
   filter(`Case outcome` != "3rd Country Refusal") %>%	
   filter(`Case outcome` !=  "Certified Refusal") %>%
   filter(`Case outcome` != "Discretionary Leave") %>%
@@ -99,25 +60,32 @@ SF2022 %>%
   filter(`Case outcome` != "Temporary Refugee Permission") %>%
   filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") %>%
   filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") %>%
-  filter()
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ")
+  
+library(plyr)
 
-SafeRoutes <- SafeRoutes %>%
-  filter(`Case outcome` == "Resettlement - UK Resettlement Scheme") +
-  filter(`Case outcome` == "Resettlement - Community Sponsorship Scheme") %>%
-  filter(`Case outcome` == "Resettlement - Mandate Scheme") %>%
-  filter(`Case outcome` == "Resettlement - Vulnerable Children Resettlement Scheme") %>%
-  filter(`Case outcome` == "Resettlement - Vulnerable Persons Resettlement Scheme") %>%
-  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Accommodation not recorded") %>%
-  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Settled accommodation") %>%
-  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship") %>%
-  filter(`Case outcome` == "Resettlement - ACRS Pathway 1 - Temporary accommodation") %>%
-  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Accommodation not recorded") %>%
-  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Settled accommodation") %>%
-  filter(`Case outcome` == "Resettlement - Afghan route not recorded - Temporary accommodation")
+SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
+                                 c("Resettlement - ACRS Pathway 1 - Accommodation not recorded" = "ACRS", 
+                                   "Resettlement - ACRS Pathway 1 - Temporary accommodation" = "ACRS", 
+                                   "Resettlement - ACRS Pathway 2 - Settled accommodation" = "ACRS",
+                                   "Resettlement - ACRS Pathway 3 - Settled accommodation" = "ACRS", 
+                                   "Resettlement - ACRS Pathway 3 - Temporary accommodation" = "ACRS",
+                                   "Resettlement - ACRS Pathway 1 - Settled accommodation" = "ACRS"))
 
-bind_rows(SafeRoutes)
+SF2022 %>%
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded") %>%
+  ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
+  geom_bar(position = "stack", stat = "identity") +
+  theme_classic() +
+  labs(title = "Number of People Granted Protection Under a Safe Route", 
+       x = NULL,
+       y = "Grants", 
+       caption = "British Red Cross Analyses on Home Office Data, year ending March, 2023") +
+  scale_x_continuous(breaks = c(2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
 
+##To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?##
 ----#UK Resettlement Scheme#----
 
 UKResettlement <- decisions_resettlement %>%
@@ -169,17 +137,3 @@ UKResettlement %>%
   labs(title = "Nationalities of People in UK Resettlement Scheme", 
        x = "Quarter", 
        y = "Number of People")
-
-UKResettlementNat <- UKResettlement %>%
-  group_by(Date, Year, Quarter, Nationality) %>%
-  filter(Year > 2021) %>%
-  summarise(TotalbyNat = sum(TotalperCategory)) 
-
-#To check with team about this method of Nationality Visualization
-UKResettlementNat%>%
-  streamgraph("Nationality", "TotalbyNat", "Date") %>%
-  sg_axis_x(1, "Date", "%Y") %>%
-  sg_fill_brewer("PuOr") %>%
-  sg_legend(show=TRUE, label="Nationalities: ")
-
-
