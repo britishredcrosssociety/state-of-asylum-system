@@ -74,7 +74,7 @@ asylum::applications |>
 applications_nationality <- 
   asylum::applications |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   arrange(desc(Applications)) |> 
@@ -85,7 +85,7 @@ applications_nationality <-
 applications_age <- 
   asylum::applications |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   filter(Age != "Unknown") |> 
@@ -95,7 +95,7 @@ applications_age <-
 applications_sex <- 
   asylum::applications |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Sex) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   filter(Sex != "Unknown Sex") |> 
@@ -105,7 +105,7 @@ applications_sex <-
 applications_uasc <- 
   asylum::applications |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(UASC) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   rename(Category = UASC, UASC = Applications) |> 
@@ -124,7 +124,7 @@ bind_rows(
 # Nationality
 applications_nationality <- 
   asylum::applications |> 
-  filter(Date >= today() - dmonths(12)) |> # Filter applications within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -158,7 +158,7 @@ applications_uasc
 # ---- Age and sex pyramid ----
 asylum::applications |> 
   # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age, Sex) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   
@@ -168,13 +168,14 @@ asylum::applications |>
   pivot_wider(names_from = Sex, values_from = Applications) |> 
   mutate(Female = Female * -1) |> 
   
+  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
 
 # - CAPTION -
 # Percentage of people applying for asylum over the last year, by age and sex
 asylum::applications |> 
-  # Filter applications within the last 12 months
-  filter(Date >= today() - dmonths(12)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
   
   # Make a single age group for working age people
   mutate(Age = case_when(
