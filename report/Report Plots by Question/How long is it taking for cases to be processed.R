@@ -56,7 +56,29 @@ scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
 
 DecisionTimeG + scale_fill_manual(values = c(brc_colours$red_mercer,
                                              brc_colours$red_deep)) 
-+
-scale_x_continuous(breaks = c(2012, 2014, 2016, 2017,2018, 2019, 2020, 2021, 2022, 2023))
+#+scale_x_continuous(breaks = c(2012, 2014, 2016, 2017,2018, 2019, 2020, 2021, 2022, 2023))#
 
+#To discuss with Matt and team about how the data is spread and compare it to other work completed by other organizations.#
 
+#Decision by Nationality in 2022# 
+
+DecisionbyNat <- awaiting_decision %>%
+  filter(Year == 2022) %>%
+  group_by(Year, Nationality, Duration) %>%
+  summarise(Total = sum(Applications))
+
+#DecisionbyNat$Nationality <- factor(DecisionbyNat$Nationality, levels = DecisionbyNat$Nationality[order(DecisionbyNat$Total, decreasing = TRUE)])
+#Attempted to order from highest to lowest, but for some reason running into error- to revise. 
+
+DecisionbyNat %>%
+  filter(Duration == "More than 6 months") %>%
+  filter(Total > 10000) %>%
+  ggplot(aes(Nationality, Total)) +
+  geom_col(aes(colour = brc_colours$red_mercer, fill = brc_colours$red_mercer), show.legend = FALSE)  +
+  geom_text(aes(x = Nationality, y = Total, label = scales::comma(Total)), vjust = -0.5, show.legend = FALSE, size = rel(4)) +
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  labs(title = "Nationalities Waiting Over 6 Months for an Initial Decision in 2022", 
+        x = "Nationalities",
+        y = "Applications", 
+        caption = "British Red Cross Analyses of Home Office Data")
