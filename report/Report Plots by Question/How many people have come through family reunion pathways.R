@@ -21,6 +21,26 @@ Totalfamreunion +
 scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
 scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
+#Family Reunion by Quarter Across All Years#
+
+FamilyRunionbyQ <- family_reunion %>%
+  group_by(Year, Quarter) %>%
+  summarise(Total = sum(`Visas granted`)) %>%
+  ggplot(aes(fill = Quarter, x = Year, y = Total)) +
+  geom_bar(position = "stack", stat = "identity") +
+  theme_classic() +
+  labs(title = "Number of Family Reunion Visas Granted per Quarter",
+       x = NULL,
+       y = "Number of Visas Granted", 
+       caption = "British Red Cross Analysis of HO Data, March 2023") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+  
+  
+FamilyRunionbyQ
+
+#To change colours#
+
 #Family Reunion Visas by Sex and Age 
 
 FamilyReunion <- family_reunion %>% 

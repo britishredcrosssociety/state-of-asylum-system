@@ -37,25 +37,26 @@ DecisionTime <- DecisionTime %>%
   dplyr::mutate(year = lubridate::year(Date))
 
 DecisionTime <- DecisionTime %>%
-  group_by(year, Duration) %>%
+  group_by(Date, year, Duration) %>%
   summarise(Total = sum(Total))
 
 DecisionTime <- DecisionTime %>%
   filter(Duration != 	"N/A - Further review")
 
 #Decision Plot 
-DecisionTimeG <- ggplot(DecisionTime, aes(fill = Duration, x = year, y = Total)) +
-  geom_bar(position="stack", stat="identity") +
-  theme_classic() +
+DecisionTimeG <- (DecisionTime %>%
+ggplot(aes(x = Date, y = Total, fill = Duration)) +
+geom_area() +
+theme_classic() +
   labs(title = "Length of Time for an Initial Decision on Asylum Applications", 
        x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross Analyses of Home Office Data, March 2023")
+       caption = "British Red Cross Analyses of Home Office Data, March 2023") +
+scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
 
-DecisionTimeG <- DecisionTimeG + scale_y_continuous(labels = scales::comma, limits = c(0, NA))
-
-DecisionTimeG + scale_fill_manual(values = c(brc_colours$red_dunant,
-                                             brc_colours$red_deep)) +
-scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+DecisionTimeG + scale_fill_manual(values = c(brc_colours$red_mercer,
+                                             brc_colours$red_deep)) 
++
+scale_x_continuous(breaks = c(2012, 2014, 2016, 2017,2018, 2019, 2020, 2021, 2022, 2023))
 
 
