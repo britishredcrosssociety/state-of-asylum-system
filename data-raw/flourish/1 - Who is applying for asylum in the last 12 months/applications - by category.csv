@@ -9,12 +9,12 @@ Bangladesh,3988,Nationality,NA,NA,NA
 Pakistan,3049,Nationality,NA,NA,NA
 Sudan,3016,Nationality,NA,NA,NA
 Eritrea,2855,Nationality,NA,NA,NA
+Under 18,NA,Age,16183,NA,NA
 18-29,NA,Age,43516,NA,NA
 30-49,NA,Age,28061,NA,NA
 50-69,NA,Age,2974,NA,NA
 70+,NA,Age,311,NA,NA
-Under 18,NA,Age,16183,NA,NA
 Female,NA,Sex,NA,21419,NA
 Male,NA,Sex,NA,69005,NA
-Non-UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,86037
-UASC,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,5010
+Accompanied children,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,86037
+Unaccompanied children,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,5010

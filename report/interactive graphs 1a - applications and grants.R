@@ -42,8 +42,14 @@ immigration <-
   "Immigration", "Non-asylum migration", "British Nationals Overseas", bno,
   "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
   "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
-  "Immigration", "Non-asylum migration", "Resettlement", resettlement
+  "Immigration", "Non-asylum migration", "Resettlement and other safe routes", resettlement
 )
+
+# Calculate proportions
+immigration <- 
+  immigration |> 
+  mutate(`Percentage of people immigrating` = `Number of people` / sum(`Number of people`)) |> 
+  mutate(`Percentage of people immigrating` = scales::percent(`Percentage of people immigrating`, accuracy = 0.1))
 
 immigration |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/immigration.csv")
@@ -90,6 +96,7 @@ applications_age <-
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   filter(Age != "Unknown") |> 
   rename(Category = Age, Age = Applications) |> 
+  arrange(match(Category, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   mutate(Type = "Age")
 
 applications_sex <- 
@@ -109,6 +116,10 @@ applications_uasc <-
   group_by(UASC) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   rename(Category = UASC, UASC = Applications) |> 
+  mutate(Category = case_when(
+    Category == "UASC" ~ "Unaccompanied children",
+    Category == "Non-UASC" ~ "Accompanied children",
+  )) |> 
   mutate(Type = "Unaccompanied asylum-seeking children (UASC)")
 
 # Combine into a single dataframe and save
