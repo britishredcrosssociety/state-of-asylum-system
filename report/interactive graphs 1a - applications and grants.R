@@ -96,6 +96,7 @@ applications_age <-
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   filter(Age != "Unknown") |> 
   rename(Category = Age, Age = Applications) |> 
+  arrange(match(Category, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   mutate(Type = "Age")
 
 applications_sex <- 
@@ -115,6 +116,10 @@ applications_uasc <-
   group_by(UASC) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   rename(Category = UASC, UASC = Applications) |> 
+  mutate(Category = case_when(
+    Category == "UASC" ~ "Unaccompanied children",
+    Category == "Non-UASC" ~ "Accompanied children",
+  )) |> 
   mutate(Type = "Unaccompanied asylum-seeking children (UASC)")
 
 # Combine into a single dataframe and save
