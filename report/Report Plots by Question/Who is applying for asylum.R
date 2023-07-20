@@ -12,15 +12,15 @@ view(TotalApps)
 TotalApps |>
   ggplot(aes(Year, Total)) +
   geom_line(colour = "red") +
-  geom_point(aes(size = Total, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) +
+  geom_point(aes(size = Total, alpha = 0.5, colour = 'red'), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
   theme_classic() +
   scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  labs(title = "Total Number of Asylum Applications", 
+  scale_y_continuous(labels = scales::comma, limits = c(0, 120000)) +
+  labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross Analyses 2023, Q1")
+       caption = "British Red Cross analysis of Home Office data from January,2001 to January,2023")
 
 ----#Top Nationalities#----
 
@@ -30,18 +30,30 @@ ApplicationbyNationality <- applications %>%
   summarise(Total = sum(Applications))
 
 ApplicationbyNationality %>%
-  filter(Total > 1000) %>%
+  filter(Total > 2000) %>%
   ggplot(aes(x = Year, y = Total, fill = Nationality), show.legend = FALSE) + 
   geom_area() +
   theme_classic() +
   labs (title = "Applications") +
   scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1)) +
+  #scale_fill_manual(values = c(brc_colours$claret,
+                               brc_colours$mustard,
+                               brc_colours$sand,
+                               brc_colours$earth,
+                               brc_colours$grey,
+                               brc_colours$grey_fog,
+                               brc_colours$white_flag,
+                               brc_colours$duck,
+                               brc_colours$steel,
+                               brc_colours$sky,
+                               brc_colours$teal,
+                               brc_colours$blue,
+                               brc_colours$green_dark))
 
 #Have to adjust the colour- to discuss with Matt
-
-
+#Look at adjusting the filter to 2000/3000 rather than 1000. 
 
 
 ----#Age and Sex Analysis 2022/23#----
@@ -62,17 +74,18 @@ AgeAnalysis <- AgeAnalysis %>%
 #2022-2023 Sex and Age Plot 
 AgeAnalysis$Age <- factor(AgeAnalysis$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
 
-AgeandSexPlot <- (AgeAnalysis %>%
+AgeAnalysis %>%
   filter(Year > 2022) %>%
   ggplot(aes(fill = Age, x = Sex, y = AgeGroupSum)) +
   geom_bar(position = "stack", stat = "identity") +
+  #geom_text(aes(label = AgeGroupSum), position = position_stack(vjust = -0.25),size = rel(2)) + 
   theme_classic() +
-  labs(title = "Asylum Applicants in 2022-2023 Q1 by Age and Sex", 
-       x = "Sex", 
+  labs(title = "Asylum applicants in January 2023 by age and sex", 
+       x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross Analyses of Home Office Data, March 2023"))
-
-AgeandSexPlot + scale_fill_manual(values = c(brc_colours$red_deep,
+       caption = "British Red Cross analysis of Home Office data, January 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) +
+  scale_fill_manual(values = c(brc_colours$red_deep,
                                      brc_colours$red_light,
                                      brc_colours$red_dunant,
                                      brc_colours$red_mercer,
@@ -96,10 +109,12 @@ UASCOnly |>
   geom_text(aes(label = scales::comma(TotalUASC)), show.legend = FALSE, size = rel(4)) +
   theme_classic() +
   scale_x_continuous(breaks = c(2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  labs(title = "Unaccompanied Asylum Seeking Children (UASC) Applications", 
+  labs(title = "Number of asylum applications from Unaccompanied asylum-seeking children (UASC), 2006-2023", 
        x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross Analyses 2023, Q1")
+       caption = "British Red Cross analysis of Home Office data, from January 2006 - January 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 6000))
+  
 
 ----#Dependant Children#----
 DependentC <- applications %>%
@@ -117,8 +132,9 @@ DependentC |>
   geom_line(colour = "red") +
   geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(4)) +
   theme_classic() +
-  labs(title = 'Asylum Applications of Depedant Children', 
+  labs(title = 'Number of asylum applications of dependent children', 
        x = NULL, 
        y = 'Applications', 
-       caption = 'British Red Cross Analyses 2023, Q1') +
-  scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+       caption = 'British Red Cross Analysis January 2006 - January 2023') +
+  scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 10000))

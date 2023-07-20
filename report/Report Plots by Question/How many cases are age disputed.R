@@ -1,14 +1,40 @@
 ----#QUESTION: HOW MANY PEOPLE HAVE AGE DISPUTES? 
   
-----#Age Dispute#----
+----#Age Dispute Raised or Resolved#----
+AgeDispute <- age_disputes %>%
+  group_by(Year, `Raised or resolved`) %>%
+  summarise(Total = sum(`Age disputes`)) 
 
-AgeDispute12Month <- age_disputes %>%
-  filter(Year > 2021)
+AgeDispute %>%
+  ggplot(aes(fill = `Raised or resolved`, y = Total, x = Year)) + 
+  geom_bar(position="stack", stat="identity") +
+  theme_classic() +
+  labs(title = "Total number of age dispute cases raised and resolved",
+       x = NULL,
+       y = "Number of cases",
+       caption = "British Red Cross Analyses of Home Office Data, January 2022 - January, 2023") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$red_mercer,
+                               brc_colours$red_deep))
+  
+  
+  
+  
+  
+  
+#Age Dispute Raised#
+AgeDispute12MonthRaised <- age_disputes %>%
+  filter(Year > 2021) %>%
+  filter(`Raised or resolved` == "Raised") %>%
+  group_by(Year,`Raised type / Resolved outcome`) %>%
+  summarise(Total = sum(`Age disputes`))
 
 #Age Dispute by Resolved Reason# 
 
-AgeDispute12Month <- AgeDispute12Month %>%
-  group_by(Year, Quarter, Nationality, `Raised type / Resolved outcome`) %>%
+AgeDisputeResolved12Month <- age_disputes %>%
+  filter(Year > 2021)
+  group_by(Year, Quarter, Nationality, `Raised type / Resolved outcome`, `Raised or resolved`) %>%
   summarise(Total = sum(`Age disputes`))
 
 ByDispute <- AgeDispute12Month %>%
@@ -18,7 +44,15 @@ ByDispute <- AgeDispute12Month %>%
 ggplot(ByDispute, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute, x = Quarter)) + 
   geom_bar(position="stack", stat="identity") +
   theme_classic() +
-  labs(title = "Age Dispute by Outcome", x = "Quarter of 2022", y = "Total Persons")
+  labs(title = "Outcome of Age Dispute Cases by Quarter in last 12 Months", 
+       x = "Quarter", 
+       y = "Total Cases", 
+       caption = "British Red Cross Analyses of Home Office Data, year ending January 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$steel,
+                               brc_colours$teal,
+                               brc_colours$red_mercer,
+                               brc_colours$red_deep))
 
 
 #Age Disputes Total Over All Years#
