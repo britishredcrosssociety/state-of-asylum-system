@@ -1,7 +1,7 @@
-Category,Sub-category,Migration type,Number of people
-Immigration,Non-asylum migration,Non-asylum migration,901737
-Immigration,Non-asylum migration,Ukraine visas,114000
-Immigration,Non-asylum migration,British Nationals Overseas,52000
-Immigration,Asylum claims,Asylum claims (not via small boats),48210
-Immigration,Asylum claims,Small boat arrivals claiming asylum,41188
-Immigration,Non-asylum migration,Resettlement,5865
+Category,Sub-category,Migration type,Number of people,Percentage of people immigrating
+Immigration,Non-asylum migration,Non-asylum migration,901737,77.5%
+Immigration,Non-asylum migration,Ukraine visas,114000,9.8%
+Immigration,Non-asylum migration,British Nationals Overseas,52000,4.5%
+Immigration,Asylum claims,Asylum claims (not via small boats),48210,4.1%
+Immigration,Asylum claims,Small boat arrivals claiming asylum,41188,3.5%
+Immigration,Non-asylum migration,Resettlement and other safe routes,5865,0.5%
