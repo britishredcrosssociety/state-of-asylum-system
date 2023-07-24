@@ -202,18 +202,24 @@ asylum::applications |>
 
 # ---- Top five countries applying for asylum over time ----
 asylum::applications |> 
-  group_by(Year, Region, Nationality) |> 
+  group_by(Quarter, Region, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   ungroup() |> 
   
-  group_by(Year) |> 
-  slice_max(Applications, n = 5) |> 
-  ungroup() |> 
+  # Cumulative number of applications
+  # group_by(Nationality) |> 
+  # arrange(Year) |> 
+  # mutate(Applications = cumsum(Applications)) |> 
+  # ungroup() |> 
+  
+  # group_by(Year) |> 
+  # slice_max(Applications, n = 5) |> 
+  # ungroup() |> 
   
   mutate(Applications = as.character(Applications)) |> 
   # mutate(Applications = replace_na(Applications, "")) |> 
   
-  pivot_wider(names_from = Year, values_from = Applications) |> 
+  pivot_wider(names_from = Quarter, values_from = Applications) |> 
   mutate(across(-(Region:Nationality), ~ replace_na(.x, ""))) |> 
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
