@@ -129,12 +129,13 @@ view(DependentC)
 
 DependentC |>
   ggplot(aes(Year, TotalDC)) +
-  geom_line(colour = "red") +
-  geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(4)) +
+  geom_point(aes(size = TotalDC, colour = brc_colours$red_dunant, alpha = 0.5), show.legend = FALSE) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
-  labs(title = 'Number of asylum applications of dependent children', 
+  labs(title = 'Number of asylum applications of dependent children from 2009 to 2023', 
        x = NULL, 
        y = 'Applications', 
-       caption = 'British Red Cross Analysis January 2006 - January 2023') +
-  scale_x_continuous(breaks = c(2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+       caption = 'British Red Cross analysis of Home Office data January 2009 - January 2023') +
+  scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 10000))
