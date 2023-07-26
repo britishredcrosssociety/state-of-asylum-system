@@ -98,8 +98,7 @@ SF2022 %>%
 
 
 ##To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?##
-----#UK Resettlement Scheme#----
-
+----#Age of those per Resettlement Scheme#----
 UKResettlement <- decisions_resettlement %>%
   filter(`Case outcome` == "Resettlement - UK Resettlement Scheme")
 
