@@ -76,41 +76,39 @@ age_disputes_nation <-
   asylum::age_disputes |> 
   # Filter within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
-  group_by(Nationality, `Raised or resolved`, `Raised type / Resolved outcome`) |> 
+  filter(`Raised or resolved` == "Resolved") |>   # Don't need to show 'raised'
+  group_by(Nationality, `Resolved outcome` = `Raised type / Resolved outcome`) |> 
   summarise(`Age disputes` = sum(`Age disputes`, na.rm = TRUE)) |> 
-  ungroup()
+  ungroup() |> 
+  
+  mutate(`Resolved outcome` = if_else(`Resolved outcome` == "Less than 18", "Under 18", "18+"))
 
 # Get top five nations for 'raised' and for 'resolved'
-top_five_raised <- 
-  age_disputes_nation |> 
-  filter(`Raised or resolved` == "Raised") |> 
-  arrange(desc(`Age disputes`)) |> 
-  slice(1:10) |> 
-  pull(Nationality)
+# top_five_raised <- 
+#   age_disputes_nation |> 
+#   filter(`Raised or resolved` == "Raised") |> 
+#   arrange(desc(`Age disputes`)) |> 
+#   slice(1:10) |> 
+#   pull(Nationality)
   
-top_five_resolved <- 
+top_ten_resolved <- 
   age_disputes_nation |> 
-  filter(`Raised or resolved` == "Resolved") |> 
   arrange(desc(`Age disputes`)) |> 
   slice(1:10) |> 
   pull(Nationality)
 
 age_disputes_nation |> 
-  filter(Nationality %in% c(top_five_raised, top_five_resolved)) |> 
-  #   (`Raised or resolved` == "Raised" & Nationality %in% top_five_raised) |
-  #     (`Raised or resolved` == "Resolved" & Nationality %in% top_five_resolved)
-  # ) |> 
-  pivot_wider(names_from = `Raised type / Resolved outcome`, values_from = `Age disputes`) |> 
+  filter(Nationality %in% top_ten_resolved) |> 
+  pivot_wider(names_from = `Resolved outcome`, values_from = `Age disputes`) |> 
+  relocate(`18+`, .after = last_col()) |> 
   
   write_csv("data-raw/flourish/3b - Decision-making/age disputes.csv")
 
+# - Caption -
+# What proportion of all resolved age disputes found that people were children?
 age_disputes_nation |> 
   ungroup() |> 
-  group_by(`Raised or resolved`, Nationality) |> 
+  group_by(`Resolved outcome`) |> 
   summarise(`Age disputes` = sum(`Age disputes`)) |> 
   ungroup() |> 
-  
-  group_by(`Raised or resolved`) |> 
-  mutate(Proportion = `Age disputes` / sum(`Age disputes`)) |> 
-  
-  View()
+  mutate(Proportion = `Age disputes` / sum(`Age disputes`))
