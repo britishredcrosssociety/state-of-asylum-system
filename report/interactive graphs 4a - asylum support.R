@@ -47,7 +47,7 @@ support_received_recently |>
 #   filter(`Support Type` == "Section 95") |> 
 #   mutate(Proportion = People / sum(People))
 
-# What proportion of people receiving Section 4 support are in hotels?
+# What proportion of people receiving Section 98 support are in hotels?
 support_received_recently |> 
   filter(`Support Type` == "Section 98") |> 
   mutate(Proportion = People / sum(People))
