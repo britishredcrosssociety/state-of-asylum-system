@@ -37,12 +37,12 @@ bno <- 52000  # British Nationals Overseas - BN(O)
 immigration <- 
   tribble(
   ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
-  "Immigration", "Non-asylum migration", "Non-asylum migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
-  "Immigration", "Non-asylum migration", "Ukraine visas", ukraine,
-  "Immigration", "Non-asylum migration", "British Nationals Overseas", bno,
+  "Immigration", "Other migration", "Other migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
+  "Immigration", "Other migration", "Ukraine visas", ukraine,
+  "Immigration", "Other migration", "British Nationals Overseas", bno,
   "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
   "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
-  "Immigration", "Non-asylum migration", "Resettlement and other safe routes", resettlement
+  "Immigration", "Other migration", "Resettlement and other safe routes", resettlement
 )
 
 # Calculate proportions
@@ -115,12 +115,12 @@ applications_uasc <-
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(UASC) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-  rename(Category = UASC, UASC = Applications) |> 
+  rename(Category = UASC, Children = Applications) |> 
   mutate(Category = case_when(
     Category == "UASC" ~ "Unaccompanied children",
     Category == "Non-UASC" ~ "Accompanied children",
   )) |> 
-  mutate(Type = "Unaccompanied asylum-seeking children (UASC)")
+  mutate(Type = "Children seeking asylum")
 
 # Combine into a single dataframe and save
 bind_rows(
@@ -249,7 +249,7 @@ grant_rates_initial_annual |>
   filter(Year >= max(Year) - 1) |> 
   filter(Nationality %in% top_ten_nations) |> 
   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
-  sort(desc(`Initial grant rate`)) |> 
+  arrange(desc(`Initial grant rate`)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
 
 grant_rates_initial_annual |> 

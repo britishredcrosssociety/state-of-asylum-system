@@ -29,7 +29,15 @@ resettlement_grants_without_ARAP |>
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
   
-  arrange(desc(Decisions))
+  arrange(desc(Decisions)) |> 
+  
+  # separate_wider_delim(`Case outcome`, delim = " - ", names = c("Resettlement", "Scheme", "Accommodation"))
+  mutate(ACRS = if_else(str_detect(`Case outcome`, "ACRS"), "ACRS", "Other")) |> 
+  
+  group_by(ACRS) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Proportion = Decisions / sum(Decisions))
 
 # - How do current levels of resettlement compare to historical levels? -
 resettlement_by_quarter <- 
@@ -62,6 +70,7 @@ bind_rows(
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
     arrange(desc(Decisions)) |> 
     slice(1:10) |> 
+    mutate(Nationality = if_else(Nationality == "Sudan (South)", "S. Sudan", Nationality)) |> 
     rename(Category = Nationality, Nationality = Decisions) |> 
     mutate(Type = "Nationality"),
   
@@ -72,6 +81,7 @@ bind_rows(
     summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
     filter(Age != "Unknown") |> 
     rename(Category = Age, Age = Decisions) |> 
+    arrange(match(Category, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
     mutate(Type = "Age"),
   
   resettlement_grants_without_ARAP |> 

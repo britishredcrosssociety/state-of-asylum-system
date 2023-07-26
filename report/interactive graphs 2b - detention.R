@@ -129,3 +129,10 @@ detention_length |>
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")
+
+# calculate % increase since April 2021
+asylum::detention_cost_per_day |> 
+  select(Date, Cost) |> 
+  filter(Date %in% c(ymd("2021-07-01"), max(Date))) |> 
+  # arrange(desc(Date)) |> 
+  mutate(Percent_change = (Cost - lag(Cost)) / lag(Cost))

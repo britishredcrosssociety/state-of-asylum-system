@@ -1,4 +1,4 @@
-Category,Nationality,Type,Age,Sex,UASC
+Category,Nationality,Type,Age,Sex,Children
 Albania,15521,Nationality,NA,NA,NA
 Afghanistan,10555,Nationality,NA,NA,NA
 Iran,9485,Nationality,NA,NA,NA
@@ -16,5 +16,5 @@ Under 18,NA,Age,16183,NA,NA
 70+,NA,Age,311,NA,NA
 Female,NA,Sex,NA,21419,NA
 Male,NA,Sex,NA,69005,NA
-Accompanied children,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,86037
-Unaccompanied children,NA,Unaccompanied asylum-seeking children (UASC),NA,NA,5010
+Accompanied children,NA,Children seeking asylum,NA,NA,86037
+Unaccompanied children,NA,Children seeking asylum,NA,NA,5010

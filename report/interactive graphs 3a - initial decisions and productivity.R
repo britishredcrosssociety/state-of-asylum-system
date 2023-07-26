@@ -1,6 +1,49 @@
 library(tidyverse)
 library(asylum)
 
+# ---- Backlog over time, by nationality ----
+backlog_total <- 
+  asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage) |> 
+  summarise(Backlog = sum(Applications)) |> 
+  mutate(Nationality = "Total")
+
+backlog_nationality <- 
+  asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage, Nationality) |> 
+  summarise(Backlog = sum(Applications))
+
+bind_rows(backlog_total, backlog_nationality) |> 
+  pivot_wider(names_from = Stage, values_from = Backlog) |> 
+  # Turns NAs into blank spaces
+  mutate(across(`Pending further review`:`Pending initial decision (more than 6 months)`, as.character)) |> 
+  replace_na(list(`Pending further review` = "",
+                  `Pending initial decision (6 months or less)` = "",
+                  `Pending initial decision (more than 6 months)` = "")) |> 
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality.csv")
+
+# - Caption -
+# Proportion of people currently waiting for a decision who have been waiting more than three months
+backlog_total |> 
+  ungroup() |>
+  filter(Date == max(Date)) |> 
+  mutate(Proportion = Backlog / sum(Backlog))
+
+backlog_total |> 
+  ungroup() |>
+  filter(Date == max(Date)) |> 
+  summarise(Total = sum(Backlog))
+
 # ---- What is the number of people waiting for an initial decision on their asylum claim (and what is their nationality, age, gender)? ----
 # - Nationality -
 awaiting_decision_by_nationality <- 
