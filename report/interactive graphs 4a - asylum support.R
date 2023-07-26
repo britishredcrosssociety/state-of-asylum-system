@@ -43,9 +43,21 @@ support_received_recently |>
 
 # - Caption -
 # What proportion of people receiving Section 95 support only receive subsistence?
+# support_received_recently |> 
+#   filter(`Support Type` == "Section 95") |> 
+#   mutate(Proportion = People / sum(People))
+
+# What proportion of people receiving Section 4 support are in hotels?
 support_received_recently |> 
-  filter(`Support Type` == "Section 95") |> 
+  filter(`Support Type` == "Section 98") |> 
   mutate(Proportion = People / sum(People))
+
+# asylum::support_received |> 
+#   filter(`Support Type` == "Section 98") |> 
+#   filter(str_detect(`Accommodation Type`, "Hotel")) |> 
+#   group_by(Date, `Support Type`, `Accommodation Type`) |> 
+#   summarise(People = sum(People)) |> 
+#   ungroup()
 
 # ---- What is the rate of destitution among people seeking asylum in the UK? ----
 # - Could this be number receiving support divided by total number of people on the backlog? -
