@@ -18,9 +18,9 @@ TotalApps |>
   scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000)) +
   labs(title = "Total number of asylum applications from 2001 to 2023", 
-       x = NULL, 
+       x = "Year", 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data from January,2001 to January,2023")
+       caption = "British Red Cross analysis of Home Office data, January 2001 to January 2023")
 
 ----#Top Nationalities#----
 
@@ -80,7 +80,7 @@ AgeAnalysis %>%
   geom_bar(position = "stack", stat = "identity") +
   #geom_text(aes(label = AgeGroupSum), position = position_stack(vjust = -0.25),size = rel(2)) + 
   theme_classic() +
-  labs(title = "Asylum applicants in January 2023 by age and sex", 
+  labs(title = "Asylum applicants by age and sex for year ending January 2023 ", 
        x = NULL, 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, January 2023") +
@@ -90,6 +90,8 @@ AgeAnalysis %>%
                                      brc_colours$red_dunant,
                                      brc_colours$red_mercer,
                                      brc_colours$red_earth))
+
+
 ----#UASC#----
 UASC <- applications %>%
   select(Year, Nationality, UASC, Applications) %>%
@@ -112,7 +114,7 @@ UASCOnly |>
   labs(title = "Number of asylum applications from Unaccompanied asylum-seeking children (UASC), 2006-2023", 
        x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, from January 2006 - January 2023") +
+       caption = "British Red Cross analysis of Home Office data, January 2006 to January 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000))
   
 
@@ -133,9 +135,9 @@ DependentC |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
-  labs(title = 'Number of asylum applications of dependent children from 2009 to 2023', 
+  labs(title = "Number of asylum applications by dependent children from 2009 to 2023", 
        x = NULL, 
        y = 'Applications', 
-       caption = 'British Red Cross analysis of Home Office data January 2009 - January 2023') +
+       caption = 'British Red Cross analysis of Home Office data, January 2009 to January 2023') +
   scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 10000))
