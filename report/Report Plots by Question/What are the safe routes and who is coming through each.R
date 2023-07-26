@@ -1,35 +1,33 @@
 ----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES?#----
-----#Safe Routes Analysis- Resettlement Asylum Case#----
 
 view(decisions_resettlement)
 
 colnames(decisions_resettlement)
 
 ResettlmentTotal <- decisions_resettlement %>%
-  select(Year, `Case outcome group`, Decisions) %>%
-  group_by(Year, `Case outcome group`) %>%
+  select(Year, `Case outcome group`, Decisions, `Case type`) %>%
+  group_by(Year, `Case outcome group`, `Case type`) %>%
   summarise(RTotal = sum(Decisions))
 
 view(ResettlmentTotal)
 
-----##Resettlement Bar Graph##----
+----##Asylum vs Refugee Resettlement Bar Graph##----
 ResettlmentTotal %>%
-ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
+  filter(Year > 2009) %>%
+  ggplot(aes(fill = `Case type`, y = RTotal, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   theme_classic() +
-  labs(title = "Resettlement Outcomes of Asylum Applications at Initial Decision",
-       subtitle = "Resettlement grouped by case outcome",
-       x = NULL, 
-       y = "Decisions", 
-       caption = "British Red Cross Analysis of Home Office Data, until 2022") +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) + 
-  scale_fill_manual(values = c(brc_colours$red_deep,
-                               brc_colours$red_mercer,
-                               brc_colours$red_dunant,
-                               brc_colours$red_light))
+  labs(title = "Grants of protection by either asylum or resettlement case from 2010 to 2023",
+       subtitle = "Total number of grants of protection per year, broken down by asylum or resettlement application",
+       x = "Year", 
+       y = "Number of Decisions", 
+       caption = "British Red Cross analysis of Home Office data, from January 2010 to January, 2023") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) + 
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_earth))
 
- 
+
 ----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS?#----
 
 #Safe Routes#  
@@ -64,25 +62,39 @@ SF2022 <- SF2022 %>%
   
 library(plyr)
 
+#When adding plyr library, dplyr gets overshadowed for some of the sum functions. 
+
 SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
                                  c("Resettlement - ACRS Pathway 1 - Accommodation not recorded" = "ACRS", 
                                    "Resettlement - ACRS Pathway 1 - Temporary accommodation" = "ACRS", 
                                    "Resettlement - ACRS Pathway 2 - Settled accommodation" = "ACRS",
                                    "Resettlement - ACRS Pathway 3 - Settled accommodation" = "ACRS", 
                                    "Resettlement - ACRS Pathway 3 - Temporary accommodation" = "ACRS",
-                                   "Resettlement - ACRS Pathway 1 - Settled accommodation" = "ACRS"))
+                                   "Resettlement - ACRS Pathway 1 - Settled accommodation" = "ACRS",
+                                   "Resettlement - Afghan route not recorded - Settled accommodation" = "ACRS",
+                                   "Resettlement - Afghan route not recorded - Temporary accommodation" = "ACRS"))
+
+SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
+                                 c("ACRS" = "Afghan Route"))
+
+SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
+                                 c("Afghan Route" = "Resettlement - Afghan Route"))
 
 SF2022 %>%
   filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded") %>%
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Number of People Granted Protection Under a Safe Route", 
+  labs(title = "Number of people granted protection under a resettlement scheme", 
        x = NULL,
-       y = "Grants", 
-       caption = "British Red Cross Analyses on Home Office Data, year ending March, 2023") +
+       y = "Number of Grants", 
+       caption = "British Red Cross analysis of Home Office data, year ending January, 2023") +
   scale_x_continuous(breaks = c(2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+  scale_y_continuous(labels = scales::comma, limits = c(0, 2000)) +
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_mercer,
+                               brc_colours$red_deep,
+                               brc_colours$red_light))
 
 
 ##To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?##
