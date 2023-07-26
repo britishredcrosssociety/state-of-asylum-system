@@ -27,7 +27,9 @@ asylum_payments <-
     "2015-08", 36.95,
     "2018-02", 37.75,
     "2021-02", 39.63,
-    "2022-02", 40.85
+    "2022-02", 40.85,
+    "2022-12", 45,
+    "2023-07", 47.39
   ) |> 
   mutate(Date = ym(Date))
 
@@ -38,18 +40,19 @@ asylum_payments <-
 #   pull(CPI)
 
 # Use April 2000 for reindexing
-cpi_apr_2000 <- 
-  cpi |> 
-  filter(Date == ym("2000-04")) |> 
-  pull(CPI)
+# cpi_apr_2000 <- 
+#   cpi |> 
+#   filter(Date == ym("2000-04")) |> 
+#   pull(CPI)
 
 real_asylum_payments <- 
   cpi |> 
+  
   # Re-index CPI
-  mutate(
-    # CPI_dec_2021 = CPI / cpi_dec_2021,
-    CPI_apr_2000 = CPI / cpi_apr_2000
-  ) |> 
+  # mutate(
+  #   # CPI_dec_2021 = CPI / cpi_dec_2021,
+  #   CPI_apr_2000 = CPI / cpi_apr_2000
+  # ) |> 
   
   # Merge nominal asylum payments
   left_join(asylum_payments) |> 
@@ -58,14 +61,20 @@ real_asylum_payments <-
   # Calculate real asylum payments
   mutate(
     # `Real asylum payment (2021 GBP)` = Weekly_nominal / CPI_dec_2021,
-    # `Real asylum payment (2015 GBP)` = Weekly_nominal / (CPI / 100),
-    `Real asylum payment (2000 GBP)` = Weekly_nominal / CPI_apr_2000,
+    `Real asylum payment (2015 GBP)` = Weekly_nominal / (CPI / 100),
+    # `Real asylum payment (2000 GBP)` = Weekly_nominal / CPI_apr_2000,
     
     # This is an equivalent way to calculate asylum payments in 2021 pounds (or another year of our choosing)
     # `Real asylum payment (2021 GBP)` = Weekly_nominal * (cpi_dec_2021 / CPI)
   )
 
 real_asylum_payments |> 
-  select(Date, `Inflation-adjusted` = `Real asylum payment (2000 GBP)`, `Nominal` = Weekly_nominal) |> 
+  select(Date, `Inflation-adjusted` = `Real asylum payment (2015 GBP)`, `Nominal` = Weekly_nominal) |> 
   pivot_longer(cols = -Date, names_to = "Adjusted", values_to = "Asylum support payment (£)") |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - inflation adjusted.csv")
+
+# - Caption -
+# Calculate % change since 2000
+real_asylum_payments |> 
+  filter(Date %in% c(min(Date), max(Date))) |> 
+  mutate(Percent_change = (`Real asylum payment (2015 GBP)` - lag(`Real asylum payment (2015 GBP)`)) / lag(`Real asylum payment (2015 GBP)`))
