@@ -65,6 +65,7 @@ support_received_recently |>
 receiving_support <- 
   asylum::support_received |> 
   filter(Date == max(Date)) |> 
+  filter(`Support Type` != "Section 4") |> 
   mutate(`Accommodation Type` = if_else(`Accommodation Type` == "Subsistence Only", "Receiving asylum support (subsistence only)", "Receiving asylum support (accommodation)")) |> 
   group_by(`Accommodation Type`) |> 
   summarise(People = sum(People))
