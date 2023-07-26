@@ -133,6 +133,6 @@ asylum::detention_cost_per_day |>
 # calculate % increase since April 2021
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 
-  filter(Date %in% c(ymd("2021-04-01"), max(Date))) |> 
+  filter(Date %in% c(ymd("2021-07-01"), max(Date))) |> 
   # arrange(desc(Date)) |> 
   mutate(Percent_change = (Cost - lag(Cost)) / lag(Cost))
