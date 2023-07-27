@@ -77,6 +77,7 @@ library(asylum)
 #   mutate(`Final grant rate` = (Grant + Allowed) / (Grant + Refused + Allowed + Dismissed))
 
 # Calculate initial and final grant rates from Outcomes data
+grant_rates_initial_final <- 
 asylum::outcomes |>
   drop_na() |> 
   select(`Year of application`, `Granted asylum`:Refused, `Allowed appeals`:`Dismissed appeals`, `Final outcome: Grants of asylum`:`Final outcomes: Refused asylum or HP or DL or other leave`) |> 
@@ -88,30 +89,30 @@ asylum::outcomes |>
     `Initial grant rate` = (`Granted asylum` + `Granted HP/DL` + `Other grants`) / (`Granted asylum` + `Granted HP/DL` + `Other grants` + Refused),
     # `Appeal grant rate` = `Allowed appeals` / (`Allowed appeals` + `Dismissed appeals`),
     `Final grant rate` = (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other`) / (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other` + `Final outcomes: Refused asylum or HP or DL or other leave`)
-  ) |> 
+  )
   
+grant_rates_initial_final |> 
   select(`Year of application`, contains("rate")) |> 
-  
   write_csv("data-raw/flourish/3b - Decision-making/grant rates - initial and final.csv")
 
 # - Grant rates by nationality -
 # Top five nations, by number of grants and grant rate in the most recent year
-top_five_nations <- 
-  grant_rates_at_appeal |> 
-  filter(Year == max(Year)) |> 
-  arrange(desc(`Grant rate at appeal`), desc(Allowed)) |> 
-  slice(1:5) |> 
-  pull(Nationality)
+# top_five_nations <- 
+#   grant_rates_at_appeal |> 
+#   filter(Year == max(Year)) |> 
+#   arrange(desc(`Grant rate at appeal`), desc(Allowed)) |> 
+#   slice(1:5) |> 
+#   pull(Nationality)
 
 # Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
-grant_rates_at_appeal |> 
-  select(Year, Nationality, `Grant rate at appeal`) |> 
-  pivot_wider(names_from = Nationality, values_from = `Grant rate at appeal`) |> 
-  
-  # Move the five nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
-  relocate(Year, any_of(top_five_nations)) |> 
-  
-  write_csv("data-raw/flourish/3b - Decision-making/grant rates at appeal - by nationality.csv")
+# grant_rates_at_appeal |> 
+#   select(Year, Nationality, `Grant rate at appeal`) |> 
+#   pivot_wider(names_from = Nationality, values_from = `Grant rate at appeal`) |> 
+#   
+#   # Move the five nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+#   relocate(Year, any_of(top_five_nations)) |> 
+#   
+#   write_csv("data-raw/flourish/3b - Decision-making/grant rates at appeal - by nationality.csv")
 
 # ---- How many people have been age disputed in the last 12 months by nationality and gender and what was the outcome of the dispute? ----
 # Data doesn't contain gender/sex

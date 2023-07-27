@@ -271,6 +271,9 @@ grant_rates_initial_quarterly |>
   # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
   relocate(Date, Quarter, any_of(top_ten_nations)) |> 
   
+  # Remove columns that contain only NAs
+  select(where(~!all(is.na(.x)))) |> 
+
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
 
 # ---- Returns ----
