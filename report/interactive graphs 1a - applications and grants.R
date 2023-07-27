@@ -1,13 +1,16 @@
 library(tidyverse)
 library(asylum)
+library(compositr)
+library(readxl)
 
 # ---- Migration comparison/proportions ----
 # Total applications in 2022
-migration_asylum <- 
-  asylum::applications |> 
-  filter(Year == 2022) |> 
-  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-  pull(Applications)
+# migration_asylum <- 
+#   asylum::applications |> 
+#   filter(Year == 2022) |> 
+#   filter(`Applicant type` == "Main applicant") |> 
+#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+#   pull(Applications)
 
 # People arriving on small boats who claimed asylum
 migration_small_boats <- 
@@ -21,41 +24,91 @@ migration_small_boats <-
 #   summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
 #   pull(Boats)
 
-resettlement <- 
-  asylum::decisions_resettlement |> 
-  filter(Year == 2022 & str_detect(`Case type`, "Resettlement")) |> 
-  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
-  pull(Decisions)
+# resettlement <- 
+#   asylum::decisions_resettlement |> 
+#   filter(Year == 2022 & str_detect(`Case type`, "Resettlement")) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   pull(Decisions)
 
 # These migration figures are taken from ONS
 # Source: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2022
-net_migration <- 606000 
-immigration_2022 <- 1163000
-ukraine <- 114000
-bno <- 52000  # British Nationals Overseas - BN(O)
+# net_migration <- 606000 
+# immigration_2022 <- 1163000
+# ukraine <- 114000
+# bno <- 52000  # British Nationals Overseas - BN(O)
+
+# Data: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/datasets/longterminternationalimmigrationemigrationandnetmigrationflowsprovisional
+tf <- download_file("https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/internationalmigration/datasets/longterminternationalimmigrationemigrationandnetmigrationflowsprovisional/yearendingdecember2022/longterminternationalmigrationprovisional2018to2022.xlsx", ".xlsx")
+
+immigration_non_EU <- read_excel(tf, sheet = "2. Non-EU reason immigration", skip = 3)
+
+immigration_non_EU <- 
+  immigration_non_EU |> 
+  filter(Period == "YE Dec 2022 P") |> 
+  mutate(`Other migration (non-EU)` = `Total Work` + `Total Study` + Family + Other) |> 
+  mutate(BNO = as.integer(BNO)) |> 
+  select(
+    `Other migration (non-EU)`, 
+    `British nationals (overseas)` = BNO,
+    `Ukraine visas` = Ukraine,
+    `Resettlement and other safe routes` = Resettlement,
+    Asylum
+  )
+
+immigration_British_EU <- read_excel(tf, sheet = "4. British and EU nat by reason", skip = 2)
+
+immigration_British_EU <- 
+  immigration_British_EU |> 
+  filter(Period == "YE Dec 2022 P") |> 
+  summarise(`British and EU nationals` = sum(`All Reasons`))
 
 immigration <- 
-  tribble(
-  ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
-  "Immigration", "Other migration", "Other migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
-  "Immigration", "Other migration", "Ukraine visas", ukraine,
-  "Immigration", "Other migration", "British Nationals Overseas", bno,
-  "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
-  "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
-  "Immigration", "Other migration", "Resettlement and other safe routes", resettlement
-)
+  immigration_non_EU |> 
+  bind_cols(immigration_British_EU) |> 
+  mutate(
+    `Other immigration` = `Other migration (non-EU)` + `British and EU nationals`,
+    `Small boat arrivals claiming asylum` = migration_small_boats,
+    `Asylum claims (not via small boats)` = Asylum - migration_small_boats
+  )
 
-# Calculate proportions
 immigration <- 
   immigration |> 
+  select(`Other immigration`, `Ukraine visas`, `British nationals (overseas)`, `Asylum claims (not via small boats)`, `Small boat arrivals claiming asylum`, `Resettlement and other safe routes`) |> 
+  pivot_longer(cols = everything(), names_to = "Migration type", values_to = "Number of people") |> 
+  arrange(desc(`Number of people`)) |> 
+  
+  # Calculate proportions
   mutate(`Percentage of people immigrating` = `Number of people` / sum(`Number of people`)) |> 
   mutate(`Percentage of people immigrating` = scales::percent(`Percentage of people immigrating`, accuracy = 0.1))
+
+# immigration <- 
+#   tribble(
+#   ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
+#   "Immigration", "Other migration", "Other migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
+#   "Immigration", "Other migration", "Ukraine visas", ukraine,
+#   "Immigration", "Other migration", "British Nationals Overseas", bno,
+#   "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
+#   "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
+#   "Immigration", "Other migration", "Resettlement and other safe routes", resettlement
+# )
+# 
+# # Calculate proportions
+# immigration <- 
+#   immigration |> 
+#   mutate(`Percentage of people immigrating` = `Number of people` / sum(`Number of people`)) |> 
+#   mutate(`Percentage of people immigrating` = scales::percent(`Percentage of people immigrating`, accuracy = 0.1))
 
 immigration |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/immigration.csv")
 
 # - CAPTION -
 immigration |> 
+  mutate(`Sub-category` = case_match(
+    `Migration type`,
+    c("Asylum claims (not via small boats)", "Small boat arrivals claiming asylum") ~ "Asylum",
+    .default = "Other"
+  )) |> 
+  
   group_by(`Sub-category`) |> 
   summarise(Total = sum(`Number of people`)) |> 
   ungroup() |> 
