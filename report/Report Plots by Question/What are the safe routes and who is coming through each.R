@@ -11,26 +11,11 @@ ResettlmentTotal <- decisions_resettlement %>%
 
 view(ResettlmentTotal)
 
-----##Asylum vs Refugee Resettlement Bar Graph##----
-ResettlmentTotal %>%
-  filter(Year > 2009) %>%
-  ggplot(aes(fill = `Case type`, y = RTotal, x = Year)) + 
-  geom_bar(position="stack", stat="identity") +
-  theme_classic() +
-  labs(title = "Grants of protection by either asylum or resettlement case from 2010 to 2023",
-       subtitle = "Total number of grants of protection per year, broken down by asylum or resettlement application",
-       x = "Year", 
-       y = "Number of Decisions", 
-       caption = "British Red Cross analysis of Home Office data, from January 2010 to January, 2023") +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) + 
-  scale_fill_manual(values = c(brc_colours$red_dunant,
-                               brc_colours$red_earth))
 
 
 ----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS?#----
 
-#Safe Routes#  
+#Resettlement#  
 
 ResettlementScheme <- decisions_resettlement %>%
   select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) %>%
@@ -65,30 +50,36 @@ Resettlement22 |>
   mutate(`Case outcome` = 
            case_match(
              `Case outcome`,
-             c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
+             (c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
                "Resettlement - ACRS Pathway 1 - Temporary accommodation", 
                "Resettlement - ACRS Pathway 2 - Settled accommodation",
                "Resettlement - ACRS Pathway 3 - Settled accommodation", 
                "Resettlement - ACRS Pathway 3 - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation",
                "Resettlement - Afghan route not recorded - Settled accommodation",
-               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Resettlement - Afghan Route", 
-             .default = `Case outcome`
+               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route"), 
+             ("Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme"),
+             ("Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme"),
+             ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme")
              )
          ) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = TotalR)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Number of people granted protection under a resettlement scheme", 
-       x = NULL,
+  labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
+       x = "Year",
        y = "Number of Grants", 
-       caption = "British Red Cross analysis of Home Office data, year ending March, 2023") +
+       caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
   scale_x_continuous(breaks = c(2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 2000)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_mercer,
                                brc_colours$red_deep,
                                brc_colours$red_light))
+
+
+
+#Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default#
 
 
 ##To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?##

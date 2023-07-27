@@ -102,11 +102,11 @@ Appeals2022 %>%
   geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3), position=position_dodge(width=0.5), vjust=-0.25) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=0.5)) +
-  labs(title = "Number of appeals lodged by nationalities for year ending January 2023 ", 
+  labs(title = "Number of appeals lodged by nationalities for year ending March 2023 ", 
        subtitle = "Appeals lodged at the First-Tier Tribunal",
        x = "Nationality", 
        y = "Number of Appeals", 
-       caption = "British Red Cross Analyses of Home Office Data, January 2022 to January 2023") +
+       caption = "British Red Cross analysis of Home Office Data, March 2022 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 800))
 
 

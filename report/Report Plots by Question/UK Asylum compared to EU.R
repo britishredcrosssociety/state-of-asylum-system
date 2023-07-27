@@ -12,29 +12,37 @@ AppsQ1T <- applications %>%
   summarise(Total = sum(Applications))
 
 ----#EU Across 10 Years#----
-
 EU_Stats_10_Years %>%
-  filter(Applications > 40000) %>%
+  group_by(Year) |> 
+  slice_max(Applications, n = 10) |> 
   ggplot(aes(fill = Country, x = Year, y = Applications)) +
   geom_bar(position = "stack", stat = "identity") + 
   theme_classic() +
-  labs(title = "Number of asylum applications to European Countries and the United Kingdom from 2013 to 2022",
+  labs(title = "Number of asylum applications to European countries from 2013 to 2022",
        subtitle = "Top 10 countries with the highest asylum applications over the last decade",
        x = "Year", 
        y = "Number of Asylum Applications", 
-       caption = "British Red Cross analysis of EuroStat Data, year ending 2022") +
-  scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6)) +
+       caption = "British Red Cross analysis of EuroStat Data, MONTH 2022") +
+  scale_y_continuous(labels = scales::unit_format(unit = "m", scale = 1e-6)) +
   scale_x_continuous(breaks = c(2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
-  scale_fill_manual(values = c(brc_colours$blue,
+  scale_fill_manual(values = c(brc_colours$black_full,
+                               brc_colours$blue,
                                brc_colours$teal,
+                               brc_colours$green,
+                               brc_colours$green_dark,
                                brc_colours$steel,
                                brc_colours$grey,
+                               brc_colours$grey_fog,
+                               brc_colours$duck,
+                               brc_colours$sand,
                                brc_colours$claret,
                                brc_colours$red_deep,
                                brc_colours$red_earth,
                                brc_colours$red_mercer,
                                brc_colours$red_light,
                                brc_colours$red_dunant))
+
+#Can't do "Other" for the Across 10 Year plots because of the way that the data is coded.
 
 #EU Bar Graph -2022 Total
 
@@ -47,16 +55,29 @@ EU_Stat %>%
   geom_bar(stat = "identity", fill = brc_colours$red_dunant, show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Applications)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_classic() +
-  labs(title = "Number of asylum applications to European countries and the United Kindom in 2022",
-       subtitle =  "10 countries with the highest applications",
+  labs(title = "Number of asylum applications to European countries, 2022",
+       subtitle =  "Top 10 countries with the highest applications",
        x = "Country", 
        y = "Number of People", 
-       caption = "British Red Cross analysis of EuroStat data, year ending 2022") +
+       caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 250000)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
+EU_Stat |> 
+  ggplot(aes(Countries, Applications, colour = brc_colours$red_dunant, show.legend = FALSE), group_by(Countries)) +
+  geom_bar(stat = "identity", fill = brc_colours$red_dunant, show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Applications)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  theme_classic() +
+  labs(title = "Number of asylum applications to European countries, 2022",
+       subtitle =  "Top 10 countries with the highest applications",
+       x = "Country", 
+       y = "Number of People", 
+       caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 250000)) +
+  theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+  
 
-#EU Grant Rate & Top 5
+----#Top 10 Grant Rates#----
 
 EU_Grant_Rates %>%
   filter(Grant > 9000) %>%
@@ -64,11 +85,11 @@ EU_Grant_Rates %>%
   geom_bar(stat = "identity", fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Grant)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25) +
   theme_classic() +
-  labs(title = "Number of asylum grants across European countries and the United Kingdom in 2022",
-        subtitle = "10 countries with the highest number of asylum grants",
+  labs(title = "Number of asylum grants across European countries in 2022",
+        subtitle = "Top 10 countries with the highest number of asylum grants",
         x = "Country", 
         y = "Number of Asylum Grants", 
-        caption = "British Red Cross analysis of EuroStat data, year ending 2022") +
+        caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
