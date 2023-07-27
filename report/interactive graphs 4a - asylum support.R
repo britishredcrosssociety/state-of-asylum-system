@@ -34,9 +34,11 @@ asylum::support_received |>
 support_received_recently <- 
   asylum::support_received |> 
   filter(Date == max(Date)) |> 
+  
   group_by(`Support Type`, `Accommodation Type`) |> 
   summarise(People = sum(People)) |> 
-  ungroup()
+  ungroup() |> 
+  arrange(`Support Type`, desc(People))
 
 support_received_recently |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
