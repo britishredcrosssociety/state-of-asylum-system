@@ -32,17 +32,17 @@ ResettlmentTotal %>%
 
 #Safe Routes#  
 
-SafeRoutes <- decisions_resettlement %>%
+ResettlementScheme <- decisions_resettlement %>%
   select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) %>%
   group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) %>%
   summarise(Total = sum(Decisions))
 
-SF2022 <- SafeRoutes %>%
+Resettlement22 <- ResettlementScheme %>%
   filter(Year > 2021) %>%
   group_by(Year, `Case outcome`) %>%
-  summarise(Total = sum(TotalF)) 
+  summarise(TotalR = sum(Total)) 
   
-SF2022 <- SF2022 %>%
+Resettlement22 <- Resettlement22 %>%
   filter(`Case outcome` != "3rd Country Refusal") %>%	
   filter(`Case outcome` !=  "Certified Refusal") %>%
   filter(`Case outcome` != "Discretionary Leave") %>%
@@ -58,37 +58,31 @@ SF2022 <- SF2022 %>%
   filter(`Case outcome` != "Temporary Refugee Permission") %>%
   filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") %>%
   filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") %>%
-  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ")
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ") %>%
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded")
   
-library(plyr)
-
-#When adding plyr library, dplyr gets overshadowed for some of the sum functions. 
-
-SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
-                                 c("Resettlement - ACRS Pathway 1 - Accommodation not recorded" = "ACRS", 
-                                   "Resettlement - ACRS Pathway 1 - Temporary accommodation" = "ACRS", 
-                                   "Resettlement - ACRS Pathway 2 - Settled accommodation" = "ACRS",
-                                   "Resettlement - ACRS Pathway 3 - Settled accommodation" = "ACRS", 
-                                   "Resettlement - ACRS Pathway 3 - Temporary accommodation" = "ACRS",
-                                   "Resettlement - ACRS Pathway 1 - Settled accommodation" = "ACRS",
-                                   "Resettlement - Afghan route not recorded - Settled accommodation" = "ACRS",
-                                   "Resettlement - Afghan route not recorded - Temporary accommodation" = "ACRS"))
-
-SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
-                                 c("ACRS" = "Afghan Route"))
-
-SF2022$`Case outcome` <- revalue(SF2022$`Case outcome`, 
-                                 c("Afghan Route" = "Resettlement - Afghan Route"))
-
-SF2022 %>%
-  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded") %>%
-  ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
+Resettlement22 |> 
+  mutate(`Case outcome` = 
+           case_match(
+             `Case outcome`,
+             c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
+               "Resettlement - ACRS Pathway 1 - Temporary accommodation", 
+               "Resettlement - ACRS Pathway 2 - Settled accommodation",
+               "Resettlement - ACRS Pathway 3 - Settled accommodation", 
+               "Resettlement - ACRS Pathway 3 - Temporary accommodation",
+               "Resettlement - ACRS Pathway 1 - Settled accommodation",
+               "Resettlement - Afghan route not recorded - Settled accommodation",
+               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Resettlement - Afghan Route", 
+             .default = `Case outcome`
+             )
+         ) |>
+  ggplot(aes(fill = `Case outcome`, x = Year, y = TotalR)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
   labs(title = "Number of people granted protection under a resettlement scheme", 
        x = NULL,
        y = "Number of Grants", 
-       caption = "British Red Cross analysis of Home Office data, year ending January, 2023") +
+       caption = "British Red Cross analysis of Home Office data, year ending March, 2023") +
   scale_x_continuous(breaks = c(2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 2000)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,

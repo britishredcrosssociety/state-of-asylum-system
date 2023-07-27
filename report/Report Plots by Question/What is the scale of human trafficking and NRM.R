@@ -100,11 +100,10 @@ ReasonableGrounds <- nrm_reasonable_grounds %>%
   select(Year, Quarter, `Adult (18 or over) - Positive reasonable grounds`, `Child (17 or under) - Positive reasonable grounds`, `Age not specified or unknown - Positive reasonable grounds`) 
 
 ReasonableGrounds %>%
-  filter(Quarter == "Total") |>
-  ggplot(aes(x = Year)) +
-  geom_line(aes(x = Year, y = `Adult (18 or over) - Positive reasonable grounds`), colour = brc_colours$red_dunant) +
-  geom_line(aes(x = Year, y = `Child (17 or under) - Positive reasonable grounds`), colour = brc_colours$teal) +
-  geom_line(aes(x = Year, y = `Age not specified or unknown - Positive reasonable grounds`), colour = brc_colours$black_shadow) +
+  filter(Quarter == "Total") |> 
+  pivot_longer(cols = `Adult (18 or over) - Positive reasonable grounds`:`Age not specified or unknown - Positive reasonable grounds`, names_to = "Age group", values_to = "People") |> 
+  ggplot(aes(x = Year, y = People, group = `Age group`)) +
+  geom_line(aes(colour = `Age group`)) +
   theme_classic() +
   labs(title = "Number of people who recieved positive reasonable grounds by age", 
        subtitle = "Adults shown in red, children in teal and unknown in black",
@@ -112,7 +111,8 @@ ReasonableGrounds %>%
        y = "Number of People",
        caption = "British Red Cross analysis of Home Office data, January 2014 until January 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) 
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  
 
 #Fix the legend
 

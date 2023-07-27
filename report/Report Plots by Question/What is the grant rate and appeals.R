@@ -27,11 +27,11 @@ GrantRatebyYear |>
     # legend.margin = margin(),
     plot.title.position = "plot") +
   labs(
-    title = "Average grant rates at initial decision on asylum applications from 2001 to 2023",
+    title = "Average asylum grant rate at initial decision from 2001 to 2023 ",
     subtitle = "Proportion of initial decisions which resulted in a grant of protection or other leave",
     x = "Year",
     y = "Grant Rate (%)",
-    caption = "British Red Cross analysis on Home Office data from January 2001 to January 2023")
+    caption = "British Red Cross analysis on Home Office data, January 2001 to January 2023")
 
 
 #Grant Rate Top Nationalities#
@@ -80,11 +80,11 @@ AppealsLodgedTotal %>%
     # legend.margin = margin(),
     plot.title.position = "plot") +
   labs(
-    title = "Number of asylum appeals lodged from 2010 to 2023",
+    title = "Number of asylum appeals from 2010 to 2023",  
     subtitle = "Number of appeals lodged with the first-tier tribunal where an asylum claim has been refused at initial decision",
     x = NULL,
     y = "Number of Appeals Lodged",
-    caption = "British Red Cross analysis of Home Office data from January 2010 to January 2023") +
+    caption = "British Red Cross analysis of Home Office data, January 2010 to January 2023") +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
 ----#Appeals Lodged by Nationality#----
@@ -102,11 +102,11 @@ Appeals2022 %>%
   geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3), position=position_dodge(width=0.5), vjust=-0.25) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=0.5)) +
-  labs(title = "Number of appeals lodged by nationalities from January 2022 to January 2023", 
+  labs(title = "Number of appeals lodged by nationalities for year ending January 2023 ", 
        subtitle = "Appeals lodged at the First-Tier Tribunal",
        x = "Nationality", 
        y = "Number of Appeals", 
-       caption = "British Red Cross Analyses of Home Office Data, January 2022 - January 2023") +
+       caption = "British Red Cross Analyses of Home Office Data, January 2022 to January 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 800))
 
 

@@ -26,7 +26,7 @@ scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 FamilyRunionbyQ <- family_reunion %>%
   group_by(Year, Quarter) %>%
   summarise(Total = sum(`Visas granted`)) %>%
-  ggplot(aes(fill = Quarter, x = Year, y = Total)) +
+  ggplot(aes(fill = factor(Quarter), x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
   labs(title = "Number of Family Reunion Visas Granted per Quarter",
