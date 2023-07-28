@@ -115,7 +115,7 @@ UASC22 |>
   geom_col(fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
-  labs(title = "Number of asylum applications of Unaccompanied asylum seeking children, 2022 to 2023",
+  labs(title = "Number of asylum applications of Unaccompanied asylum seeking children, year ending March 2023",
        subtitle =  "Top 10 nationalities with the highest applications",
        x = "Country", 
        y = 'Number of Children', 

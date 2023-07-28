@@ -69,7 +69,7 @@ Resettlement22 |>
   labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
        x = "Year",
        y = "Number of Grants", 
-       caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
   scale_x_continuous(breaks = c(2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 2000)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
@@ -103,7 +103,7 @@ UKResettlement %>%
   geom_line(aes(colour = Sex)) +
   geom_point(aes(colour = Sex)) +
   theme_classic() +
-  labs(title = "Number of People Arriving through UK Resettlement Scheme by Sex",
+  labs(title = "Number of People Arriving through UK Resettlement Scheme by Sex, year ending December 2",
        x = "Quarter", 
        y = "Total Number of People")
 

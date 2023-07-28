@@ -15,7 +15,7 @@ Totalfamreunion <- family_reunion %>%
   labs(title = "Number of family reunion visas granted from 2010 to 2023",
        x = NULL,
        y = "Number of Visas Granted", 
-       caption = "British Red Cross analysis of Home Office data, March 2023")
+       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
 
 Totalfamreunion + 
 scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
@@ -45,7 +45,7 @@ FamReuinion22 |>
                            box.padding = unit(0.01, "lines")) +
   #geom_text(aes(label = scales::comma(TotalbyAge)), show.legend = FALSE, size = rel(2), position = position_stack(vjust = .5)) +
   theme_classic() +
-  labs(title = "Family reunion visas granted by sex and age, 2022", 
+  labs(title = "Family reunion visas granted by sex and age, year ending December 2022", 
        x = "Sex", 
        y = "Total Visas Granted", 
        caption = "British Red Cross analysis of Home Office data, year ending December 2022") +
