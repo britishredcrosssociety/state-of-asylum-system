@@ -111,11 +111,11 @@ UASC22 |>
   group_by(Nationality) |>
   summarise(Total = sum(Total)) |>
   filter(Total > 120) |>
-  ggplot(aes(x = reorder(Nationality, Total, sum), y = Total)) +
+  ggplot(aes(x = reorder(Nationality, desc(Total), sum), y = Total)) +
   geom_col(fill = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_classic() +
-  labs(title = "Number of asylum applications of Unaccompanied asylum seeking children, year ending March 2023",
+  labs(title = "Number of asylum applications of Unaccompanied asylum seeking children for year ending March 2023",
        subtitle =  "Top 10 nationalities with the highest applications",
        x = "Country", 
        y = 'Number of Children', 

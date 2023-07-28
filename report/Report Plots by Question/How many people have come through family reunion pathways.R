@@ -33,7 +33,7 @@ FamReuinion22 <- FamilyReunion %>%
   group_by(Sex, Age) %>%
   summarise(TotalbyAge = sum(Total)) 
 
-arrange(FamReuinion22)
+
 
 FamReuinion22$Age <- factor(FamReuinion22$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
 
@@ -45,7 +45,7 @@ FamReuinion22 |>
                            box.padding = unit(0.01, "lines")) +
   #geom_text(aes(label = scales::comma(TotalbyAge)), show.legend = FALSE, size = rel(2), position = position_stack(vjust = .5)) +
   theme_classic() +
-  labs(title = "Family reunion visas granted by sex and age, year ending December 2022", 
+  labs(title = "Family reunion visas granted by sex and age for year ending December 2022", 
        x = "Sex", 
        y = "Total Visas Granted", 
        caption = "British Red Cross analysis of Home Office data, year ending December 2022") +
