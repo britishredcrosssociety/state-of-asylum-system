@@ -2,6 +2,7 @@
   
 ----#Section 95 Support#----
 ----##Support Applications#----
+#support_applications is for the number of applications to section 95.#
 
 Section95Apps <- support_applications %>%
   select(Year, Nationality, `Support type granted`, `Group type`, Applications) %>%
@@ -47,11 +48,11 @@ SupportRecieved <- SupportRecieved %>%
   mutate(Year = lubridate::year(Date))
 
 TotalSupportRecieved <- SupportRecieved %>%
-  group_by(Year) %>%
+  group_by(Date) %>%
   summarise(Total = sum(People))
 
 TotalSupportRecieved |>
-  ggplot(aes(Year, Total)) +
+  ggplot(aes(Date, Total)) +
   geom_line(aes(colour = "red"), show.legend = FALSE) +
   geom_point(aes(colour = "red", size = Total, alpha = 0.5), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
@@ -60,44 +61,43 @@ TotalSupportRecieved |>
        x = NULL, 
        y = "Number of People", 
        caption = "British Red Cross Analyses of Home Office Data, year ending March 2023") +
-  scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  #scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
-#Support Type#
-
+----#Support Type#----
 SupportType <- SupportRecieved %>%
-  group_by(Year,`Support Type`,`Accommodation Type`) %>%
+  group_by(Date,`Support Type`,`Accommodation Type`) %>%
   summarise(Total = sum(People))  
 
 SupportType |>
-  ggplot(aes(fill = `Support Type`, y = Total, x = Year)) +
+  ggplot(aes(fill = `Support Type`, y = Total, x = Date)) +
   geom_bar(position ="stack", stat="identity") +
   theme_classic() +
-  labs(title = "People in Reciept of Support by Section Type (4, 95, 98)", 
-       x = NULL, 
+  labs(title = "Number of people in receipt of asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999, March 2014 to March 2023", 
+       x = "Year", 
        y = "Number of People", 
-       caption = "British Red Cross Analyses of Home Office Data, year ending March, 2023") +
-  scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+       caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
+  #scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 120000)) +
   scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_mercer,
+                               brc_colours$red_dunant,
                                brc_colours$red_deep))
 
 
-#2022/23 Section and Accommodation Type 
+----#2023 Section and Accommodation Type#---- 
 SupportType %>%
-  filter(Year == 2022) %>%
+  filter(Date == "2023-03-31") %>%
   filter(`Accommodation Type` != "N/A - Section 98 (pre-2023)") %>%
   filter(`Accommodation Type`!= "Subsistence only") %>%
   filter(`Accommodation Type`!= "Subsistence Only") %>%
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
   theme_classic() +
-  labs(title = "People in Reciept of Accomodation by Section Type, 2022", 
-       x = NULL, 
+  labs(title = "Number of people in reciept of support by accomodation type, March 2023", 
+       x = "Asylum Support", 
        y = "Number of People", 
-       caption = "British Red Cross Analyses of Home Office Data, year ending 2022") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+       caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 60000)) +
   guides(color = guide_legend(override.aes = list(size = 0.5))) +
   scale_fill_manual(values = c(brc_colours$steel,
                                brc_colours$teal,
