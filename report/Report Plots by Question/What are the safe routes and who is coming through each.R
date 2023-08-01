@@ -11,8 +11,6 @@ ResettlmentTotal <- decisions_resettlement %>%
 
 view(ResettlmentTotal)
 
-
-
 ----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS?#----
 
 #Resettlement#  
