@@ -80,7 +80,7 @@ SupportType |>
        y = "Number of People", 
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   # scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 120000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
                                brc_colours$red_deep))
