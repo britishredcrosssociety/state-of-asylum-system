@@ -17,7 +17,7 @@ TotalApps |>
   geom_point(aes(size = Total, alpha = 0.5, colour = 'red'), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
   theme_brc() +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_x_continuous(breaks = c(2001:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = NULL, 
@@ -25,7 +25,6 @@ TotalApps |>
        caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023")
 
 # ---- Top Nationalities ----
-
 ApplicationbyNationality <- applications %>%
   select(Year, Nationality, Applications) %>%
   group_by(Year, Nationality) %>%
@@ -56,7 +55,6 @@ ApplicationbyNationality %>%
 
 # Have to adjust the colour- to discuss with Matt
 # Look at adjusting the filter to 2000/3000 rather than 1000. 
-
 
 # ---- Age and Sex Analysis 2022/23 ----
 AgeAnalysis <- applications %>%
@@ -92,7 +90,6 @@ AgeAnalysis %>%
                                      brc_colours$red_dunant,
                                      brc_colours$red_mercer,
                                      brc_colours$red_earth))
-
 
 # ---- UASC ----
 UASC <- applications %>%
@@ -161,10 +158,10 @@ DependentC |>
   geom_point(aes(size = TotalDC, colour = brc_colours$red_dunant, alpha = 0.5), show.legend = FALSE) +
   geom_line(colour = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(TotalDC)), show.legend = FALSE, size = rel(3)) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of asylum applications by dependent children from 2009 to 2023", 
        x = NULL, 
        y = 'Applications', 
        caption = 'British Red Cross analysis of Home Office data, March 2009 to March 2023') +
-  scale_x_continuous(breaks = c(2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 10000))
+  scale_x_continuous(breaks = c(2009:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 10000), expand = c(0, NA))
