@@ -71,51 +71,64 @@ NRMTotal |>
 
 
 ----#Positive Conclusive Grounds#---- 
-PositiveConclusive <- nrm_conclusive_grounds %>%
-  select(Year, Quarter, `Adult (18 or over) - Positive conclusive grounds`, `Child (17 or under) - Positive conclusive grounds`, `Age not specified or unknown - Positive conclusive grounds`) 
+nrm_conclusive_grounds <- nrm_conclusive_grounds |>
+  filter(Quarter == "Total") |> 
+  pivot_longer(cols = `Adult (18 or over) - Negative conclusive grounds`:`Age not specified or unknown - Total`, names_to = "Age group", values_to = "People") 
 
-PositiveConclusive %>%
-  filter(Quarter == "Total") |>
-  ggplot(aes(x = Year)) +
-  geom_line(aes(x = Year, y = `Adult (18 or over) - Positive conclusive grounds`), colour = brc_colours$red_dunant) +
-  geom_line(aes(x = Year, y = `Child (17 or under) - Positive conclusive grounds`), colour = brc_colours$teal) +
-  geom_line(aes(x = Year, y = `Age not specified or unknown - Positive conclusive grounds`), colour = brc_colours$black_shadow) +
+nrm_conclusive_grounds <- nrm_conclusive_grounds |>
+  select(Year, `Age group`,People)
+
+nrm_conclusive_grounds |>
+  filter(`Age group` != "Adult (18 or over) - Total", 
+         `Age group` != "Child (17 or under) - Total",
+         `Age group` != "Age not specified or unknown - Total",
+         `Age group` != "Age not specified or unknown - Negative conclusive grounds",
+         `Age group` != "Age not specified or unknown - Positive conclusive grounds") |>
+  ggplot(aes(x = Year, y = People, fill = `Age group`)) +
+  geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Number of people who recieved positive conclusive grounds by age",
-       subtitle = "Adults shown in red, children in teal and unknown in black",
+  labs(title = "Proportion of people who recieved positive conclusive grounds by age from 2014 to 2023", 
        x = "Year", 
        y = "Number of People",
-       colour = "Age",
-       caption = "British Red Cross analysis of Home Office data, January 2014 until January 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2014 until March 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) 
-
-#To discuss with Matt why the legend is coming up with colour inside aes() but does not apply when inside, but legend shows up.
-
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$red_light,
+                               brc_colours$red_dunant,
+                               brc_colours$steel,
+                               brc_colours$teal))
 
 ----#NRM Reasonable Grounds#---- 
 
 view(nrm_reasonable_grounds)
 
-ReasonableGrounds <- nrm_reasonable_grounds %>%
-  select(Year, Quarter, `Adult (18 or over) - Positive reasonable grounds`, `Child (17 or under) - Positive reasonable grounds`, `Age not specified or unknown - Positive reasonable grounds`) 
-
-ReasonableGrounds %>%
+nrm_reasonable_grounds <- nrm_reasonable_grounds |>
   filter(Quarter == "Total") |> 
-  pivot_longer(cols = `Adult (18 or over) - Positive reasonable grounds`:`Age not specified or unknown - Positive reasonable grounds`, names_to = "Age group", values_to = "People") |> 
-  ggplot(aes(x = Year, y = People, group = `Age group`)) +
-  geom_line(aes(colour = `Age group`)) +
+  pivot_longer(cols = `Adult (18 or over) - Negative reasonable grounds`:`Age not specified or unknown - Total`, names_to = "Age group", values_to = "People") 
+
+nrm_reasonable_grounds <- nrm_reasonable_grounds |>
+  select(Year, `Age group`,People)
+
+nrm_reasonable_grounds |>
+  filter(`Age group` != "Adult (18 or over) - Total", 
+         `Age group` != "Child (17 or under) - Total",
+         `Age group` != "Age not specified or unknown - Total",
+         `Age group` != "Age not specified or unknown - Negative reasonable grounds",
+         `Age group` != "Age not specified or unknown - Positive reasonable grounds") |>
+  ggplot(aes(x = Year, y = People, fill = `Age group`)) +
+  geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Number of people who recieved positive reasonable grounds by age", 
+  labs(title = "Proportion of people who recieved positive reasonable grounds by age from 2014 to 2023", 
        subtitle = "Adults shown in red, children in teal and unknown in black",
        x = "Year", 
        y = "Number of People",
        caption = "British Red Cross analysis of Home Office data, January 2014 until January 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  
-
-#Fix the legend
+  scale_y_continuous(labels = scales::comma, limits = c(0, 20000)) +
+  scale_fill_manual(values = c(brc_colours$red_light,
+                               brc_colours$red_dunant,
+                               brc_colours$steel,
+                               brc_colours$teal))
 
 ----##NRM Duty to Notify#----
 

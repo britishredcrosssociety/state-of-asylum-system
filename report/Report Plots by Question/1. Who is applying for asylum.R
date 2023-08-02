@@ -100,12 +100,12 @@ UASC <- applications %>%
 
 view(UASC)
 
+----##UASC Nationality##----
 UASC22 <- UASC %>%
   filter(Year > 2021, UASC == "UASC") %>%
   group_by(Year, Nationality)
 
 UASC22$Nationality <- factor(UASC22$Nationality, levels = UASC22$Nationality[order(UASC22$Total, decreasing = TRUE)])
-
 
 UASC22 |>
   group_by(Nationality) |>
@@ -125,18 +125,19 @@ UASC22 |>
 
 
 UASCOnly <- UASC %>%
-  filter(Year > 2005, UASC == "UASC")
-
-view(UASCOnly)
+  filter(Year > 2005, UASC == "UASC") %>%
+  group_by(Year) %>%
+  summarise(UASCTotal = sum(Total))
 
 UASCOnly |>
-  ggplot(aes(Year, TotalUASC)) +
-  geom_line(colour = "red") +
-  geom_text(aes(label = scales::comma(TotalUASC)), show.legend = FALSE, size = rel(4)) +
+  ggplot(aes(Year, UASCTotal)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_point(colour = brc_colours$red_dunant, size = UASCTotal, alpha = 0.5) +
+  geom_text(aes(label = scales::comma(UASCTotal)), show.legend = FALSE, size = rel(4)) +
   theme_classic() +
   scale_x_continuous(breaks = c(2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   labs(title = "Applications for asylum by unaccompanied asylum-seeking children (UASC), 2006-2023", 
-       x = NULL, 
+       x = "Year", 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2006 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000))
