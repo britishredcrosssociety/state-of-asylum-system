@@ -1,6 +1,11 @@
-----#QUESTION: What is the scale of human trafficking in the UK and what is the provision of support to survivors?#----
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
-----#Referral to NRM:----
+# ---- QUESTION: What is the scale of human trafficking in the UK and what is the provision of support to survivors? ----
+
+# ---- Referral to NRM: ----
 nrm_referrals <- 
   bind_rows(
     asylum::nrm_referrals_2023_q1,
@@ -22,10 +27,9 @@ NRMTotal <- NRMTotal %>%
   filter(Gender != "Total") %>%
   filter(Nationality != "Total")
 
-#"Total" was removed from each category as it was grouped for other analyses.
+# "Total" was removed from each category as it was grouped for other analyses.
 
-----#NRM referral by Sex and Age#----
-
+# ---- NRM referral by Sex and Age ----
 NRMTotal %>%
   filter(Gender != "Not Recorded") %>%
   filter(Gender != "Other") %>%
@@ -44,14 +48,13 @@ NRMTotal %>%
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_earth))
  
-----#NRM by Top Nationalities#---- 
-
+# ---- NRM by Top Nationalities ---- 
 NRMTotal %>%
   filter(Nationality == "UK") %>%
   group_by(Nationality) %>%
   summarise(UK = sum(Total))
 
-#1775 male children/ 2469 were referred to NRM- mostly male children from UK.
+# 1775 male children/ 2469 were referred to NRM- mostly male children from UK.
 
 NRMTotal |>
   group_by(Nationality) %>%
@@ -70,7 +73,7 @@ NRMTotal |>
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 
-----#Positive Conclusive Grounds#---- 
+# ---- Positive Conclusive Grounds ---- 
 nrm_conclusive_grounds <- nrm_conclusive_grounds |>
   filter(Quarter == "Total") |> 
   pivot_longer(cols = `Adult (18 or over) - Negative conclusive grounds`:`Age not specified or unknown - Total`, names_to = "Age group", values_to = "People") 
@@ -98,8 +101,7 @@ nrm_conclusive_grounds |>
                                brc_colours$steel,
                                brc_colours$teal))
 
-----#NRM Reasonable Grounds#---- 
-
+# ---- NRM Reasonable Grounds ---- 
 view(nrm_reasonable_grounds)
 
 nrm_reasonable_grounds <- nrm_reasonable_grounds |>
@@ -130,8 +132,7 @@ nrm_reasonable_grounds |>
                                brc_colours$steel,
                                brc_colours$teal))
 
-----##NRM Duty to Notify#----
-
+# ---- # NRM Duty to Notify ----
 view(nrm_duty_to_notify_2022_q2)
 
 nrm_duty_to_notify <- bind_rows(
@@ -149,7 +150,6 @@ DTNTotal <- DTNTotal %>%
   group_by(Nationality) %>%
   summarise(Total2 = sum(Total))
 
-
 DTNTotal %>%
   filter(Total2 > 200) %>%
   ggplot(aes(x = reorder(Nationality, desc(Total2)), y = Total2)) +
@@ -157,7 +157,7 @@ DTNTotal %>%
   geom_text(aes(label = scales::comma(Total2)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_classic() +
   labs(title = "Nationalities with the largest number of reports via the Duty to Notify process from 2022 to 2023",
-       #subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to Janaury 2023",
+       # subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to Janaury 2023",
        x = "Nationalities", 
        y = "Number of reports", 
        caption = "British Red Cross analysis of Home Office data, March 2022 - March 2023") +
