@@ -15,13 +15,13 @@ AgeDispute %>%
   geom_bar(position="stack", stat="identity") +
   geom_text(aes(label = Total),
             position = position_stack(vjust = .5), size = 2) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of age dispute cases raised and resolved from March 2010 to March 2023",
-       x = 'Year',
+       x = NULL,
        y = "Number of cases",
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(2010:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant))
   
@@ -31,23 +31,23 @@ AgeDispute <- age_disputes %>%
   summarise(Total = sum(`Age disputes`))
 
 ByOutcome <- AgeDispute %>%
-  group_by(Year,`Raised type / Resolved outcome`) %>%
   filter(`Raised type / Resolved outcome` != 'Existing asylum application') %>%
   filter(`Raised type / Resolved outcome` != 'Asylum application raised in quarter') %>%
+  group_by(Year,`Raised type / Resolved outcome`) %>%
   summarise(TotalDispute = sum(Total))
 
 ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   geom_text(aes(label = TotalDispute),
             position = position_stack(vjust = .5), size = 2) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Outcome of age dispute cases from March 2010 to March 2023", 
-       x = "Year", 
-       y = "Total Cases",
+       x = NULL, 
+       y = "Total cases",
        fill = 'Outcome of Age Dispute',
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2500)) +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 2500), expand = c(0, NA)) +
+  scale_x_continuous(breaks = c(2010:2023)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant))
 
