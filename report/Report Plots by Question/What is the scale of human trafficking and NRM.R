@@ -24,26 +24,27 @@ NRMTotal <- NRMTotal %>%
 
 #"Total" was removed from each category as it was grouped for other analyses.
 
-#NRM referral by Sex and Age#
+----#NRM referral by Sex and Age#----
 
 NRMTotal %>%
   filter(Gender != "Not Recorded") %>%
   filter(Gender != "Other") %>%
+  filter(`Age at exploitation` != "Not specified or unknown") %>%
   group_by(`Age at exploitation`, Gender) %>%
   summarise(TotalSum = sum(Total)) %>%
   ggplot(aes(fill = `Age at exploitation`, x =  Gender,y =  TotalSum)) +
   geom_bar(position = "stack", stat ="identity") +
+  geom_text(aes(label = TotalSum), position = position_stack(vjust = .5),size = rel(2)) +
   theme_classic() +
-  labs(title = "Referrals to the National Referral Mechanism (NRM) by age and sex, 2022/23", 
+  labs(title = "Number of referrals to the National Referral Mechanism (NRM) by age and sex, from 2022 to 2023", 
        x = "Sex", 
        y = "Number of Referrals",
-       caption = "British Red Cross analysis of Home Office data, April 2022 to January 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 10000)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$red_deep))
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 12000)) +
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_earth))
  
-#NRM by Top Nationalities 
+----#NRM by Top Nationalities#---- 
 
 NRMTotal %>%
   filter(Nationality == "UK") %>%
@@ -52,24 +53,24 @@ NRMTotal %>%
 
 #1775 male children/ 2469 were referred to NRM- mostly male children from UK.
 
-NRMTotal %>%
+NRMTotal |>
   group_by(Nationality) %>%
-  summarise(TotalNat = sum(Total)) %>%
-  filter(Nationality != "UK") %>%
-  filter(TotalNat > 300) %>%
-  ggplot(aes(x = Nationality, y = TotalNat)) +
-  geom_col(fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(TotalNat)), show.legend = FALSE, size = rel(3)) +
+  summarise(TotalN = sum(Total)) %>%
+  filter(TotalN > 300) %>%
+  ggplot(aes(x = reorder(Nationality, desc(TotalN)), y = TotalN)) +
+  geom_col(fill = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_classic() +
-  labs(title = "Nationalities aside from the United Kingdom with the highest referrals to the National Referral Mechanism (NRM) in 2022/23",
-       subtitle = "2462 individuals from the United Kingdom were referred to the NRM",
-       x = "Nationality",
-       y = "Number of Referrals",
-       caption = "British Red Cross analysis of Home Office data, April 2022 to January 2023") +
-  theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 5000))
+  labs(title = "Nationalities with the largest number of referrals to the National Referral Mechanism (NRM) processed year ending March 2023",
+       subtitle =  "People from the United Kingdom, Albania, Eritrea, Iran, Sudan and Vietnam made up 70% of all NRM referrals",
+       x = "Nationality", 
+       y = 'Number of People', 
+       caption = 'British Red Cross analysis of Home Office data, March 2022 to March 2023') +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 5000)) +
+  theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
-#Positive Conclusive Grounds 
+
+----#Positive Conclusive Grounds#---- 
 PositiveConclusive <- nrm_conclusive_grounds %>%
   select(Year, Quarter, `Adult (18 or over) - Positive conclusive grounds`, `Child (17 or under) - Positive conclusive grounds`, `Age not specified or unknown - Positive conclusive grounds`) 
 
@@ -92,7 +93,7 @@ PositiveConclusive %>%
 #To discuss with Matt why the legend is coming up with colour inside aes() but does not apply when inside, but legend shows up.
 
 
-#NRM Reasonable Grounds# 
+----#NRM Reasonable Grounds#---- 
 
 view(nrm_reasonable_grounds)
 
@@ -135,16 +136,16 @@ DTNTotal <- DTNTotal %>%
   group_by(Nationality) %>%
   summarise(Total2 = sum(Total))
 
+
 DTNTotal %>%
-  filter(Nationality != "UK") %>%
   filter(Total2 > 200) %>%
-  ggplot(aes(Nationality, Total2)) +
+  ggplot(aes(x = reorder(Nationality, desc(Total2)), y = Total2)) +
   geom_col(fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(Total2)), show.legend = FALSE, size = rel(3)) +
+  geom_text(aes(label = scales::comma(Total2)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_classic() +
-  labs(title = "Nationaities with the highest number of individuals referred to Duty to Notitify aside from the United Kingdom",
-       subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to Janaury 2023",
+  labs(title = "Nationalities with the largest number of reports via the Duty to Notify process from 2022 to 2023",
+       #subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to Janaury 2023",
        x = "Nationalities", 
-       y = "Number of People", 
-       caption = "British Red Cross analysis of Home Office data, April 2022 - January 2023") +
+       y = "Number of reports", 
+       caption = "British Red Cross analysis of Home Office data, March 2022 - March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
