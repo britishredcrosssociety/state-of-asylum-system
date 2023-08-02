@@ -1,9 +1,13 @@
-----#QUESTION: HOW MANY PEOPLE ARE IN RECIEPT OF ASYLYUM SUPPORT (S4, S98, S95)
-  
-----#Section 95 Support#----
-----##Support Applications#----
-#support_applications is for the number of applications to section 95.#
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
+# ---- QUESTION: HOW MANY PEOPLE ARE IN RECIEPT OF ASYLYUM SUPPORT (S4, S98, S95)
+  
+# ---- Section 95 Support ----
+# ---- Support Applications ----
+# support_applications is for the number of applications to section 95.# 
 Section95Apps <- support_applications %>%
   select(Year, Nationality, `Support type granted`, `Group type`, Applications) %>%
   group_by(Year, Nationality, `Support type granted`, `Group type`) %>%
@@ -13,7 +17,7 @@ TotalSection95Apps <- Section95Apps %>%
   group_by(Year, `Support type granted`,`Group type`) %>%
   summarise(Total95 = sum(Total))
 
-#Applications per Support Type Applied for# 
+# Applications per Support Type Applied for#  
 TotalSection95Apps |>
   ggplot(aes(fill = `Support type granted`, y = Total95, x = Year)) +
   geom_bar(position ="stack", stat="identity") +
@@ -29,16 +33,14 @@ TotalSection95Apps |>
                     brc_colours$red_mercer,
                     brc_colours$red_deep))
 
-
-#Section 95 by Nationality# 
-
+# ---- Section 95 by Nationality
 Nationalities95 <- Section95Apps %>%
   group_by(Year, Nationality) %>%
   summarise(TotalNat = sum(Total)) 
 
-#In 2020 and 2022, of all the Section95 applications made, Unknown was the highest group in Nationality. Does this even fit with the narrative? 
+# In 2020 and 2022, of all the Section95 applications made, Unknown was the highest group in Nationality. Does this even fit with the narrative? 
 
-----##Section 95 Received##----
+# ---- Section 95 Received ----
 view(support_received)
 
 SupportRecieved <- support_received %>%
@@ -61,10 +63,10 @@ TotalSupportRecieved |>
        x = NULL, 
        y = "Number of People", 
        caption = "British Red Cross Analyses of Home Office Data, year ending March 2023") +
-  #scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  # scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
-----#Support Type#----
+# ---- Support Type ----
 SupportType <- SupportRecieved %>%
   group_by(Date,`Support Type`,`Accommodation Type`) %>%
   summarise(Total = sum(People))  
@@ -77,14 +79,13 @@ SupportType |>
        x = "Year", 
        y = "Number of People", 
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
-  #scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  # scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
                                brc_colours$red_deep))
 
-
-----#2023 Section and Accommodation Type#---- 
+# ---- 2023 Section and Accommodation Type ---- 
 SupportType %>%
   filter(Date == "2023-03-31") %>%
   filter(`Accommodation Type` != "N/A - Section 98 (pre-2023)") %>%
@@ -104,10 +105,7 @@ SupportType %>%
                                brc_colours$red_dunant,
                                brc_colours$red_mercer))
 
-
-
-----#Destitution#----
-
+# ---- Destitution ----
 Destitution <- support_received %>%
   select(Date, `Support Type`, `Accommodation Type`, "UK Region" , People) 
 
