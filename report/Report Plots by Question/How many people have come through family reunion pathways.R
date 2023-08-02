@@ -43,12 +43,12 @@ FamilyReunion22 |>
                            position = position_stack(vjust = 0.5), direction = "y", 
                            box.padding = unit(0.01, "lines")) +
   # geom_text(aes(label = scales::comma(TotalbyAge)), show.legend = FALSE, size = rel(2), position = position_stack(vjust = .5)) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Family reunion visas granted by sex and age for year ending December 2022", 
        x = "Sex", 
-       y = "Total Visas Granted", 
+       y = "Total visas granted", 
        caption = "British Red Cross analysis of Home Office data, year ending December 2022") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 3000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 3000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                      brc_colours$red_light,
                                      brc_colours$red_dunant,
