@@ -1,6 +1,11 @@
-----#QUESTION: HOW MANY PEOPLE HAVE AGE DISPUTES? 
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
+
+# ---- QUESTION: HOW MANY PEOPLE HAVE AGE DISPUTES? 
   
-----#Age Dispute Raised or Resolved#----
+# ---- Age Dispute Raised or Resolved ----
 AgeDispute <- age_disputes %>%
   group_by(Year, `Raised or resolved`) %>%
   summarise(Total = sum(`Age disputes`)) 
@@ -20,8 +25,7 @@ AgeDispute %>%
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant))
   
-----#Age Dispute by Resolved Reason#---- 
-
+# ---- Age Dispute by Resolved Reason ---- 
 AgeDispute <- age_disputes %>%
   group_by(Year, Nationality, `Raised type / Resolved outcome`, `Raised or resolved`) %>%
   summarise(Total = sum(`Age disputes`))
@@ -47,13 +51,12 @@ ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute,
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant))
 
-
-#Age Dispute Nationality- REVISE#
+# Age Dispute Nationality- REVISE# 
 AgeDispute12Month %>%
   group_by(Nationality, Year) %>%
   summarise(TotalNat = sum(Total)) |>
   ggplot(aes(Year, TotalNat)) +
-  #geom_line(aes(colour = Nationality, group = Nationality))
+  # geom_line(aes(colour = Nationality, group = Nationality))
   geom_point(aes(colour = Nationality, size = TotalNat), alpha = 0.5) +
   geom_text(aes(label = scales::comma(TotalNat)), show.legend = FALSE, size = rel(3)) +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
