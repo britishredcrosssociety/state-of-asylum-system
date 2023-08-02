@@ -76,8 +76,8 @@ SupportType |>
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
   labs(title = "Number of people in receipt of asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999, March 2014 to March 2023", 
-       x = "Year", 
-       y = "Number of People", 
+       x = NULL, 
+       y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   # scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
