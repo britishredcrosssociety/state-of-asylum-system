@@ -113,72 +113,72 @@ eu_asylum |>
 # ---- Which countries in the EU have granted the most asylum claims? ----
 # Final decisions on asylum applications - annual data (tps00193)
 # Source: https://ec.europa.eu/eurostat/web/migration-asylum/asylum/database
-tf <- download_file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00193.tsv.gz", file_extension = ".tsv.gz")
-
-eu_grants_raw <- read_tsv(tf)
-
-# Wrangling
-eu_grants <- 
-  eu_grants_raw |> 
-  
-  # Separate out the elements of the long single first column
-  separate_wider_delim(`unit,citizen,sex,age,decision,geo\\time`, delim = ",", names = c("unit", "citizen", "sex", "age", "decision", "geo")) |> 
-  
-  filter(decision == "TOTAL_POS") |>  # Keep only positive decisions
-  filter(geo != "EU27_2020") |>     # Don't need the EU27 total
-  
-  mutate(across(starts_with("20"), as.integer)) |> 
-  
-  mutate(Nation = case_country_lookup(geo)) |> 
-  arrange(desc(`2022`)) |> 
-  
-  select(-c(unit:decision)) |> 
-  relocate(Nation)
-
-# - Add UK totals for 2020 to latest year -
-# What's the latest year in the EU dataset?
-first_year <- 
-  str_extract(names(eu_grants), "20[0-9]+") |> 
-  as.integer() |> 
-  min(na.rm = TRUE)
-
-most_recent_year <- 
-  str_extract(names(eu_grants), "20[0-9]+") |> 
-  as.integer() |> 
-  max(na.rm = TRUE)
-
-uk_grants <- 
-  asylum::decisions_resettlement |> 
-  filter(`Case type` == "Asylum Case" & str_detect(`Case outcome group`, "Grant")) |> 
-  
-  group_by(Year) |> 
-  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
-  filter(Year >= first_year & Year <= most_recent_year) |> 
-  
-  mutate(Nation = "United Kingdom", geo = "UK") |> 
-  pivot_wider(names_from = Year, values_from = Decisions)
-
-eu_grants <- 
-  eu_grants |> 
-  filter(Nation != "United Kingdom") |> 
-  bind_rows(uk_grants) |> 
-  arrange(desc(`2022`))
-
-# Turn each nation's geo code into one of Flourish's URLs for flags
-eu_grants <- 
-  eu_grants |> 
-  # Manually tweak country codes to match Flourish's .svg filenames
-  mutate(geo = case_when(
-    geo == "UK" ~ "GB",  # United Kingdom
-    geo == "EL" ~ "GR",  # Greece
-    .default = geo
-  )) |> 
-  mutate(geo = str_glue("https://public.flourish.studio/country-flags/svg/{tolower(geo)}.svg")) |> 
-  rename(`Flag URL` = geo)
-
-# Save
-eu_grants |> 
-  write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - grants.csv")
+# tf <- download_file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00193.tsv.gz", file_extension = ".tsv.gz")
+# 
+# eu_grants_raw <- read_tsv(tf)
+# 
+# # Wrangling
+# eu_grants <- 
+#   eu_grants_raw |> 
+#   
+#   # Separate out the elements of the long single first column
+#   separate_wider_delim(`unit,citizen,sex,age,decision,geo\\time`, delim = ",", names = c("unit", "citizen", "sex", "age", "decision", "geo")) |> 
+#   
+#   filter(decision == "TOTAL_POS") |>  # Keep only positive decisions
+#   filter(geo != "EU27_2020") |>     # Don't need the EU27 total
+#   
+#   mutate(across(starts_with("20"), as.integer)) |> 
+#   
+#   mutate(Nation = case_country_lookup(geo)) |> 
+#   arrange(desc(`2022`)) |> 
+#   
+#   select(-c(unit:decision)) |> 
+#   relocate(Nation)
+# 
+# # - Add UK totals for 2020 to latest year -
+# # What's the latest year in the EU dataset?
+# first_year <- 
+#   str_extract(names(eu_grants), "20[0-9]+") |> 
+#   as.integer() |> 
+#   min(na.rm = TRUE)
+# 
+# most_recent_year <- 
+#   str_extract(names(eu_grants), "20[0-9]+") |> 
+#   as.integer() |> 
+#   max(na.rm = TRUE)
+# 
+# uk_grants <- 
+#   asylum::decisions_resettlement |> 
+#   filter(`Case type` == "Asylum Case" & str_detect(`Case outcome group`, "Grant")) |> 
+#   
+#   group_by(Year) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   filter(Year >= first_year & Year <= most_recent_year) |> 
+#   
+#   mutate(Nation = "United Kingdom", geo = "UK") |> 
+#   pivot_wider(names_from = Year, values_from = Decisions)
+# 
+# eu_grants <- 
+#   eu_grants |> 
+#   filter(Nation != "United Kingdom") |> 
+#   bind_rows(uk_grants) |> 
+#   arrange(desc(`2022`))
+# 
+# # Turn each nation's geo code into one of Flourish's URLs for flags
+# eu_grants <- 
+#   eu_grants |> 
+#   # Manually tweak country codes to match Flourish's .svg filenames
+#   mutate(geo = case_when(
+#     geo == "UK" ~ "GB",  # United Kingdom
+#     geo == "EL" ~ "GR",  # Greece
+#     .default = geo
+#   )) |> 
+#   mutate(geo = str_glue("https://public.flourish.studio/country-flags/svg/{tolower(geo)}.svg")) |> 
+#   rename(`Flag URL` = geo)
+# 
+# # Save
+# eu_grants |> 
+#   write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - grants.csv")
 
 # ---- What are the top 5 countries globally that currently have the most asylum seekers? ----
 # Source: https://popstats.unhcr.org/refugee-statistics/download/
@@ -215,8 +215,10 @@ flows <-
 
 flows <- 
   flows |>
-  rowwise() |> 
-  mutate(`People displaced internationally` = sum(c_across(`Refugees under UNHCR's mandate`:`Others of concern`), na.rm = TRUE))
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  mutate(`People displaced internationally` = `Refugees under UNHCR's mandate` + `Asylum-seekers` + `Other people in need of international protection`)
+  # rowwise() |> 
+  # mutate(`People displaced internationally` = sum(c_across(`Refugees under UNHCR's mandate`:`Others of concern`), na.rm = TRUE))
 
 # Internally displaced persons
 flows_idp <- 
@@ -229,6 +231,16 @@ flows_international <-
 
 flows_international |> 
   write_csv("data-raw/flourish/1b - International comparisons/Global flows.csv")
+
+# - Caption -
+flows_international |> 
+  filter(Year == max(Year)) |> 
+  group_by(`Country of asylum`) |> 
+  summarise(`People displaced internationally` = sum(`People displaced internationally`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Proportion = `People displaced internationally` / sum(`People displaced internationally`)) |> 
+  arrange(desc(`People displaced internationally`)) |> 
+  mutate(Cumulative = cumsum(Proportion))
 
 # flows_idp_total <- 
 #   flows_idp |> 
