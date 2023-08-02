@@ -93,12 +93,12 @@ SupportType %>%
   filter(`Accommodation Type`!= "Subsistence Only") %>%
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of people in reciept of support by accomodation type, March 2023", 
-       x = "Asylum Support", 
-       y = "Number of People", 
+       x = "Type of asylum support", 
+       y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 60000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 60000), expand = c(0, NA)) +
   guides(color = guide_legend(override.aes = list(size = 0.5))) +
   scale_fill_manual(values = c(brc_colours$steel,
                                brc_colours$teal,
