@@ -2,6 +2,7 @@ library(tidyverse)
 library(asylum)
 library(compositr)
 library(readxl)
+library(Hmisc)
 
 # ---- Migration comparison/proportions ----
 # Total applications in 2022
@@ -277,7 +278,7 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
 
-# Asylum over time, by nationality
+# ---- Asylum applications over time, by nationality ----
 asylum::applications |> 
   group_by(Year, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -289,99 +290,116 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation.csv")
 
+# - Caption -
+# Which nationalities are consistently in the top 10% of applications?
+num_years <- max(asylum::applications$Year) - min(asylum::applications$Year)
+
+asylum::applications |> 
+  group_by(Year, Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  group_by(Year) |> 
+  mutate(Decile = as.integer(Hmisc::cut2(Applications, g = 10))) |> 
+  filter(Decile == 10) |> 
+  ungroup() |> 
+  
+  count(Nationality, sort = TRUE) |> 
+  mutate(proportion_of_years = n / num_years)
+
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
-top_ten_nations <- 
-  grant_rates_initial_annual |> 
-  filter(Year == max(Year)) |> 
-  arrange(desc(Grant), desc(`Initial grant rate`)) |> 
-  slice(1:10) |> 
-  pull(Nationality)
-
-grant_rates_initial_annual |> 
-  filter(Year >= max(Year) - 1) |> 
-  filter(Nationality %in% top_ten_nations) |> 
-  select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
-  arrange(desc(`Initial grant rate`)) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
-
-grant_rates_initial_annual |> 
-  group_by(Year) |> 
-  summarise(
-    Grant = sum(Grant, na.rm = TRUE),
-    Refused = sum(Refused, na.rm = TRUE)
-  ) |> 
-  ungroup() |>
-  mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
-  select(Year, `Initial grant rate`) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-total.csv")
-
-# Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
-grant_rates_initial_quarterly |> 
-  select(Date, Quarter, Nationality, `Initial grant rate`) |> 
-  pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |> 
-  
-  # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
-  relocate(Date, Quarter, any_of(top_ten_nations)) |> 
-  
-  # Remove columns that contain only NAs
-  select(where(~!all(is.na(.x)))) |> 
-
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
+# top_ten_nations <- 
+#   grant_rates_initial_annual |> 
+#   filter(Year == max(Year)) |> 
+#   arrange(desc(Grant), desc(`Initial grant rate`)) |> 
+#   slice(1:10) |> 
+#   pull(Nationality)
+# 
+# grant_rates_initial_annual |> 
+#   filter(Year >= max(Year) - 1) |> 
+#   filter(Nationality %in% top_ten_nations) |> 
+#   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |> 
+#   arrange(desc(`Initial grant rate`)) |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
+# 
+# grant_rates_initial_annual |> 
+#   group_by(Year) |> 
+#   summarise(
+#     Grant = sum(Grant, na.rm = TRUE),
+#     Refused = sum(Refused, na.rm = TRUE)
+#   ) |> 
+#   ungroup() |>
+#   mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
+#   select(Year, `Initial grant rate`) |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-total.csv")
+# 
+# # Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
+# grant_rates_initial_quarterly |> 
+#   select(Date, Quarter, Nationality, `Initial grant rate`) |> 
+#   pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |> 
+#   
+#   # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+#   relocate(Date, Quarter, any_of(top_ten_nations)) |> 
+#   
+#   # Remove columns that contain only NAs
+#   select(where(~!all(is.na(.x)))) |> 
+# 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
 
 # ---- Returns ----
 # How many and who have been returned
-asylum::returns |> 
-  group_by(Year, `Return type group`) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  
-  pivot_wider(names_from = `Return type group`, values_from = `Number of returns`) |> 
-  
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - overall.csv")
-
-asylum::returns |> 
-  group_by(Year, Age) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  filter(Age != "Unknown") |> 
-  pivot_wider(names_from = Age, values_from = `Number of returns`) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by age.csv")
-
-asylum::returns |> 
-  group_by(Year, Sex) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  filter(!str_detect(Sex, "Unknown")) |> 
-  pivot_wider(names_from = Sex, values_from = `Number of returns`) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by sex.csv")
+# asylum::returns |> 
+#   group_by(Year, `Return type group`) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   
+#   pivot_wider(names_from = `Return type group`, values_from = `Number of returns`) |> 
+#   
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - overall.csv")
+# 
+# asylum::returns |> 
+#   group_by(Year, Age) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   filter(Age != "Unknown") |> 
+#   pivot_wider(names_from = Age, values_from = `Number of returns`) |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by age.csv")
+# 
+# asylum::returns |> 
+#   group_by(Year, Sex) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   filter(!str_detect(Sex, "Unknown")) |> 
+#   pivot_wider(names_from = Sex, values_from = `Number of returns`) |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by sex.csv")
 
 # Top five nations, by number of returns in the most recent year
-top_five_nations <- 
-  returns_by_destination |> 
-  filter(Year == max(Year)) |> 
-  group_by(Year, `Return destination`) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  arrange(desc(`Number of returns`)) |> 
-  slice(1:5) |> 
-  pull(`Return destination`)
-
-returns_by_destination |> 
-  group_by(`Return destination`) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  ungroup() |> 
-  arrange(desc(`Number of returns`))
-
-# Make a wider version of returns quarterly data
-asylum::returns_by_destination |> 
-  select(Date, `Return destination`, `Number of returns`) |> 
-  
-  group_by(Date, `Return destination`) |> 
-  summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
-  
-  pivot_wider(names_from = `Return destination`, values_from = `Number of returns`) |> 
-  
-  # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
-  relocate(Date, any_of(top_five_nations)) |> 
-  
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
+# top_five_nations <- 
+#   returns_by_destination |> 
+#   filter(Year == max(Year)) |> 
+#   group_by(Year, `Return destination`) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   arrange(desc(`Number of returns`)) |> 
+#   slice(1:5) |> 
+#   pull(`Return destination`)
+# 
+# returns_by_destination |> 
+#   group_by(`Return destination`) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   arrange(desc(`Number of returns`))
+# 
+# # Make a wider version of returns quarterly data
+# asylum::returns_by_destination |> 
+#   select(Date, `Return destination`, `Number of returns`) |> 
+#   
+#   group_by(Date, `Return destination`) |> 
+#   summarise(`Number of returns` = sum(`Number of returns`, na.rm = TRUE)) |> 
+#   
+#   pivot_wider(names_from = `Return destination`, values_from = `Number of returns`) |> 
+#   
+#   # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+#   relocate(Date, any_of(top_five_nations)) |> 
+#   
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
 
 # ---- Asylum and non-asylum returns in 2022 ----
 asylum::returns_asylum |> 
@@ -427,5 +445,5 @@ asylum::inadmissibility_cases_considered |>
   summarise(Cases = sum(Cases)) |> 
   ungroup()
 
-asylum::notices_of_intent |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
+# asylum::notices_of_intent |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
