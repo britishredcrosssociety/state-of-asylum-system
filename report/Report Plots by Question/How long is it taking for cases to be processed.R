@@ -62,26 +62,27 @@ DecisionTime %>%
 
 # To discuss with Matt and team about how the data is spread and compare it to other work completed by other organizations.# 
 
-# Decision by Nationality in 2022#  
-
+# ---- Decision by Nationality in 2022 ----
 DecisionbyNat <- awaiting_decision %>%
+  mutate(Year = year(Date)) %>%
   filter(Year == 2022) %>%
   group_by(Year, Nationality, Duration) %>%
-  summarise(Total = sum(Applications))
-
-DecisionbyNat$Nationality <- factor(DecisionbyNat$Nationality, levels = DecisionbyNat$Nationality[order(DecisionbyNat$Total, decreasing = TRUE)])
-# Attempted to order from highest to lowest, but for some reason running into error- to revise. 
+  summarise(Total = sum(Applications)) %>%
+  ungroup()
 
 DecisionbyNat %>%
   filter(Duration == "More than 6 months") %>%
-  filter(Total > 10000) %>%
-  ggplot(aes(x = reorder(Nationality, desc(Total), sum), y = Total)) +
-  geom_col(aes(colour = brc_colours$red_mercer, fill = brc_colours$red_mercer), show.legend = FALSE)  +
-  geom_text(aes(x = Nationality, y = Total, label = scales::comma(Total)), vjust = -0.5, show.legend = FALSE, size = rel(4)) +
-  theme_classic() +
+  arrange(desc(Total)) %>%
+  slice_max(Total, n = 10) %>%
+  # filter(Total > 10000) %>%
+  ggplot(aes(x = reorder(Nationality, Total, sum), y = Total)) +
+  geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant, show.legend = FALSE)  +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, hjust = 1.1, size = rel(4), colour = "white") +
+  coord_flip() +
+  theme_brc() +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
   labs(title = "Nationalities with the largest number of people waiting over six months for an initial decision", 
        subtitle = "Top 10 nationalities",
-        x = "Nationalities",
+        x = NULL,
         y = "Applications", 
         caption = "British Red Cross analysis of Home Office data, March 2021 to March 2022")
