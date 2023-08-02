@@ -1,10 +1,14 @@
-----#QUESTION: What is the cost and productivity of the home office? 
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
-----#Cost & Productivity#----
+# ---- QUESTION: What is the cost and productivity of the home office? 
+
+# ---- Cost & Productivity ----
 view(asylum_costs_and_productivity) 
 
-----#Cost of the System#---- 
-
+# ---- Cost of the System ---- 
 ggplot(asylum_costs_and_productivity) +
   geom_col(aes(x = `Financial Year`, y = `Total Asylum Costs`), colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(x = `Financial Year`, y = `Total Asylum Costs`, label = scales::comma(`Total Asylum Costs`)), vjust = -0.5, show.legend = FALSE, size = rel(3)) +
@@ -16,9 +20,7 @@ ggplot(asylum_costs_and_productivity) +
        y = " Total Cost in Billions (£)",
        caption = "British Red Cross analysis of Home Office data, from financial year 2010/11 to 2021/22")
 
-
-
-----#Productivity#---- 
+# ---- Productivity ---- 
 Productivity <- asylum_costs_and_productivity %>%
   select(`Financial Year`, Productivity) %>%
   filter(`Financial Year` > "2010/11")
@@ -35,4 +37,3 @@ Productivity |>
        x = "Financial Year",
        y = "Productivity", 
        caption = "British Red Cross analysis of Home Office data, financial year 2011/12 to 2021/22")
-
