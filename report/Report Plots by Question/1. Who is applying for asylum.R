@@ -130,9 +130,9 @@ UASCOnly <- UASC %>%
   summarise(UASCTotal = sum(Total))
 
 UASCOnly |>
-  ggplot(aes(Year, UASCTotal)) +
-  geom_line(colour = brc_colours$red_dunant) +
-  geom_point(colour = brc_colours$red_dunant, size = UASCTotal, alpha = 0.5) +
+  ggplot(aes(x = Year, y = UASCTotal)) +
+  geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_point(colour = brc_colours$red_dunant, alpha = 0.5, show.legend = FALSE) +
   geom_text(aes(label = scales::comma(UASCTotal)), show.legend = FALSE, size = rel(4)) +
   theme_classic() +
   scale_x_continuous(breaks = c(2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
