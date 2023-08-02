@@ -12,19 +12,19 @@ GrantRatebyYear <- grant_rates_initial_annual %>%
 
 GrantRatebyYear <- GrantRatebyYear %>%
   mutate(TotalCases = TGrant + TRefused) %>%
-  mutate(GrantRate = TGrant / TotalCases) %>%
-  mutate(GrantRate = (GrantRate <- GrantRate*100))
+  mutate(GrantRate = TGrant / TotalCases)
+  # mutate(GrantRate = (GrantRate <- GrantRate*100))
 
-GrantRatebyYear <- ceiling(GrantRatebyYear) 
+# GrantRatebyYear <- ceiling(GrantRatebyYear) 
 
 GrantRatebyYear |>
   ggplot(aes(Year, GrantRate)) +
   geom_line(aes(colour = "red"), show.legend = NULL) +
   geom_point(aes(size = GrantRate, alpha = 0.4, colour = 'red'), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(GrantRate)), show.legend = FALSE, size = rel(4)) + 
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  theme_classic() +
+  geom_text(aes(label = scales::percent(GrantRate, accuracy = 1)), show.legend = FALSE, size = rel(4)) + 
+  scale_y_continuous(labels = scales::percent, limits = c(0, NA), expand = c(0, NA)) +
+  scale_x_continuous(breaks = c(2001:2023)) +
+  theme_brc() +
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
     legend.position = "right",
@@ -34,18 +34,17 @@ GrantRatebyYear |>
   labs(
     title = "Average asylum grant rate at initial decision from 2001 to 2023 ",
     subtitle = "Proportion of initial decisions which resulted in a grant of protection or other leave",
-    x = "Year",
-    y = "Grant Rate (%)",
-    caption = "British Red Cross analysis on Home Office data, January 2001 to January 2023")
+    x = NULL,
+    y = "Grant rate (%)",
+    caption = "British Red Cross analysis of Home Office data, January 2001 to January 2023")
 
-
-# Grant Rate Top Nationalities# 
+# Grant Rate Top Nationalities
 GrantRateNationality <- grant_rates_initial_annual %>%
   filter(Year == 2022, Grant > 0, Refused > 0) %>%
   select(Year, Nationality, Grant, Refused, `Initial grant rate`) 
 
-GrantRateNationality <- GrantRateNationality %>%
-  mutate(`Initial grant rate` * 100) %>%
+# GrantRateNationality <- GrantRateNationality %>%
+#   mutate(`Initial grant rate` * 100) %>%
 
 TopGranted <- (GrantRateNationality %>%
   filter(`Initial grant rate` * 100 > 80))
@@ -76,8 +75,9 @@ AppealsLodgedTotal %>%
   geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_point(aes(size = Total, alpha = 0.4, colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(4)) + 
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) +
-  theme_classic() +
+  scale_x_continuous(breaks = c(2010:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA)) +
+  theme_brc() +
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
     legend.position = "right",
@@ -88,9 +88,8 @@ AppealsLodgedTotal %>%
     title = "Number of asylum appeals from 2010 to 2023",  
     subtitle = "Number of appeals lodged with the first-tier tribunal where an asylum claim has been refused at initial decision",
     x = NULL,
-    y = "Number of Appeals Lodged",
-    caption = "British Red Cross analysis of Home Office data, January 2010 to January 2023") +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
+    y = "Number of appeals lodged",
+    caption = "British Red Cross analysis of Home Office data, January 2010 to January 2023")
 
 # ---- Appeals Lodged by Nationality ----
 Appeals2022 <- AppealsLodgedTotal %>%
