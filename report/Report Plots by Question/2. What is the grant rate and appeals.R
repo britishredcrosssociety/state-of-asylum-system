@@ -1,5 +1,10 @@
-----#QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL?#----
-----#Grant Rate and Appeals#----
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
+
+# ---- QUESTION: WHAT IS THE ASYLUM GRANT RATE AT INITIAL DECISION AND APPEAL? ----
+# ---- Grant Rate and Appeals ----
 GrantRatebyYear <- grant_rates_initial_annual %>%
   select(Year, Grant, Refused) %>%
   group_by(Year) %>%
@@ -23,8 +28,8 @@ GrantRatebyYear |>
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
     legend.position = "right",
-    # legend.box = "vertical",
-    # legend.margin = margin(),
+    #  legend.box = "vertical",
+    #  legend.margin = margin(),
     plot.title.position = "plot") +
   labs(
     title = "Average asylum grant rate at initial decision from 2001 to 2023 ",
@@ -34,7 +39,7 @@ GrantRatebyYear |>
     caption = "British Red Cross analysis on Home Office data, January 2001 to January 2023")
 
 
-#Grant Rate Top Nationalities#
+# Grant Rate Top Nationalities# 
 GrantRateNationality <- grant_rates_initial_annual %>%
   filter(Year == 2022, Grant > 0, Refused > 0) %>%
   select(Year, Nationality, Grant, Refused, `Initial grant rate`) 
@@ -58,7 +63,7 @@ GrantRate <- (ggplot() +
 GrantRate + theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1))
 
 
-----#Appeals#----
+# ---- Appeals ----
 AppealsLodgedTotal <- appeals_lodged %>%
   select(Date, Nationality, Year,`Appeals lodged`) %>%
   group_by(Date, Year, Nationality) %>%
@@ -76,8 +81,8 @@ AppealsLodgedTotal %>%
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
     legend.position = "right",
-    # legend.box = "vertical",
-    # legend.margin = margin(),
+    #  legend.box = "vertical",
+    #  legend.margin = margin(),
     plot.title.position = "plot") +
   labs(
     title = "Number of asylum appeals from 2010 to 2023",  
@@ -87,7 +92,7 @@ AppealsLodgedTotal %>%
     caption = "British Red Cross analysis of Home Office data, January 2010 to January 2023") +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023))
 
-----#Appeals Lodged by Nationality#----
+# ---- Appeals Lodged by Nationality ----
 Appeals2022 <- AppealsLodgedTotal %>%
   filter(Date > "2021-10-01") %>%
   group_by(Nationality) %>%
@@ -110,7 +115,7 @@ Appeals2022 %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, 800))
 
 
-----##Outcomes of Initial Decision Bar Graph##----
+# ---- # Outcomes of Initial Decision Bar Graph#  ----
 ResettlmentTotal %>%
   filter(`Case type` != "Resettlment Case") %>%
   ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
