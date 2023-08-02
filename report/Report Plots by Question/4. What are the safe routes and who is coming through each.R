@@ -1,5 +1,9 @@
-----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES?#----
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
+# ---- QUESTION:HOW MANY PEOPLE HAVE ARRIVED AND HAVE BEEN GRANTED PROTECTION UNDER SAFE ROUTES? ----
 view(decisions_resettlement)
 
 colnames(decisions_resettlement)
@@ -11,10 +15,8 @@ ResettlmentTotal <- decisions_resettlement %>%
 
 view(ResettlmentTotal)
 
-----#QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS?#----
-
-#Resettlement#  
-
+# ---- QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? ----
+# Resettlement
 ResettlementScheme <- decisions_resettlement %>%
   select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) %>%
   group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) %>%
@@ -63,25 +65,22 @@ Resettlement22 |>
          ) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = TotalR)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
-  labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
-       x = "Year",
-       y = "Number of Grants", 
-       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
   scale_x_continuous(breaks = c(2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_mercer,
                                brc_colours$red_deep,
-                               brc_colours$red_light))
+                               brc_colours$red_light)) +
+  theme_brc() +
+  labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
+       x = "Year",
+       y = "Number of grants", 
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023")
 
+# Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
+# # To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?# # 
 
-
-#Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default#
-
-
-##To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?##
-----#Age of those per Resettlement Scheme#----
+# ---- Age of those per Resettlement Scheme ----
 UKResettlement <- decisions_resettlement %>%
   filter(`Case outcome` == "Resettlement - UK Resettlement Scheme")
 
@@ -92,7 +91,7 @@ UKResettlement <- UKResettlement %>%
 
 UKResettlement
 
-#Sex Last 12 Months UK Resettlement Scheme# 
+# Sex Last 12 Months UK Resettlement Scheme#  
 UKResettlement %>%
   group_by(Date, Year, Quarter, Sex) %>%
   filter(Year > 2021) %>%
@@ -105,7 +104,7 @@ UKResettlement %>%
        x = "Quarter", 
        y = "Total Number of People")
 
-#By Age Last 12 Months UK Resettlement Scheme#
+# By Age Last 12 Months UK Resettlement Scheme# 
 UKResettlement %>%
   group_by(Year, Quarter, Age) %>%
   filter(Year > 2021) %>%
@@ -118,13 +117,13 @@ UKResettlement %>%
        x = "Quarter", 
        y = "Total Number of People")
 
-#By Nationality UK Resettlement Scheme# 
+# By Nationality UK Resettlement Scheme#  
 UKResettlement %>%
   group_by(Year, Quarter, Nationality) %>%
   filter(Year > 2021) %>%
   summarise(TotalbyNat = sum(TotalperCategory)) |>
   ggplot(aes(Quarter, Nationality)) +
-  #geom_line(aes(group = Nationality)) +
+  # geom_line(aes(group = Nationality)) +
   geom_point(aes(size = TotalbyNat, colour = Nationality), show.legend = NULL) +
   geom_text(aes(label = scales::comma(TotalbyNat)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
