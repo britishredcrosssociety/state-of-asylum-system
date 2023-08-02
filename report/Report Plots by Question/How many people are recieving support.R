@@ -74,7 +74,7 @@ SupportType <- SupportRecieved %>%
 SupportType |>
   ggplot(aes(fill = `Support Type`, y = Total, x = Date)) +
   geom_bar(position ="stack", stat="identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of people in receipt of asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999, March 2014 to March 2023", 
        x = "Year", 
        y = "Number of People", 
