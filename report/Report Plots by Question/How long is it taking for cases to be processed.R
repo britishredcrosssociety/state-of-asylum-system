@@ -50,10 +50,10 @@ DecisionTime %>%
   ggplot(aes(x = Date, y = Total, fill = Duration)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
-  labs(title = "Length of Time for an Initial Decision on Asylum Applications", 
+  labs(title = "Length of time for an initial decision on asylum applications", 
        x = NULL, 
        y = "Applications", 
-       caption = "British Red Cross Analyses of Home Office Data, March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_mercer,
                                                brc_colours$red_deep)) 
