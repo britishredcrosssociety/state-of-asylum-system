@@ -1,7 +1,11 @@
-----#QUESTION: HOW MANY PEOPLE HAVE BEEN RETURNED? AND TO WHERE?#----
-----#Returned#----
-#Returned Total#
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
+# ---- QUESTION: HOW MANY PEOPLE HAVE BEEN RETURNED? AND TO WHERE? ----
+# ---- Returned ----
+# Returned Total
 ReturnTotal <- returns %>%
   select(Year, `Number of returns`) %>%
   group_by(Year) %>%
@@ -19,9 +23,7 @@ ReturnTotal |>
        y = 'Number of Returns', 
        caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
 
-
-#Returns Quarterly
-
+# Returns Quarterly
 ReturnsQ <- returns %>%
   select(Year, Quarter, `Number of returns`) %>%
   group_by(Year, Quarter) %>%
@@ -40,4 +42,4 @@ ReturnsQ %>%
        y = 'Number of Returns', 
        caption = 'BRC Analysis of UK Home Office Data. Mock analyses')
 
-# Can examine what nationalities we see at different quarters, but may just be a better question to pose to team.#
+#  Can examine what nationalities we see at different quarters, but may just be a better question to pose to team.# 
