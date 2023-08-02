@@ -1,6 +1,7 @@
 library(tidyverse)
 library(asylum)
 source("report/brc_colours.R")
+source("report/theme_brc.R")
 
 # ---- QUESTION: HOW LONG IS IT TAKING FOR DECISIONS TO BE MADE? ---- 
 # ---- Backlog Analyses ----
@@ -49,14 +50,14 @@ DecisionTime <- DecisionTime %>%
 DecisionTime %>%
   ggplot(aes(x = Date, y = Total, fill = Duration)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Length of time for an initial decision on asylum applications", 
        x = NULL, 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_mercer,
-                                               brc_colours$red_deep)) 
+                                               brc_colours$red_deep))
 # scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
 
 # To discuss with Matt and team about how the data is spread and compare it to other work completed by other organizations.# 
