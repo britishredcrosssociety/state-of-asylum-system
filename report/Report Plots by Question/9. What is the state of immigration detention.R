@@ -1,6 +1,11 @@
-----#QUESTION: WHAT IS THE STATE OF DETENTION?
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
-----#People in Detention#----
+# ---- QUESTION: WHAT IS THE STATE OF DETENTION?
+
+# ---- People in Detention ----
 OverallinDetention <- people_in_detention %>%
   select(Year, Age, Sex, `Length of detention`, People) %>%
   group_by(Year) %>%
@@ -19,16 +24,14 @@ OverallinDetention |>
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000))
 
-
-----#Length of Time in Detention#----
-
+# ---- Length of Time in Detention ----
 detention_length <- 
   asylum::people_leaving_detention |>
   
-  # Remove initial letter and colon
+  #  Remove initial letter and colon
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s")) |> 
   
-  # Group into fewer categories
+  #  Group into fewer categories
   mutate(`Length of detention` = case_match(
     `Length of detention`,
     c("3 days or less", "4 to 7 days", "8 to 14 days") ~ "A: Up to two weeks",
@@ -39,7 +42,7 @@ detention_length <-
   group_by(Year, `Length of detention`) |> 
   summarise(People = sum(Leaving, na.rm = TRUE)) |> 
   
-  # Remove initial letter and colon
+  #  Remove initial letter and colon
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
 
 detention_length |> 
@@ -56,8 +59,7 @@ detention_length |>
                                brc_colours$red_dunant,
                                brc_colours$red_deep))
 
-----#Detention: Age and Sex#---- 
-
+# ---- Detention: Age and Sex ---- 
 AgeSexDetention <- people_in_detention %>%
   select(Year, Age, Sex, People) %>%
   group_by(Year, Age, Sex) %>%
@@ -85,9 +87,7 @@ AgeSexDetention %>%
                                brc_colours$red_dunant,
                                brc_colours$red_light))
                                
-
-----#Detention Pregnant Women#----
-
+# ---- Detention Pregnant Women ----
 detention_pregnant_women %>%
   select(Year, `Number of pregnant women detained in the immigration detention estate`) %>%
   group_by(Year) %>%
@@ -104,20 +104,17 @@ detention_pregnant_women %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   scale_x_continuous(breaks = c(2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) 
 
-
-----#Children in Detention#----
+# ---- Children in Detention ----
 ChildrenDetention <- people_in_detention %>%
   filter(Age == "17 and under") %>%
   group_by(Year) %>%
   summarise(Total = sum(People)) 
   
-
 ChildrenDetention %>%
   ggplot(aes(Year, Total)) +
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant)
-  
 
-#using children entering detention as a more accurate depiction rather than in detention as the data is not recorded as well? 
+# using children entering detention as a more accurate depiction rather than in detention as the data is not recorded as well? 
 view(children_entering_detention)
 
 children_entering_detention %>%
@@ -132,11 +129,9 @@ children_entering_detention %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, 600)) +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) 
 
+# Check with team about children IN and children entering detention and why these numbers are so different?!
 
-#Check with team about children IN and children entering detention and why these numbers are so different?!
-
-----#Leaving Detention and Reason#---- 
-
+# ---- Leaving Detention and Reason ---- 
 people_leaving_detention |> 
   mutate(`Reason for leaving detention` = 
            case_match(
@@ -162,7 +157,7 @@ people_leaving_detention |>
                                brc_colours$red_earth,
                                brc_colours$red_dunant))
   
-----#Women in Detention#----
+# ---- Women in Detention ----
 people_in_detention$Age <- factor(people_in_detention$Age, levels=c('70 and over',
                                                             '50 to 69',
                                                             '30 to 49',
