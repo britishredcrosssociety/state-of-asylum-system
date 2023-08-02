@@ -1,6 +1,6 @@
 ----#QUESTION: WHAT IS THE STATE OF DETENTION?
 
-#People in Detention#
+----#People in Detention#----
 OverallinDetention <- people_in_detention %>%
   select(Year, Age, Sex, `Length of detention`, People) %>%
   group_by(Year) %>%
@@ -20,80 +20,41 @@ OverallinDetention |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000))
 
 
-#Length of Time in Detention#
-LengthinDetention <- people_in_detention %>%
-  group_by(Year, `Length of detention`) %>%
-  summarise(Total = sum(People))
+----#Length of Time in Detention#----
 
-LengthinDetention |> 
-  mutate(`Length of detention` = 
-           case_match(
-             `Length of detention`,
-                      (c(("A: 3 days or less",
-                        "B: 4 to 7 days", 
-                        "C: 8 to 14 days") ~ "Up to two weeks"),
-                        ("E: 29 days to less than 2 months",
-                        "F: 2 months to less than 3 months",
-                        "G: 3 months to less than 4 months",
-                        "H: 4 months to less than 6 months",
-                        "I: 6 months to less than 12 months",
-                        "J: 12 months to less than 18 months",
-                        "K: 18 months to less than 24 months", 
-                        "L: 24 months to less than 36 months",
-                        "M: 36 months to less than 48 months", 
-                        "N: 48 months or more") ~ "29 days or more"), 
-                        .default =  `Length of detention`)
-             )
-         )|>
-  ggplot(aes(fill =`Length of detention`, x = Year, y = Total)) +
+detention_length <- 
+  asylum::people_leaving_detention |>
+  
+  # Remove initial letter and colon
+  mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s")) |> 
+  
+  # Group into fewer categories
+  mutate(`Length of detention` = case_match(
+    `Length of detention`,
+    c("3 days or less", "4 to 7 days", "8 to 14 days") ~ "A: Up to two weeks",
+    c("15 to 28 days") ~ "B: 15 to 28 days",
+    .default = "C: 29 days or more"
+  )) |> 
+  
+  group_by(Year, `Length of detention`) |> 
+  summarise(People = sum(Leaving, na.rm = TRUE)) |> 
+  
+  # Remove initial letter and colon
+  mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
+
+detention_length |> 
+  ggplot(aes(fill =`Length of detention`, x = Year, y = People)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_classic() +
   labs(title = "Length of time people have spent in immigration detention from 2010 - 2023",
-       x = NULL,
+       x = "Year",
        y = "Number of People",
-       caption = "British Red Cross analysis of Home Office data, year ending September 2022 as further data labelled 'Not Available'") +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to 2023") +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 40000)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
                                brc_colours$red_deep))
-
-
-#Why does this not work like it did with safe routes?#
-            
-LengthinDetention$`Length of detention` <- factor(LengthinDetention$`Length of detention`, levels=c('4 years +',
-                                                                                                    '2 years to 4 years',
-                                                                                                    '1 year to 2 years',
-                                                                                                    '6 months to 12 months',
-                                                                                                    '3 months to 6 months',
-                                                                                                    '29 days to 3 months',
-                                                                                                    '15 days to 28 days',
-                                                                                                    '8 days to 14 days',
-                                                                                                    '7 days or less',                                                                                                   'Not available'))
-LengthinDetention %>%
-  group_by(`Length of detention`) %>%
-  filter(`Length of detention` != "Not available") %>%
-  ggplot(aes(fill =`Length of detention`, x = Year, y = LengthTotal)) +
-  geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
-  labs(title = "Length of time people have spent in immigration detention from 2010 - 2023",
-       x = NULL,
-       y = "Number of People",
-       caption = "British Red Cross analysis of Home Office data, year ending September 2022 as further data labelled 'Not Available'") +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) +
-  scale_fill_manual(values = c(brc_colours$black_shadow,
-                               brc_colours$red_deep,
-                               brc_colours$red_earth,
-                               brc_colours$red_mercer,
-                               brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$teal,
-                               brc_colours$sky,
-                               brc_colours$steel))
-
-#Is there a reason why they have not recorded how long individuals are held in detention for 2023 Q1?#
-
 
 ----#Detention: Age and Sex#---- 
 
@@ -125,7 +86,7 @@ AgeSexDetention %>%
                                brc_colours$red_light))
                                
 
-#Detention Pregnant Women#
+----#Detention Pregnant Women#----
 
 detention_pregnant_women %>%
   select(Year, `Number of pregnant women detained in the immigration detention estate`) %>%
@@ -144,7 +105,7 @@ detention_pregnant_women %>%
   scale_x_continuous(breaks = c(2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) 
 
 
-#Children in Detention#
+----#Children in Detention#----
 ChildrenDetention <- people_in_detention %>%
   filter(Age == "17 and under") %>%
   group_by(Year) %>%
