@@ -52,6 +52,7 @@ ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute,
                                brc_colours$red_dunant))
 
 # Age Dispute Nationality- REVISE# 
+#@Mathura: This is giving an error: object 'AgeDispute12Month' not found
 AgeDispute12Month %>%
   group_by(Nationality, Year) %>%
   summarise(TotalNat = sum(Total)) |>
