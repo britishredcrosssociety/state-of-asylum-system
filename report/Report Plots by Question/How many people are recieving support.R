@@ -34,37 +34,37 @@ TotalSection95Apps |>
                     brc_colours$red_deep))
 
 # ---- Section 95 by Nationality ----
-Nationalities95 <- Section95Apps %>%
-  group_by(Year, Nationality) %>%
-  summarise(TotalNat = sum(Total)) 
+# Nationalities95 <- Section95Apps %>%
+#   group_by(Year, Nationality) %>%
+#   summarise(TotalNat = sum(Total)) 
 
 # In 2020 and 2022, of all the Section95 applications made, Unknown was the highest group in Nationality. Does this even fit with the narrative? 
 
 # ---- Section 95 Received ----
-view(support_received)
+# view(support_received)
 
 SupportRecieved <- support_received %>%
-  select(Date, `Support Type`, `Accommodation Type`, "UK Region" , People) 
+  select(Date, `Support Type`, `Accommodation Type`, "UK Region" , People)
 
-SupportRecieved <- SupportRecieved %>%
-  mutate(Year = lubridate::year(Date))
-
-TotalSupportRecieved <- SupportRecieved %>%
-  group_by(Date) %>%
-  summarise(Total = sum(People))
-
-TotalSupportRecieved |>
-  ggplot(aes(Date, Total)) +
-  geom_line(aes(colour = "red"), show.legend = FALSE) +
-  geom_point(aes(colour = "red", size = Total, alpha = 0.5), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
-  theme_classic() +
-  labs(title = "Total Number of People Recieving Section 4, 98 and Section 95 per Year", 
-       x = NULL, 
-       y = "Number of People", 
-       caption = "British Red Cross Analyses of Home Office Data, year ending March 2023") +
-  # scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+# SupportRecieved <- SupportRecieved %>%
+#   mutate(Year = lubridate::year(Date))
+# 
+# TotalSupportRecieved <- SupportRecieved %>%
+#   group_by(Date) %>%
+#   summarise(Total = sum(People))
+# 
+# TotalSupportRecieved |>
+#   ggplot(aes(Date, Total)) +
+#   geom_line(aes(colour = "red"), show.legend = FALSE) +
+#   geom_point(aes(colour = "red", size = Total, alpha = 0.5), show.legend = FALSE) +
+#   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
+#   theme_classic() +
+#   labs(title = "Total Number of People Recieving Section 4, 98 and Section 95 per Year", 
+#        x = NULL, 
+#        y = "Number of People", 
+#        caption = "British Red Cross Analyses of Home Office Data, year ending March 2023") +
+#   # scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+#   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
 # ---- Support Type ----
 SupportType <- SupportRecieved %>%
