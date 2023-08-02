@@ -1,9 +1,13 @@
-----#QUESTION:HOW MANY PEOPLE HAVE ARRIVED THROUGH "IRREGULAR" ENTRY?  
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
-  smallboat <- irregular_migration %>%
-    filter(`Method of entry`== "Small boat arrivals") 
+# ---- QUESTION:HOW MANY PEOPLE HAVE ARRIVED THROUGH "IRREGULAR" ENTRY?  
+smallboat <- irregular_migration %>%
+  filter(`Method of entry`== "Small boat arrivals") 
   
-----#Nationalities Small Boat#----
+# ---- Nationalities Small Boat ----
 SmallBoatNat <- smallboat %>%
   filter(Year > 2021) %>%
   select(Year, Nationality, `Number of detections`) %>%
@@ -29,8 +33,7 @@ SmallBoatNat %>%
 
 view(smallboat)
 
-----#Age and Sex 2022#----
-
+# ---- Age and Sex 2022 ----
 smallboat$`Age Group` <- factor(smallboat$`Age Group`, levels=c('40 and over', '25 to 39', '18 to 24', '17 and under'))
 
 smallboat %>%
@@ -42,7 +45,7 @@ smallboat %>%
   summarise(Total = sum(`Number of detections`)) |>
   ggplot(aes(fill = `Age Group`, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
-  #geom_text(aes(label = scales::comma(TotalAge)), show.legend = FALSE, size = rel(3)) +
+  # geom_text(aes(label = scales::comma(TotalAge)), show.legend = FALSE, size = rel(3)) +
   theme_classic() +
   labs(title = "Number of people crossing the channel by small boats by age and sex, 2018 to 2022",
        x = "Year", 
@@ -54,7 +57,7 @@ smallboat %>%
                                brc_colours$red_dunant,
                                brc_colours$red_light))
 
-----#Small Boat x Quarter#----
+# ---- Small Boat x Quarter ----
 Smallboatbyquarter <- smallboat %>% 
   select(Year, Quarter, `Number of detections`) %>%
   group_by(Year, Quarter) %>%
@@ -79,8 +82,7 @@ Smallboatbyquarter |>
                                brc_colours$red_light))
 
 
-----#Small Boat x Asylum Applications#----
-
+# ---- Small Boat x Asylum Applications ----
 SmallboatAsylum <- small_boat_asylum_applications %>%
   select(Year, `Age Group`, Sex, Region, Applications, `Asylum application`) %>%
   filter("Asylum application" != "No asylum application raised")
@@ -100,8 +102,7 @@ SmallboatAsylum %>%
        caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) 
 
-
-----#Irregular Migration by Method of Entry#----  
+# ---- Irregular Migration by Method of Entry ----  
 irregular_migration %>%
   select(Year, `Method of entry`, `Number of detections`) %>%
   group_by(Year, `Method of entry`) %>%

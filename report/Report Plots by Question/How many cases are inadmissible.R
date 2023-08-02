@@ -1,6 +1,12 @@
-----#QUESTION: HOW MANY CLAIMS HAVE BEEN DEEMED INADMISSABLE?#---- 
+library(tidyverse)
+library(asylum)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
 
-#Inadmissible- to discuss with the team if this revised graph is better?#
+# ---- QUESTION: HOW MANY CLAIMS HAVE BEEN DEEMED INADMISSABLE? ---- 
+
+# ---- Inadmissible ----
+# To discuss with the team if this revised graph is better?
 Inadmissable <- inadmissibility_cases_considered %>%
   select(Date, Year, Stage, Cases, Quarter) %>%
   group_by(Date, Year, Quarter, Stage) %>%
@@ -17,8 +23,8 @@ Inadmissable |>
   guides(fill=guide_legend(nrow=6,byrow=TRUE), color = guide_legend(nrow=6,byrow=TRUE))+
   theme(
     legend.position = "right",
-    # legend.box = "vertical",
-    # legend.margin = margin(),
+    #  legend.box = "vertical",
+    #  legend.margin = margin(),
     plot.title.position = "plot",
     plot.title = element_textbox_simple(size = 12)
   ) +
@@ -29,15 +35,13 @@ Inadmissable |>
     caption = "British Red Cross Mock Analyses."
   )
 
-#Inadmissable Sankey#
-
-
-# Create sample data
-InadmissibleforSankey <- data.frame(inadmissibility_cases_considered,
-                                    Year = c("2021", "2022", "2023"),
-                                    stage = c("Stage 1", "Stage 2", "Stage 1", "Stage 2", "Stage 1"),
-                                    count = c(100, 70, 80, 50, 120)
-)
-
-# Create Sankey diagram
-sankey(data, from = country, to = stage, weight = count)
+# ---- Inadmissable Sankey ----
+#  Create sample data
+# InadmissibleforSankey <- data.frame(inadmissibility_cases_considered,
+#                                     Year = c("2021", "2022", "2023"),
+#                                     stage = c("Stage 1", "Stage 2", "Stage 1", "Stage 2", "Stage 1"),
+#                                     count = c(100, 70, 80, 50, 120)
+# )
+# 
+# #  Create Sankey diagram
+# sankey(data, from = country, to = stage, weight = count)
