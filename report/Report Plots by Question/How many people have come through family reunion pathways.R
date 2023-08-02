@@ -26,11 +26,13 @@ family_reunion %>%
 
 # ---- Family Reunion Visas by Sex and Age ----
 FamilyReunion <- family_reunion %>% 
-  group_by(Year, Nationality, Sex, Age) %>%
-  summarise(Total = sum(`Visas granted`))
+  group_by(Date, Nationality, Sex, Age) %>%
+  summarise(Total = sum(`Visas granted`)) |> 
+  ungroup()
 
 FamilyReunion22 <- FamilyReunion %>%
-  filter(Year == 2022) %>%
+  # filter(Year == 2022) %>%
+  filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Sex, Age) %>%
   summarise(TotalbyAge = sum(Total)) 
 
