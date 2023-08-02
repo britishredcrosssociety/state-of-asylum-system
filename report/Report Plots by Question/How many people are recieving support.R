@@ -20,20 +20,20 @@ TotalSection95Apps <- Section95Apps %>%
 # Applications per Support Type Applied for#  
 TotalSection95Apps |>
   ggplot(aes(fill = `Support type granted`, y = Total95, x = Year)) +
-  geom_bar(position ="stack", stat="identity") +
-  theme_classic() +
+  geom_bar(position = position_stack(reverse = TRUE), stat = "identity") +
+  theme_brc() +
   labs(title = "People Applying for Section 95 by Support Type", 
-       subtitle = "Other as defined as cases that are deemed invalid, not assessed, or awaiting dispersal into accomodation",
+       subtitle = "Other is defined as cases that are deemed invalid, not assessed, or awaiting dispersal into accomodation",
        x = NULL, 
        y = "Number of Applications", 
-       caption = "British Red Cross Analyses of Home Office Data, year ending 2022") +
-  scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) + 
-  scale_fill_manual(values = c(brc_colours$red_light,
-                    brc_colours$red_mercer,
+       caption = "British Red Cross analysis of Home Office data, year ending 2022") +
+  scale_x_continuous(breaks = c(2012:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) + 
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                    brc_colours$red_light,
                     brc_colours$red_deep))
 
-# ---- Section 95 by Nationality
+# ---- Section 95 by Nationality ----
 Nationalities95 <- Section95Apps %>%
   group_by(Year, Nationality) %>%
   summarise(TotalNat = sum(Total)) 
