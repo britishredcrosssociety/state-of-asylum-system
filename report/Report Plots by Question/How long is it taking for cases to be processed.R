@@ -54,7 +54,7 @@ DecisionTime %>%
        x = NULL, 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_mercer,
                                                brc_colours$red_deep)) 
 # scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
