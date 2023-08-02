@@ -12,22 +12,25 @@ SmallBoatNat <- smallboat %>%
   filter(Year > 2021) %>%
   select(Year, Nationality, `Number of detections`) %>%
   group_by(Nationality) %>%
-  summarise(Total = sum(`Number of detections`))
+  summarise(Total = sum(`Number of detections`)) |> 
+  ungroup()
 
 SmallBoatNat$Nationality <- factor(SmallBoatNat$Nationality, levels = SmallBoatNat$Nationality[order(SmallBoatNat$Total, decreasing = TRUE)])
 
 SmallBoatNat %>%
-  filter(Total > 1200) %>%
+  # filter(Total > 1200) %>%
+  slice_max(Total, n = 10) |> 
   filter(Nationality != "Not currently recorded") |>
-  ggplot(aes(Nationality, Total)) +
-  geom_col(aes(fill = brc_colours$red_dunant), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25) +
-  theme_classic() +
+  ggplot(aes(x = reorder(Nationality, Total, sum), y = Total)) +
+  geom_col(fill = brc_colours$red_dunant, show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), hjust = 1.1, colour = "white") +
+  coord_flip() +
+  theme_brc() +
   theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=0.5)) +
   labs(title = "Number of people detected crossing the channel in small boats from March 2022 to March 2023",
        subtitle = "Top 10 nationalities detected crossing the channel",
-       x = "Nationalities", 
-       y = "Number of People Detected", 
+       x = NULL, 
+       y = "Number of people detected", 
        caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) 
 
@@ -46,12 +49,12 @@ smallboat %>%
   ggplot(aes(fill = `Age Group`, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   # geom_text(aes(label = scales::comma(TotalAge)), show.legend = FALSE, size = rel(3)) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of people crossing the channel by small boats by age and sex, 2018 to 2022",
-       x = "Year", 
-       y = "Number of People Detected",
+       x = "Sex", 
+       y = "Number of people detected",
        caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_earth,
                                brc_colours$red_dunant,
@@ -68,19 +71,18 @@ view(Smallboatbyquarter)
 Smallboatbyquarter |>
   ggplot(aes(fill = factor(Quarter), x = Year, y = TotalQ)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of people crossing the channel by quarter from March 2018 to March 2022", 
        subtitle = "The greatest number of detections are seen in the third quarter",
-       x = "Year", 
+       x = NULL, 
        y = "Number of People Detected",
        fill = "Quarter",
        caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_earth,
                                brc_colours$red_dunant,
                                brc_colours$red_light))
-
 
 # ---- Small Boat x Asylum Applications ----
 SmallboatAsylum <- small_boat_asylum_applications %>%
@@ -95,12 +97,12 @@ SmallboatAsylum %>%
   geom_point(aes(colour = brc_colours$red_dunant, size = Total), alpha = 0.5, show.legend = FALSE) +
   geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
-  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
+  theme_brc() +
   labs(title = "Number of asylum applications from people crossing the channel in small boats from March 2018 to March 2023",
-       x = "Year", 
-       y = "Number of Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) 
+       x = NULL, 
+       y = "Number of applications", 
+       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023")
 
 # ---- Irregular Migration by Method of Entry ----  
 irregular_migration %>%
@@ -111,10 +113,10 @@ irregular_migration %>%
   geom_point(aes(group = `Method of entry`, size = TotalbyMethod, alpha = 0.5, colour = `Method of entry`), show.legend = FALSE) +
   geom_line(aes(group = `Method of entry`, colour = `Method of entry`)) +
   geom_text(aes(label = scales::comma(TotalbyMethod)), show.legend = FALSE, size = rel(2)) +
-  theme_classic() +
+  theme_brc() +
   labs(title =  "Number of people detected by irregular methods of entry, from March 2018 to March 2023",
        x = NULL,
-       y = "Number of People", 
+       y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2018 to March, 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
   scale_colour_manual(values = c(brc_colours$red_deep,
