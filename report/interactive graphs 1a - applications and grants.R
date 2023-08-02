@@ -2,6 +2,7 @@ library(tidyverse)
 library(asylum)
 library(compositr)
 library(readxl)
+library(Hmisc)
 
 # ---- Migration comparison/proportions ----
 # Total applications in 2022
@@ -277,7 +278,7 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations.csv")
 
-# Asylum over time, by nationality
+# ---- Asylum applications over time, by nationality ----
 asylum::applications |> 
   group_by(Year, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -288,6 +289,23 @@ asylum::applications |>
   mutate(across(-(Year), ~ replace_na(.x, ""))) |> 
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation.csv")
+
+# - Caption -
+# Which nationalities are consistently in the top 10% of applications?
+num_years <- max(asylum::applications$Year) - min(asylum::applications$Year)
+
+asylum::applications |> 
+  group_by(Year, Nationality) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  group_by(Year) |> 
+  mutate(Decile = as.integer(Hmisc::cut2(Applications, g = 10))) |> 
+  filter(Decile == 10) |> 
+  ungroup() |> 
+  
+  count(Nationality, sort = TRUE) |> 
+  mutate(proportion_of_years = n / num_years)
 
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
