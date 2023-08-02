@@ -7,23 +7,22 @@ source("report/theme_brc.R")
 # ---- Family Reunion ----
 view(family_reunion)
 
-Totalfamreunion <- family_reunion %>%
+family_reunion %>%
   # select(Year, `Visas granted`) %>%
   group_by(Year) %>%
   summarise(Total = sum(`Visas granted`)) %>%
+  
   ggplot(aes(Year, Total)) +
   geom_line(aes(colour = "red"), show.legend = FALSE) +
   geom_point(aes(colour = "red", alpha = 0.5, size = Total), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
-  theme_classic() +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000)) +
+  theme_brc() +
   labs(title = "Number of family reunion visas granted from 2010 to 2023",
        x = NULL,
-       y = "Number of Visas Granted", 
+       y = "Number of visas granted", 
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
-
-Totalfamreunion + 
-scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-scale_y_continuous(labels = scales::comma, limits = c(0, 8000))
 
 # ---- Family Reunion Visas by Sex and Age ----
 FamilyReunion <- family_reunion %>% 
