@@ -1,17 +1,20 @@
-#EU Data
-
+library(tidyverse)
+library(asylum)
 library(readxl)
+source("report/brc_colours.R")
+source("report/theme_brc.R")
+
+# EU Data
 EU_stat_ <- read_excel("~/EU stat .xlsx")
 View(EU_stat_)
 
-
-#UKTotal 
+# UKTotal 
 AppsQ1T <- applications %>%
   group_by(Year) %>%
   filter(Year == 2022) %>%
   summarise(Total = sum(Applications))
 
-----#EU Across 10 Years#----
+# ---- EU Across 10 Years ----
 EU_Stats_10_Years %>%
   group_by(Year) |> 
   slice_max(Applications, n = 10) |> 
@@ -42,12 +45,10 @@ EU_Stats_10_Years %>%
                                brc_colours$red_light,
                                brc_colours$red_dunant))
 
-#Can't do "Other" for the Across 10 Year plots because of the way that the data is coded.
+# Can't do "Other" for the Across 10 Year plots because of the way that the data is coded.
 
-#EU Bar Graph -2022 Total
-
+# ---- EU Bar Graph - 2022 Total ----
 EU_Stat$Countries <- factor(EU_Stat$Countries, levels = EU_Stat$Countries[order(EU_Stat$Applications, decreasing = TRUE)])
-
 
 EU_Stat %>%
   filter(Applications > 24000) %>%
@@ -76,9 +77,7 @@ EU_Stat |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 250000)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
   
-
-----#Top 10 Grant Rates#----
-
+# ---- Top 10 Grant Rates ----
 EU_Grant_Rates %>%
   filter(Grant > 9000) %>%
   ggplot(aes(Country, Grant)) +
@@ -93,8 +92,7 @@ EU_Grant_Rates %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
-
-##EU Grant Rate as % needs to be revised and check with Matt.##
+# EU Grant Rate as % needs to be revised and check with Matt.
 EU_Grant_Rates$Country <- factor(EU_Grant_Rates$Country, levels = EU_Grant_Rates$Country[order(EU_Grant_Rates$Grant, decreasing = TRUE)])
 
 EU_Grant_Rates <- EU_Grant_Rates %>%
@@ -109,7 +107,7 @@ ceiling(EU_Grant_Rates::GrantRate1)
 PerEUGrant <- (EU_Grant_Rates %>%
   ggplot(aes(Country, GrantRate)) +
   geom_bar(stat = "identity", fill = brc_colours$red_mercer) +
-  #geom_text(aes(label = GrantRate), position = position_dodge(width=0.5), vjust=-0.25) +
+  # geom_text(aes(label = GrantRate), position = position_dodge(width=0.5), vjust=-0.25) +
   theme_classic() +
   labs(title = "EU Grant Rate and United Kingdom Grant Rate", 
                 x = "Country", 
@@ -117,5 +115,3 @@ PerEUGrant <- (EU_Grant_Rates %>%
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)))
 
 PerEUGrant + theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
-
-  
