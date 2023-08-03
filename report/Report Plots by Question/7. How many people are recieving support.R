@@ -32,19 +32,20 @@ SupportRecieved <- support_received %>%
 #   scale_y_continuous(labels = scales::comma, limits = c(0, NA))
 
 # ---- Support Type ----
-SupportType <- SupportRecieved %>%
-  group_by(Date,`Support Type`,`Accommodation Type`) %>%
+SupportType <- SupportRecieved |>
+  group_by(Date,`Support Type`,`Accommodation Type`) |>
   summarise(Total = sum(People))  
 
 SupportType |>
   ggplot(aes(fill = `Support Type`, y = Total, x = Date)) +
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
-  labs(title = "Number of people in receipt of asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999, March 2014 to March 2023", 
-       x = NULL, 
+  labs(title = str_wrap("Number of people in receipt of asylum support from 2014 to 2023"),
+       subtitle = "Asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999",
+       x = "Year", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
-  # scale_x_continuous(breaks = c(2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
@@ -52,14 +53,14 @@ SupportType |>
 
 # ---- 2023 Section and Accommodation Type ---- 
 SupportType %>%
-  filter(Date == "2023-03-31") %>%
-  filter(`Accommodation Type` != "N/A - Section 98 (pre-2023)") %>%
-  filter(`Accommodation Type`!= "Subsistence only") %>%
-  filter(`Accommodation Type`!= "Subsistence Only") %>%
+  filter(Date == "2023-03-31") |>
+  filter(`Accommodation Type` != "N/A - Section 98 (pre-2023)") |>
+  filter(`Accommodation Type`!= "Subsistence only") |>
+  filter(`Accommodation Type`!= "Subsistence Only") |>
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
-  labs(title = "Number of people in reciept of support by accomodation type, March 2023", 
+  labs(title = "Number of people in reciept of support by accomodation type at March 2023", 
        x = "Type of asylum support", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
