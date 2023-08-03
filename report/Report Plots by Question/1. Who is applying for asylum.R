@@ -44,23 +44,24 @@ application_by_nationality |>
   scale_x_continuous(breaks = c(2001 : 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$red_earth,
-                               brc_colours$red_mercer,
+  scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_deep,
+                               brc_colours$red_mercer,
+                               brc_colours$red_earth,
+                               brc_colours$red_light,
                                brc_colours$claret,
-                               brc_colours$mustard,
                                brc_colours$sand,
-                               brc_colours$grey_fog,
-                               brc_colours$grey,
+                               brc_colours$earth,
+                               brc_colours$green,
+                               brc_colours$green_dark,
                                brc_colours$duck,
                                brc_colours$steel,
                                brc_colours$sky,
                                brc_colours$teal,
                                brc_colours$blue,
-                               brc_colours$green,
-                               brc_colours$green_dark)) 
+                               brc_colours$grey,
+                               brc_colours$black_full
+                               )) 
   
 
 
@@ -151,7 +152,7 @@ UASCOnly |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0, NA))
   
 
-# ---- Dependant Children ----
+# ---- Dependent Children ----
 dependent_children <- applications |>
   select(Year, `Applicant type`, Age, Applications) |>
   group_by(Year, `Applicant type`, Age) |>
