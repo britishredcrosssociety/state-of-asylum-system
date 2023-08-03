@@ -6,60 +6,60 @@ source("report/theme_brc.R")
 # ---- QUESTION: HOW MANY PEOPLE HAVE AGE DISPUTES? 
   
 # ---- Age Dispute Raised or Resolved ----
-AgeDispute <- age_disputes %>%
-  group_by(Year, `Raised or resolved`) %>%
+AgeDispute <- age_disputes |>
+  group_by(Year, `Raised or resolved`) |>
   summarise(Total = sum(`Age disputes`)) 
 
-AgeDispute %>%
+AgeDispute |>
   ggplot(aes(fill = `Raised or resolved`, y = Total, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
-  geom_text(aes(label = Total),
-            position = position_stack(vjust = .5), size = 2) +
+  #geom_text(aes(label = Total),
+            #position = position_stack(vjust = .5), size = 2) +
   theme_brc() +
-  labs(title = "Number of age dispute cases raised and resolved from March 2010 to March 2023",
-       x = NULL,
+  labs(title = "Number of age dispute cases raised and resolved from 2010 to 2023",
+       x = "Year",
        y = "Number of cases",
+       fill = "Age dispute raised or resolved",
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
   scale_x_continuous(breaks = c(2010:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant))
+  scale_y_continuous(labels = scales::comma, limits = c(0, 5000), expand = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_deep))
   
 # ---- Age Dispute by Resolved Reason ---- 
-AgeDispute <- age_disputes %>%
-  group_by(Year, Nationality, `Raised type / Resolved outcome`, `Raised or resolved`) %>%
+AgeDispute <- age_disputes |>
+  group_by(Year, Nationality, `Raised type / Resolved outcome`, `Raised or resolved`) |>
   summarise(Total = sum(`Age disputes`))
 
 ByOutcome <- AgeDispute %>%
-  filter(`Raised type / Resolved outcome` != 'Existing asylum application') %>%
-  filter(`Raised type / Resolved outcome` != 'Asylum application raised in quarter') %>%
-  group_by(Year,`Raised type / Resolved outcome`) %>%
+  filter(`Raised type / Resolved outcome` != 'Existing asylum application') |>
+  filter(`Raised type / Resolved outcome` != 'Asylum application raised in quarter') |>
+  group_by(Year,`Raised type / Resolved outcome`) |>
   summarise(TotalDispute = sum(Total))
-
 ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   geom_text(aes(label = TotalDispute),
             position = position_stack(vjust = .5), size = 2) +
   theme_brc() +
-  labs(title = "Outcome of age dispute cases from March 2010 to March 2023", 
-       x = NULL, 
+  labs(title = "Outcome of age dispute cases from 2010 to 2023", 
+       x = "Year", 
        y = "Total cases",
-       fill = 'Outcome of Age Dispute',
+       fill = 'Outcome of age dispute',
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 2500), expand = c(0, NA)) +
   scale_x_continuous(breaks = c(2010:2023)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant))
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_earth))
 
-# Age Dispute Nationality- REVISE# 
-#@Mathura: This is giving an error: object 'AgeDispute12Month' not found
-AgeDispute12Month %>%
-  group_by(Nationality, Year) %>%
-  summarise(TotalNat = sum(Total)) |>
-  ggplot(aes(Year, TotalNat)) +
-  # geom_line(aes(colour = Nationality, group = Nationality))
-  geom_point(aes(colour = Nationality, size = TotalNat), alpha = 0.5) +
-  geom_text(aes(label = scales::comma(TotalNat)), show.legend = FALSE, size = rel(3)) +
+# Age Dispute Nationality for Raised- REVISE by asking the team if they want any specific nationality highlighted. 
+age_disputes |>
+  filter(`Raised or resolved` != "Raised") |>
+  filter(Year > 2021) |>
+  group_by(Year, Nationality) |>
+  summarise(Total = sum(`Age disputes`)) |> 
+  ggplot(aes(Year, Total)) +
+  geom_point(aes(colour = Nationality, size = Total), alpha = 0.5) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   theme_classic() +
