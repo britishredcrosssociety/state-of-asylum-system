@@ -4,85 +4,60 @@ source("report/brc_colours.R")
 source("report/theme_brc.R")
 
 # ---- QUESTION: HOW LONG IS IT TAKING FOR DECISIONS TO BE MADE? ---- 
-# ---- Backlog Analyses ----
-# Note from their own data release, it looks like they only include age groups and gender. No nationality. Does not break down each reason by age or gender though.# 
-# Backlog analyses only released during Q2!!!!!# 
+# ---- Time for initial decision analysis ----
+# From the transparency data, we can see how many cases were completed for appeals and for initial decision using asylum::asylum_work_in_progress
 
-# Backlog <- asylum_work_in_progress %>%
-#   select(Year, `Total Work In Progress`) 
-
-# Total work in progress is defined in the dataset as the number of cases that are not concluded at the given point in time.
-# That means that in 2022, there were 166000 cases that had not concluded at Q2 in 2022. 
-
-# ---- Graph: Backlog Overall ---- 
-# Backlog |>
-#   ggplot(aes(x = Year, y = `Total Work In Progress`)) +
-#   geom_col(aes(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant), show.legend = FALSE) +
-#   geom_text(aes(x = Year, y = `Total Work In Progress`, label = scales::comma(`Total Work In Progress`)), vjust = -0.5, show.legend = FALSE, size = rel(3)) +
-#   labs(title = "Backlog of people waiting for a decision from 2011 to 2022", 
-#        x = "Year",
-#        y = "Number of People", 
-#        caption = "British Red Cross analysis of Home Office data, March 2011 to March 2022") + 
-#   theme_classic() +
-#   scale_y_continuous(labels = scales::comma, limits = c(0, 200000)) +
-#   scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) 
+backlog_total <- 
+  asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage) |> 
+  summarise(Backlog = sum(Applications)) 
   
-# ---- Graph of Overall Time for Initial Decisions ----
-# Awaiting Decision is for Asylum Applications that are awaiting an initial decision or further review by nationality and applicant type# 
-DecisionTime <- awaiting_decision %>%
-  select(Date, Nationality, Duration, `Application stage`, Applications) %>%
-  group_by(Date, Duration, Nationality) %>%
-  summarise(Total = sum(Applications))
-
-view(DecisionTime)
-
-DecisionTime <- DecisionTime %>%
-  dplyr::mutate(year = lubridate::year(Date))
-
-DecisionTime <- DecisionTime %>%
-  group_by(Date, year, Duration) %>%
-  summarise(Total = sum(Total))
-
-DecisionTime <- DecisionTime %>%
-  filter(Duration != 	"N/A - Further review") 
-
-# Decision Plot 
-DecisionTime %>%
-  ggplot(aes(x = Date, y = Total, fill = Duration)) +
+backlog_total |>
+  filter(Stage != "Pending further review") |>
+  ggplot(aes(fill = Stage, x = Date, y = Backlog)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_brc() +
-  labs(title = "Length of time for an initial decision on asylum applications", 
-       x = NULL, 
-       y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
-  scale_fill_manual(values = c(brc_colours$red_mercer,
-                                               brc_colours$red_deep))
-# scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022))
+  theme_brc() + 
+  labs(title = "Number of people waiting for an initial decision on their asylum claim from 2010 to 2023", 
+       x = "Year",
+       y = "Number of people", 
+       caption = "British Red Cross analysis of Home Office data, June 2010 to March 2022") + 
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 200000), expand = c(0, NA)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_fill_manual(values = c(brc_colours$red_earth,
+                               brc_colours$red_dunant))
 
-# To discuss with Matt and team about how the data is spread and compare it to other work completed by other organizations.# 
 
-# ---- Decision by Nationality in 2022 ----
-DecisionbyNat <- awaiting_decision %>%
-  mutate(Year = year(Date)) %>%
-  filter(Year == 2022) %>%
-  group_by(Year, Nationality, Duration) %>%
-  summarise(Total = sum(Applications)) %>%
-  ungroup()
+# ---- Nationalities waiting for initial decision in 2022/23 ----
 
-DecisionbyNat %>%
-  filter(Duration == "More than 6 months") %>%
-  arrange(desc(Total)) %>%
-  slice_max(Total, n = 10) %>%
-  # filter(Total > 10000) %>%
-  ggplot(aes(x = reorder(Nationality, Total, sum), y = Total)) +
-  geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant, show.legend = FALSE)  +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, hjust = 1.1, size = rel(4), colour = "white") +
-  coord_flip() +
-  theme_brc() +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
-  labs(title = "Nationalities with the largest number of people waiting over six months for an initial decision", 
-       subtitle = "Top 10 nationalities",
-        x = NULL,
-        y = "Applications", 
-        caption = "British Red Cross analysis of Home Office data, March 2021 to March 2022")
+backlog_nationality <- 
+  asylum::awaiting_decision |> 
+  mutate(Stage = case_when(
+    Duration == "More than 6 months" ~ "Pending initial decision (more than 6 months)",
+    Duration == "6 months or less" ~ "Pending initial decision (6 months or less)",
+    Duration == "N/A - Further review" ~ "Pending further review"
+  )) |> 
+  group_by(Date, Stage, Nationality) |> 
+  summarise(Backlog = sum(Applications))
+
+
+backlog_nationality |>
+  filter(Stage == "Pending initial decision (more than 6 months)") |>
+  filter(Date == "2023-03-31") |>
+  filter(Backlog > 3400) |>
+  ggplot(aes(x = reorder(Nationality, desc(Backlog)), y = Backlog)) +
+  geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant, show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Backlog)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  theme_brc() + 
+  labs(title = "Nationalities with the highest number of people waiting for an initial decision on their asylum claim at March 2023", 
+       subtitle =  "Top 10 nationalities waiting over 6 months for an initial decision",
+       x = "Year",
+       y = "Number of people", 
+       caption = "British Red Cross analysis of Home Office data, March 2023") + 
+  theme_classic() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0, NA)) 
