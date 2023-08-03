@@ -26,7 +26,6 @@ backlog_total |>
        x = "Year",
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, June 2010 to March 2022") + 
-  theme_classic() +
   scale_y_continuous(labels = scales::comma, limits = c(0, 200000), expand = c(0, NA)) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_fill_manual(values = c(brc_colours$red_earth,
@@ -59,5 +58,4 @@ backlog_nationality |>
        x = "Year",
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2023") + 
-  theme_classic() +
   scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0, NA)) 
