@@ -13,7 +13,6 @@ resettlement_total <- decisions_resettlement %>%
   group_by(Year, `Case outcome group`, `Case type`) %>%
   summarise(Total = sum(Decisions))
 
-
 # ---- QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? ----
 
 # Resettlement by Scheme
@@ -81,6 +80,75 @@ resettlement_scheme |>
        fill = "Resettlement route")
 
 # Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
+
+# ---- QUESTION: HOW MANY PEOPLE HAVE COME THROUGH FAMILY REUINION PATHWAYS 
+# ---- Family Reunion ----
+
+family_reunion |>
+  group_by(Year) |>
+  summarise(Total = sum(`Visas granted`)) |>
+  ggplot(aes(Year, Total)) +
+  geom_line(aes(colour = "red"), show.legend = FALSE) +
+  geom_point(aes(colour = "red", alpha = 0.5, size = Total), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
+  scale_x_continuous(breaks = c(2010 : 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0,NA)) +
+  theme_brc() +
+  labs(title = "Number of family reunion visas granted from 2010 to 2023",
+       x = NULL,
+       y = "Number of visas granted", 
+       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
+
+# ---- Family Reunion Visas by Sex and Age ----
+FamilyReunion <- family_reunion |> 
+  group_by(Date, Nationality, Sex, Age) |>
+  summarise(Total = sum(`Visas granted`)) |> 
+  ungroup()
+
+FamilyReunion22 <- FamilyReunion |>
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Sex, Age) |>
+  summarise(TotalbyAge = sum(Total)) 
+
+FamilyReunion22$Age <- factor(FamilyReunion22$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
+
+FamilyReunion22 |>
+  ggplot(aes(fill = Age, x = Sex, y = TotalbyAge)) +
+  geom_bar(position = "stack", stat = "identity") +
+  ggrepel::geom_text_repel(aes(label = scales::number(TotalbyAge, big.mark = ',', accuracy = 1)), size = 3, 
+                           position = position_stack(vjust = 0.5), direction = "y", 
+                           box.padding = unit(0.01, "lines")) +
+  theme_brc() +
+  labs(title = "Family reunion visas granted by sex and age for year ending December 2022", 
+       x = "Sex", 
+       y = "Number of visas granted", 
+       caption = "British Red Cross analysis of Home Office data, year ending December 2022") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 3500), expand = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$red_deep,
+                               brc_colours$red_light,
+                               brc_colours$red_dunant,
+                               brc_colours$red_mercer,
+                               brc_colours$red_earth))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ########### To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?# # 
 
