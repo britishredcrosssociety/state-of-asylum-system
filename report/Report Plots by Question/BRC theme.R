@@ -42,8 +42,6 @@ theme_brc <- function(...) {
     strip.background = ggplot2::element_rect(fill = "white", colour = brc_colours$black_shadow, size = ggplot2::rel(2)),
     strip.text = ggplot2::element_text(family = font, hjust = 0),
     
-    legend.position = "top",
-    
     ...
   )
 }
