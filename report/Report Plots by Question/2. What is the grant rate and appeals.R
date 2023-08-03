@@ -81,24 +81,3 @@ appeals_2023 |>
        y = "Number of appeals", 
        caption = "British Red Cross analysis of Home Office Data, March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 200), expand = c(0,NA))
-
-
-
-####Find where this is- does not belong here???
-# ---- # Outcomes of Initial Decision Bar Graph#  ----
-ResettlmentTotal %>%
-  filter(`Case type` != "Resettlment Case") %>%
-  ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
-  geom_bar(position="stack", stat="identity") +
-  theme_classic() +
-  labs(title = "Number of grants, refusals or withdrawls of asylum applications at initial decision from 2001 to 2023",
-       subtitle = "Inital decision on asylum application grouped by case outcome",
-       x = "Year", 
-       y = "Number of Decisions", 
-       caption = "British Red Cross analysis of Home Office data, until January, 2023") +
-  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) + 
-  scale_fill_manual(values = c(brc_colours$red_dunant,
-                               brc_colours$red_light,
-                               brc_colours$red_earth,
-                               brc_colours$red_deep))

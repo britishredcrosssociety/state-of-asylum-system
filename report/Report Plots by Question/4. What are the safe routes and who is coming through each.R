@@ -8,45 +8,47 @@ view(decisions_resettlement)
 
 colnames(decisions_resettlement)
 
-ResettlmentTotal <- decisions_resettlement %>%
+resettlement_total <- decisions_resettlement %>%
   select(Year, `Case outcome group`, Decisions, `Case type`) %>%
   group_by(Year, `Case outcome group`, `Case type`) %>%
-  summarise(RTotal = sum(Decisions))
-
-view(ResettlmentTotal)
-
-# ---- QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? ----
-# Resettlement
-ResettlementScheme <- decisions_resettlement %>%
-  select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) %>%
-  group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) %>%
   summarise(Total = sum(Decisions))
 
-Resettlement22 <- ResettlementScheme %>%
-  filter(Year > 2021) %>%
-  group_by(Year, `Case outcome`) %>%
-  summarise(TotalR = sum(Total)) 
+
+# ---- QUESTION: WHAT SAFE ROUTES HAVE BEEN AVAILABLE IN THE LAST 12 MONTHS? ----
+
+# Resettlement by Scheme
+
+resettlement_scheme <- decisions_resettlement |>
+  select(Date, Year, Quarter, `Case outcome`, Age, Nationality, Sex, Decisions) |>
+  group_by(Date, Year, Quarter, Nationality, Age, Sex, `Case outcome`) |>
+  summarise(Total = sum(Decisions))
+
+resettlement_scheme <- resettlement_scheme |>
+  filter(Year > 2021) |>
+  #filter(Date >= max(Date) - dmonths(11)) %>%
+  group_by(Year, `Case outcome`) |>
+  summarise(Total = sum(Total))
   
-Resettlement22 <- Resettlement22 %>%
-  filter(`Case outcome` != "3rd Country Refusal") %>%	
-  filter(`Case outcome` !=  "Certified Refusal") %>%
-  filter(`Case outcome` != "Discretionary Leave") %>%
-  filter(`Case outcome` != "Humanitarian Protection") %>%
-  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%
-  filter(`Case outcome` != "Non-Substantiated Withdrawal") %>%      
-  filter(`Case outcome` != "Other Grants") %>% 
-  filter(`Case outcome` != "Other Refusals") %>%
-  filter(`Case outcome` !=  "Other Withdrawal") %>%
-  filter(`Case outcome` != "UASC Leave") %>%
-  filter(`Case outcome` != "Refugee Permission") %>%
-  filter(`Case outcome` != "UASC Leave") %>%
-  filter(`Case outcome` != "Temporary Refugee Permission") %>%
-  filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") %>%
-  filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") %>%
-  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ") %>%
+resettlement_scheme <- resettlement_scheme |>
+  filter(`Case outcome` != "3rd Country Refusal") |>	
+  filter(`Case outcome` !=  "Certified Refusal") |>
+  filter(`Case outcome` != "Discretionary Leave") |>
+  filter(`Case outcome` != "Humanitarian Protection") |>
+  filter(`Case outcome` != "Non-Substantiated Withdrawal") |>
+  filter(`Case outcome` != "Non-Substantiated Withdrawal") |>     
+  filter(`Case outcome` != "Other Grants") |>
+  filter(`Case outcome` != "Other Refusals") |>
+  filter(`Case outcome` !=  "Other Withdrawal") |>
+  filter(`Case outcome` != "UASC Leave") |>
+  filter(`Case outcome` != "Refugee Permission") |>
+  filter(`Case outcome` != "UASC Leave") |>
+  filter(`Case outcome` != "Temporary Refugee Permission") |>
+  filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") |>
+  filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") |>
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ") |>
   filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded")
   
-Resettlement22 |> 
+resettlement_scheme |> 
   mutate(`Case outcome` = 
            case_match(
              `Case outcome`,
@@ -63,7 +65,7 @@ Resettlement22 |>
              ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme")
              )
          ) |>
-  ggplot(aes(fill = `Case outcome`, x = Year, y = TotalR)) +
+  ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0, NA)) +
@@ -75,10 +77,12 @@ Resettlement22 |>
   labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
        x = "Year",
        y = "Number of grants", 
-       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023")
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023",
+       fill = "Resettlement route")
 
 # Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
-# # To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?# # 
+
+########### To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?# # 
 
 # ---- Age of those per Resettlement Scheme ----
 UKResettlement <- decisions_resettlement %>%
@@ -130,3 +134,23 @@ UKResettlement %>%
   labs(title = "Nationalities of People in UK Resettlement Scheme", 
        x = "Quarter", 
        y = "Number of People")
+
+
+####Find where this is- does not belong here???
+# ---- # Outcomes of Initial Decision Bar Graph#  ----
+ResettlmentTotal %>%
+  filter(`Case type` != "Resettlment Case") %>%
+  ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
+  geom_bar(position="stack", stat="identity") +
+  theme_classic() +
+  labs(title = "Number of grants, refusals or withdrawls of asylum applications at initial decision from 2001 to 2023",
+       subtitle = "Inital decision on asylum application grouped by case outcome",
+       x = "Year", 
+       y = "Number of Decisions", 
+       caption = "British Red Cross analysis of Home Office data, until January, 2023") +
+  scale_x_continuous(breaks = c(2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) + 
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_light,
+                               brc_colours$red_earth,
+                               brc_colours$red_deep))

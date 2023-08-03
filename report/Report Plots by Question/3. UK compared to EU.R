@@ -4,6 +4,65 @@ library(readxl)
 source("report/brc_colours.R")
 source("report/theme_brc.R")
 
+
+
+# Download "Asylum and first time asylum applicants - annual aggregated data (tps00191)"
+# Source: https://ec.europa.eu/eurostat/web/migration-asylum/asylum/database
+tf <- download.file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00191.tsv.gz", destfile = ".tsv.gz")
+
+eu_asylum_raw <- read_tsv(tf)
+
+# Wrangling
+eu_asylum <- 
+  eu_asylum_raw |> 
+  
+  # Separate out the elements of the long single first column
+  separate_wider_delim(`citizen,sex,unit,age,asyl_app,geo\\time`, delim = ",", names = c("citizen", "sex", "unit", "age", "asyl_app", "geo")) |> 
+  
+  filter(asyl_app == "ASY_APP") |>  # Keep only asylum applications (not breakdowns by first time or subsequent)
+  filter(geo != "EU27_2020") |>     # Don't need the EU27 total
+  
+  mutate(across(starts_with("20"), as.integer)) |> 
+  
+  mutate(Nation = case_country_lookup(geo)) |> 
+  arrange(desc(`2022`)) |> 
+  
+  select(-c(citizen:asyl_app)) |> 
+  relocate(Nation)
+
+# - Add UK totals for 2020 to latest year -
+# What's the latest year in the EU dataset?
+first_year <- 
+  str_extract(names(eu_asylum), "20[0-9]+") |> 
+  as.integer() |> 
+  min(na.rm = TRUE)
+
+most_recent_year <- 
+  str_extract(names(eu_asylum), "20[0-9]+") |> 
+  as.integer() |> 
+  max(na.rm = TRUE)
+
+uk_asylum <- 
+  asylum::applications |> 
+  group_by(Year) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  filter(Year >= first_year & Year <= most_recent_year) |> 
+  
+  mutate(Nation = "United Kingdom", geo = "UK") |> 
+  pivot_wider(names_from = Year, values_from = Applications)
+
+eu_asylum <- 
+  eu_asylum |> 
+  filter(Nation != "United Kingdom") |> 
+  bind_rows(uk_asylum) |> 
+  arrange(desc(`2022`))
+
+
+
+
+------
+
+
 # EU Data
 EU_stat_ <- read_excel("~/EU stat .xlsx")
 View(EU_stat_)
