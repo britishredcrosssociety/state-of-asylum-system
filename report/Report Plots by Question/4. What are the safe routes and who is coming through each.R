@@ -210,7 +210,7 @@ ResettlmentTotal %>%
   filter(`Case type` != "Resettlment Case") %>%
   ggplot(aes(fill = `Case outcome group`, y = RTotal, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Number of grants, refusals or withdrawls of asylum applications at initial decision from 2001 to 2023",
        subtitle = "Inital decision on asylum application grouped by case outcome",
        x = "Year", 
