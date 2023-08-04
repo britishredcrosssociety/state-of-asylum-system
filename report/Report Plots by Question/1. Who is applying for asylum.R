@@ -37,13 +37,13 @@ application_by_nationality |>
   geom_bar(stat = "identity") +
   theme_brc() +
   labs(title = "Number of asylum applications to the United Kingdom by nationality from 2001 to 2023",
-        subtitle = "Top 10 nationalities with the highest number of asylum applications to the United Kingdom",
+        subtitle = "Top 5 nationalities with the highest number of asylum applications to the United Kingdom each year",
         x = "Year", 
         y = "Number of asylum applications", 
         caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023") +
   scale_x_continuous(breaks = c(2001 : 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
-  theme(axis.text.x = element_text(angle = 70, vjust = 0.5, hjust=1)) +
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_deep,
                                brc_colours$red_mercer,
