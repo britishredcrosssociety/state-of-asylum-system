@@ -14,6 +14,7 @@ backlog <-
 
 backlog |> 
   pivot_wider(names_from = Stage, values_from = Backlog) |> 
+  select(Date, `Pending initial decision (more than 6 months)`, `Pending initial decision (6 months or less)`, `Pending further review`) |> 
   write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
 
 # - Caption -

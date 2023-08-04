@@ -30,6 +30,7 @@ bind_rows(backlog_total, backlog_nationality) |>
   replace_na(list(`Pending further review` = "",
                   `Pending initial decision (6 months or less)` = "",
                   `Pending initial decision (more than 6 months)` = "")) |> 
+  select(Date, Nationality, `Pending initial decision (more than 6 months)`, `Pending initial decision (6 months or less)`, `Pending further review`) |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality.csv")
 
 # - Caption -
