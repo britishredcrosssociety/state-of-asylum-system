@@ -39,7 +39,7 @@ ByOutcome <- AgeDispute %>%
 ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   geom_text(aes(label = TotalDispute),
-            position = position_stack(vjust = .5), size = 2) +
+            position = position_stack(vjust = .5), size = 3) +
   theme_brc() +
   labs(title = "Outcome of age dispute cases from 2010 to 2023", 
        x = "Year", 

@@ -47,9 +47,9 @@ SupportType |>
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$red_deep))
+  scale_fill_manual(values = c(brc_colours$red_deep,
+                               brc_colours$red_mercer,
+                               brc_colours$red_light))
 
 # ---- 2023 Section and Accommodation Type ---- 
 SupportType %>%
@@ -60,7 +60,7 @@ SupportType %>%
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
-  labs(title = "Number of people in reciept of support by accomodation type at March 2023", 
+  labs(title = "Number of people in reciept of support by accomodation type as of March 2023", 
        x = "Type of asylum support", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
@@ -69,7 +69,7 @@ SupportType %>%
   scale_fill_manual(values = c(brc_colours$steel,
                                brc_colours$teal,
                                brc_colours$red_dunant,
-                               brc_colours$red_mercer))
+                               brc_colours$red_earth))
 
 #To discuss with Alice and Tamara on how to plot and viz destitution.#
 # ---- Destitution ----
