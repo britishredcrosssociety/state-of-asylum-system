@@ -168,6 +168,7 @@ asylum::irregular_migration |>
   ungroup() |> 
   pivot_wider(names_from = `Method of entry`, values_from = `Number of detections`) |> 
   mutate(across(-Year, cumsum)) |> 
+  select(Year, `Small boat arrivals`, `Recorded detections in the UK`, `Inadequately documented air arrivals`, `Recorded detections at UK ports`) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - trend.csv")
 
 # - Caption -
