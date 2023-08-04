@@ -291,7 +291,7 @@ asylum::applications |>
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation.csv")
 
 # - Caption -
-# Which nationalities are consistently in the top 10% of applications?
+# Which nationalities are consistently in the top 5% of applications?
 num_years <- max(asylum::applications$Year) - min(asylum::applications$Year)
 
 asylum::applications |> 
@@ -300,8 +300,9 @@ asylum::applications |>
   ungroup() |> 
   
   group_by(Year) |> 
-  mutate(Decile = as.integer(Hmisc::cut2(Applications, g = 10))) |> 
-  filter(Decile == 10) |> 
+  mutate(Applications_rank = rank(Applications)) |> 
+  mutate(Vigintile = as.integer(Hmisc::cut2(Applications_rank, g = 20))) |> 
+  filter(Vigintile == max(Vigintile)) |> 
   ungroup() |> 
   
   count(Nationality, sort = TRUE) |> 
