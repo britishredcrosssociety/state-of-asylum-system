@@ -172,14 +172,14 @@ people_in_detention %>%
   ggplot(aes(fill = Age, x = Year, y = People)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  scale_fill_manual(values = c(brc_colours$red_deep,
-                              brc_colours$red_earth,
-                              brc_colours$red_dunant,
-                              brc_colours$red_light,
-                              brc_colours$red_mercer)) +
+  scale_fill_manual(values = c(brc_colours$teal,
+                               brc_colours$steel,
+                               brc_colours$red_light,
+                               brc_colours$red_dunant,
+                               brc_colours$red_deep)) +
   labs(title = "Number of women in immigration detention from 2010 to 2023",
        x = "Year",
        y = "Number of women",
-       caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 1500)) +
   scale_x_continuous(breaks = c(2010:2023))
