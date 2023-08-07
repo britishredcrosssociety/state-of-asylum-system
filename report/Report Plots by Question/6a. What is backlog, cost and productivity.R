@@ -59,3 +59,23 @@ backlog_nationality |>
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2023") + 
   scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0, NA)) 
+
+# ---- Grant, Refusals and Withdrawals ----
+
+
+resettlement_total %>%
+  #filter(`Case type` != "Resettlment Case") %>%
+  ggplot(aes(fill = `Case outcome group`, y = Total, x = Year)) + 
+  geom_bar(position="stack", stat="identity") +
+  theme_brc() +
+  labs(title = "Number of grants, refusals or withdrawls of asylum applications at initial decision from 2001 to 2023",
+       subtitle = "Inital decision on asylum application grouped by case outcome",
+       x = "Year", 
+       y = "Number of Decisions", 
+       caption = "British Red Cross analysis of Home Office data, until January 2023") +
+  scale_x_continuous(breaks = c(2001:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) + 
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_light,
+                               brc_colours$red_earth,
+                               brc_colours$red_deep))

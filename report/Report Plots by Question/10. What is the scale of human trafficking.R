@@ -39,12 +39,12 @@ NRMTotal %>%
   ggplot(aes(fill = `Age at exploitation`, x =  Gender,y =  TotalSum)) +
   geom_bar(position = "stack", stat ="identity") +
   geom_text(aes(label = TotalSum), position = position_stack(vjust = .5),size = rel(2)) +
-  theme_classic() +
-  labs(title = "Number of referrals to the National Referral Mechanism (NRM) by age and sex, from 2022 to 2023", 
+  theme_brc() +
+  labs(title = "Number of referrals to the National Referral Mechanism (NRM) by age and sex year ending March 2023", 
        x = "Sex", 
        y = "Number of Referrals",
        caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 12000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 12000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_earth))
  
@@ -63,13 +63,13 @@ NRMTotal |>
   ggplot(aes(x = reorder(Nationality, desc(TotalN)), y = TotalN)) +
   geom_col(fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Nationalities with the largest number of referrals to the National Referral Mechanism (NRM) processed year ending March 2023",
        subtitle =  "People from the United Kingdom, Albania, Eritrea, Iran, Sudan and Vietnam made up 70% of all NRM referrals",
        x = "Nationality", 
        y = 'Number of People', 
        caption = 'British Red Cross analysis of Home Office data, March 2022 to March 2023') +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 5000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 5000), expand = c(0, NA)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 
@@ -89,13 +89,13 @@ nrm_conclusive_grounds |>
          `Age group` != "Age not specified or unknown - Positive conclusive grounds") |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Proportion of people who recieved positive conclusive grounds by age from 2014 to 2023", 
        x = "Year", 
        y = "Number of People",
        caption = "British Red Cross analysis of Home Office data, March 2014 until March 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
                                brc_colours$steel,
@@ -119,14 +119,13 @@ nrm_reasonable_grounds |>
          `Age group` != "Age not specified or unknown - Positive reasonable grounds") |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
-  theme_classic() +
+  theme_brc() +
   labs(title = "Proportion of people who recieved positive reasonable grounds by age from 2014 to 2023", 
-       subtitle = "Adults shown in red, children in teal and unknown in black",
        x = "Year", 
        y = "Number of People",
        caption = "British Red Cross analysis of Home Office data, January 2014 until January 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 20000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_dunant,
                                brc_colours$steel,
@@ -155,10 +154,10 @@ DTNTotal %>%
   ggplot(aes(x = reorder(Nationality, desc(Total2)), y = Total2)) +
   geom_col(fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total2)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
-  theme_classic() +
-  labs(title = "Nationalities with the largest number of reports via the Duty to Notify process from 2022 to 2023",
-       # subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to Janaury 2023",
+  theme_brc() +
+  labs(title = "Nationalities with the largest number of reports via the Duty to Notify process year ending March 2023",
+       # subtitle = "406 individuals from the United Kingdom were referred to Duty to Notify from April 2022 to January 2023",
        x = "Nationalities", 
        y = "Number of reports", 
        caption = "British Red Cross analysis of Home Office data, March 2022 - March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0,NA))
