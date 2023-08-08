@@ -157,9 +157,8 @@ UKResettlement <- decisions_resettlement %>%
   filter(`Case outcome` == "Resettlement - UK Resettlement Scheme")
 
 UKResettlement <- UKResettlement %>%
-  select(Date, Year, Quarter, Nationality, Age, Sex, Decisions) %>%
-  group_by(Date, Year, Quarter, Nationality, Age, Sex) %>%
-  summarise(TotalperCategory = sum(Decisions)) 
+  group_by(Year) %>%
+  summarise(Total = sum(Decisions)) 
 
 UKResettlement
 
