@@ -84,7 +84,7 @@ people_leaving_detention |>
                                brc_colours$red_earth,
                                brc_colours$red_dunant))
 
-# ---- 4. Detention Pregnant Women ----
+# ---- 4. Detention Pregnant People ----
 detention_pregnant_women |>
   select(Year, `Number of pregnant women detained in the immigration detention estate`) |>
   group_by(Year) |>
@@ -97,7 +97,7 @@ detention_pregnant_women |>
   labs(title = "Number of pregnant people in immigration detention from 2016 to 2023",
        x = "Year", 
        y = "Number of pregnant people", 
-       caption = "British Red Cross analysis of Home Office data, July 2016 to March, 2023") +
+       caption = "British Red Cross analysis of Home Office data, July 2016 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 60), expand = c(0,NA)) +
   scale_x_continuous(breaks = c(2016:2023)) 
 
@@ -169,6 +169,11 @@ detention_length <-
   
   #  Remove initial letter and colon
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
+  
+detention_length$`Length of detention` <- factor(detention_length$`Length of detention`, 
+                                                           levels=c("Up to two weeks",
+                                                                    "15 to 28 days",
+                                                                    "29 days or more"))
 
 detention_length |> 
   ggplot(aes(fill =`Length of detention`, x = Year, y = People)) +
@@ -180,9 +185,9 @@ detention_length |>
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 40000), expand = c(0,NA)) +
-  scale_fill_manual(values = c(brc_colours$red_earth,
+  scale_fill_manual(values = c(brc_colours$red_light,
                                brc_colours$red_mercer,
-                               brc_colours$red_light))
+                               brc_colours$red_deep))
 
 
                                

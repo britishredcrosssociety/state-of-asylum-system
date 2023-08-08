@@ -81,3 +81,7 @@ appeals_2023 |>
        y = "Number of appeals", 
        caption = "British Red Cross analysis of Home Office Data, March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 200), expand = c(0,NA))
+
+ ---- # 3. Asylum Returns ----
+
+view(returns_asylum)

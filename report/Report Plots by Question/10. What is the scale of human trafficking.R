@@ -45,7 +45,7 @@ NRMTotal |>
   geom_col(fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(TotalN)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = str_wrap("Nationalities with the largest number of referrals to the National Referral Mechanism (NRM) processed year ending March 2023"),
+  labs(title = str_wrap("Nationalities with the largest number of referrals to the National Referral Mechanism (NRM) processed for year ending March 2023"),
        subtitle =  "People from the United Kingdom, Albania, Eritrea, Iran, Sudan and Vietnam made up 70% of all NRM referrals",
        x = "Nationality", 
        y = 'Number of people', 

@@ -26,7 +26,7 @@ SmallBoatNat |>
   #coord_flip() +
   theme_brc() +
   theme(axis.text.x = element_text(vjust = 0.5, hjust=0.5)) +
-  labs(title = "Top 10 nationalities detected crossing the Channel in small boats, year ending March 2023",
+  labs(title = "Top 10 nationalities detected crossing the Channel in small boats for year ending March 2023",
        #subtitle = "Top 10 nationalities detected crossing the channel",
        x = "Year", 
        y = "Number of people detected", 
@@ -88,7 +88,7 @@ smallboat |>
   ggplot(aes(fill = `Age Group`, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Small boat Channel crossings by age and sex, year ending 2022",
+  labs(title = "Small boat Channel crossings by age and sex for year ending 2022",
        x = "Sex", 
        y = "Number of people detected",
        caption = "British Red Cross analysis of Home Office data, January 2022 to December 2022") +

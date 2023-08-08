@@ -60,7 +60,7 @@ SupportType %>%
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
-  labs(title = "Number of people in reciept of support by accomodation type as of March 2023", 
+  labs(title = "Number of people in receipt of support by accomodation type as of March 2023", 
        x = "Type of asylum support", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
