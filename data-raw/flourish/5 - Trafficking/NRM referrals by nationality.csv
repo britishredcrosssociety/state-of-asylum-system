@@ -1,372 +1,41 @@
-Nationality,People
-Albanian,5056
-UK,4385
-Eritrean,1103
-Sudanese,964
-Vietnamese,766
-Iranian,428
-Indian,347
-Afghan,294
-Romanian,276
-Somali,266
-Iraqi,206
-Ethiopian,194
-Syrian,185
-Pakistani,180
-Chinese,165
-Nigerian,164
-Filipino,137
-Egyptian,120
-Bangladeshi,111
-Polish,98
-Brazilian,79
-Namibian,67
-Ghanaian,66
-Chadian,60
-Pakistani UK,57
-Lithuanian,56
-Jamaican,53
-Thai,50
-Bulgarian,48
-South Sudanese,47
-Slovak,46
-Sri Lankan,45
-Unknown,45
-Zimbabwean,44
-Moroccan,43
-Portuguese,42
-Yemeni,42
-Gambian,41
-Sierra Leonean,41
-Turkish,41
-Algerian,39
-Jamaican UK,39
-Hungarian,33
-Ukrainian,33
-Kenyan,31
-Kuwaiti,30
-Cameroonian,27
-Latvian,27
-Czech,26
-Bangladeshi UK,25
-Guinean,25
-Botswanan,24
-Italian,22
-Unknown UK,22
-Libyan,21
-Mauritian,21
-Malaysian,20
-Congolese (DRC),19
-Ivorian,19
-Polish UK,19
-Somali UK,19
-Ugandan,19
-Kosovan,18
-Saudi Arabian,18
-Central African,17
-Central African UK,16
-Irish,15
-Nigerian UK,15
-Dutch,14
-Greek,14
-Grenadian,14
-Portuguese UK,14
-Albanian Greek,13
-Palestinian,13
-Tanzanian,13
-Tunisian,13
-Honduran,12
-Nepalese,12
-Romanian UK,12
-Senegalese,12
-Turkish UK,12
-American,11
-French,11
-Spanish,11
-Eritrean Ethiopian,10
-Malian,10
-Albanian UK,9
-Salvadorean,9
-Ghanaian UK,8
-South African,8
-Trinidadian,8
-Albanian Unknown,7
-Angolan,7
-Irish UK,7
-Moroccan UK,7
-South African UK,7
-St Lucian,7
-Swedish,7
-UK Zimbabwean,7
-Afghan UK,6
-Albanian Italian,6
-Congolese (Drc),6
-East Timorese,6
-Sierra Leonean UK,6
-Taiwanese,6
-Algerian UK,5
-Beninese,5
-Congolese (Congo) UK,5
-Eritrean Sudanese,5
-Eritrean UK,5
-Italian UK,5
-Kenyan UK,5
-Kyrgyz,5
-Mexican,5
-Moldovan,5
-Sudanese South Sudanese,5
-Thai UK,5
-Albanian Bulgarian,4
-Angolan UK,4
-Brazilian UK,4
-Chadian Sudanese,4
-Citizen of the Dominican Republic,4
-Congolese (Congo),4
-Italian Nigerian,4
-Ivorian UK,4
-Kazakh,4
-Liberian,4
-Spanish UK,4
-Sudanese UK,4
-Vincentian,4
-Angolan Portuguese,3
-Cameroonian UK,3
-Chilean,3
-Chinese UK,3
-Citizen of Antigua and Barbuda,3
-Colombian UK,3
-Ecuadorean,3
-French UK,3
-Gambian UK,3
-Georgian,3
-German,3
-Hungarian Romanian,3
-Indian Sri Lankan,3
-Indian UK,3
-Iraqi Unknown,3
-Lebanese,3
-Lebanese UK,3
-Lithuanian UK,3
-Macedonian,3
-Mauritanian,3
-Romanian Unknown,3
-Russian,3
-South Sudanese Sudanese,3
-Ugandan UK,3
-Unknown Vietnamese,3
-Albanian Kosovan,2
-Albanian Romanian,2
-American UK,2
-Angolan Unknown,2
-Australian UK,2
-Belarusian,2
-Bolivian,2
-Brazilian Portuguese,2
-Burmese,2
-Burmese Bangladeshi,2
-Burundian,2
-Cayman Islander,2
-Central African Nigerian,2
-Citizen of Bosnia and Herzegovina Unknown,2
-Colombian,2
-Croatian,2
-Czech UK,2
-Dutch Somali,2
-Dutch UK,2
-Fijian UK,2
-Finnish,2
-French Nigerian,2
-Gambian Spanish,2
-Guinean UK,2
-Indian Unknown,2
-Indonesian,2
-Iranian Turkish,2
-Iranian UK,2
-Iraqi Kuwaiti,2
-Iraqi UK,2
-Japanese,2
-Kuwaiti Swedish,2
-Malawian,2
-Nigerien UK,2
-Norwegian,2
-Portuguese Zimbabwean,2
-Russian UK,2
-Rwandan,2
-Slovak Slovenian,2
-Slovak UK,2
-Slovenian UK,2
-South Korean,2
-Sri Lankan UK,2
-Sudanese Unknown,2
-Tajik,2
-Afghan Indian,1
-Afghan Pakistani,1
-Afghan Russian,1
-Afghan Unknown,1
-Albanian Botswanan,1
-Albanian German,1
-Albanian Lithuanian,1
-Albanian Turkish,1
-Algerian Eritrean,1
-Algerian Unknown,1
-American Kenyan,1
-Andorran Sudanese,1
-Andorran UK,1
-Argentine,1
-Argentine Armenian,1
-Argentine Brazilian,1
-Argentine Sri Lankan,1
-Armenian,1
-Armenian Bulgarian,1
-Australian,1
-Bahraini UK,1
-Bangladeshi Burmese,1
-Bangladeshi Irish,1
-Bangladeshi Italian,1
-Bangladeshi Unknown,1
-Barbadian,1
-Belgian,1
-Belgian Sierra Leonean,1
-Belgian UK,1
-Beninese Nigerian,1
-Beninese UK,1
-Bermudian,1
-Botswanan UK,1
-Botswanan Zimbabwean,1
-Brazilian Congolese (Congo),1
-Brazilian Nigerian,1
-British Virgin Islander Bangladeshi,1
-British Virgin Islander Citizen of the Dominican Republic,1
-British Virgin Islander UK,1
-Bulgarian Nigerian,1
-Bulgarian Spanish,1
-Bulgarian Turkish,1
-Burmese Saudi Arabian,1
-Canadian,1
-Canadian Jamaican,1
-Cape Verdean,1
-Cayman Islander UK,1
-Central African Congolese (Drc),1
-Central African French,1
-Central African Malian,1
-Chilean Spanish,1
-Chinese Hong Konger,1
-Chinese Kazakh,1
-Chinese Vietnamese,1
-Citizen of Bosnia and Herzegovina,1
-Citizen of Guinea-Bissau,1
-Citizen of Guinea-Bissau Nigerian,1
-Citizen of Guinea-Bissau Sudanese,1
-Citizen of Guinea-Bissau Vietnamese,1
-Citizen of the Dominican Republic Spanish,1
-Colombian Venezuelan,1
-Congolese (DRC) Central African,1
-Congolese (DRC) UK,1
-Congolese (Drc) UK,1
-Cuban,1
-Cuban UK,1
-Cypriot,1
-Czech Slovak,1
-Danish,1
-Danish Somali,1
-Dominican,1
-Dominican UK,1
-Dutch Eritrean,1
-Dutch Moroccan,1
-Ecuadorean UK,1
-Egyptian Kuwaiti,1
-Emirati Kuwaiti,1
-Eritrean Swedish,1
-Eritrean Unknown,1
-Estonian,1
-Estonian Russian,1
-Ethiopian UK,1
-Filipino UK,1
-Filipino Unknown,1
-French Ghanaian,1
-French Ivorian,1
-Gambian Italian,1
-Gambian Sierra Leonean,1
-Gambian Unknown,1
-German Pakistani,1
-German UK,1
-Ghanaian Irish,1
-Ghanaian Italian,1
-Greek Iranian,1
-Greek Italian,1
-Greek Russian,1
-Greek UK,1
-Guinean Portuguese,1
-Haitian,1
-Honduran Spanish,1
-Hungarian Jordanian,1
-Hungarian UK,1
-Indian Portuguese,1
-Iranian Iraqi,1
-Iranian Romanian,1
-Iranian Unknown,1
-Iraqi Iranian,1
-Iraqi Syrian,1
-Israeli,1
-Italian Pakistani,1
-Italian Romanian,1
-Jamaican Portuguese,1
-Jamaican Unknown,1
-Jordanian,1
-Kenyan Somali,1
-Kittitian,1
-Kosovan UK,1
-Kuwaiti Saudi Arabian,1
-Kuwaiti Syrian,1
-Kuwaiti UK,1
-Kuwaiti Unknown,1
-Lao,1
-Lao Vietnamese,1
-Latvian Russian,1
-Latvian UK,1
-Libyan Palestinian,1
-Libyan Sudanese,1
-Libyan UK,1
-Lithuanian Swedish,1
-Mauritian UK,1
-Mongolian,1
-Montserratian Zimbabwean,1
-Moroccan Spanish,1
-Moroccan Unknown,1
-New Zealander UK,1
-Nicaraguan,1
-Nicaraguan UK,1
-Nigerian Spanish,1
-Nigerian Sudanese,1
-Nigerian Unknown,1
-Nigerien,1
-Pakistani South African,1
-Pakistani Spanish,1
-Pakistani Unknown,1
-Panamanian,1
-Portuguese Unknown,1
-Romanian Spanish,1
-Romanian Turkish,1
-Russian Tajik,1
-Russian UKrainian,1
-Saudi Arabian Unknown,1
-Serbian UK,1
-Sierra Leonean Sudanese,1
-Singaporean UK,1
-Slovak Unknown,1
-Somali Saudi Arabian,1
-South African Sudanese,1
-South African Unknown,1
-South Sudanese South African,1
-St Lucian UK,1
-Swazi,1
-Syrian Saudi Arabian,1
-Thai Unknown,1
-Togolese,1
-Trinidadian UK,1
-Turkish UKrainian,1
-UK Venezuelan,1
-UK Vietnamese,1
-Ukrainian UK,1
-Uzbek UK,1
-Zambian,1
+Nationality,Government agency,Local Authority,NGO and third sector,Police
+Albanian,20605,772,880,566
+UK,45,9372,550,1923
+Eritrean,4780,276,330,12
+Sudanese,3970,464,205,13
+Vietnamese,1395,228,255,379
+Iranian,1310,252,365,30
+Indian,1235,44,200,49
+Afghan,795,440,45,16
+Somali,925,76,220,18
+Iraqi,715,80,130,17
+Ethiopian,790,68,65,6
+Syrian,790,36,70,4
+Nigerian,480,88,100,26
+Romanian,155,292,85,155
+Pakistani,380,120,115,51
+Filipino,380,8,260,7
+Chinese,530,20,40,46
+Egyptian,405,80,65,6
+Bangladeshi,360,24,50,23
+Namibian,300,0,30,1
+Brazilian,240,12,35,21
+Polish,45,172,40,38
+Chadian,230,40,20,0
+Ghanaian,140,24,50,22
+Jamaican,130,44,50,6
+South Sudanese,170,28,30,0
+Sri Lankan,185,12,10,3
+Yemeni,185,12,5,1
+Thai,170,4,5,14
+Turkish,145,28,10,3
+Gambian,135,24,15,5
+Sierra Leonean,100,20,50,6
+Pakistani UK,0,136,10,21
+Algerian,90,52,20,4
+Zimbabwean,120,24,10,12
+Moroccan,105,36,10,11
+Lithuanian,30,76,15,28
+Slovak,25,100,10,14
+Jamaican UK,5,128,5,5
+Kuwaiti,95,12,30,2

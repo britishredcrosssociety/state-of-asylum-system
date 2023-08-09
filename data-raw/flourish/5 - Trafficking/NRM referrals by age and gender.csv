@@ -1,4 +1,4 @@
-Age at exploitation,Female,Male,Other,Not Recorded
-Adult (18 or over),1621,5583,2,NA
-Child (17 or under),1119,4726,9,1
-Not specified or unknown,197,665,1,NA
+Age at exploitation,Female,Male
+Adult (18 or over),-1621,5583
+Child (17 or under),-1119,4726
+Not specified or unknown,-197,665
