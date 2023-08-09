@@ -94,7 +94,8 @@ return_asylum <- return_asylum |>
   
 return_asylum |>
   filter(`Return related` == "Asylum-related") |>
-  ggplot(aes(fill = `Return Method`, x = Nationality, y = People)) +
+  filter(Nationality != "Other") |>
+  ggplot(aes(fill = `Return Method`, x = reorder(Nationality, desc(People), sum), y = People)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
   labs(title = "Nationality of asylum-related returns by method of return as of March 2023",
@@ -107,16 +108,17 @@ return_asylum |>
                                brc_colours$red_mercer))
 
 return_asylum |>
+  filter(Nationality != "Other") |>
   group_by(Nationality, `Return related`) |>
   summarise(Total = sum(People)) |>
-  ggplot(aes(fill = `Return related`, x= Nationality, y = Total)) +
+  ggplot(aes(fill = `Return related`, x = reorder(Nationality, desc(Total), sum), y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
   labs(title = "Number of asylum-related and non-asylum related returns as of March 2023",
        x = "Nationality",
        y = "Number of people returned",
        caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0,NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_earth))
   
