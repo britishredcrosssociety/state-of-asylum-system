@@ -171,9 +171,9 @@ detention_length <-
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
   
 detention_length$`Length of detention` <- factor(detention_length$`Length of detention`, 
-                                                           levels=c("Up to two weeks",
+                                                           levels=c("29 days or more",
                                                                     "15 to 28 days",
-                                                                    "29 days or more"))
+                                                                    "Up to two weeks"))
 
 detention_length |> 
   ggplot(aes(fill =`Length of detention`, x = Year, y = People)) +

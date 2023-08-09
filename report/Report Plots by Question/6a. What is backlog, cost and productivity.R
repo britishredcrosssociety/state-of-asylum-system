@@ -53,7 +53,7 @@ backlog_nationality |>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant, show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Backlog)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() + 
-  labs(title = "Number of people waiting for an initial decision on their asylum claim by nationality for year ending March 2023", 
+  labs(title = str_wrap("Number of people waiting for an initial decision on their asylum claim by nationality for year ending March 2023"), 
        subtitle =  "Top 10 nationalities waiting over 6 months for an initial decision",
        x = "Nationality",
        y = "Number of people", 
