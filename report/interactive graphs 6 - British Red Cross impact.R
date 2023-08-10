@@ -50,10 +50,10 @@ brc_jun22_23 |>
 # ---- Who have we supported? (age, gender, nationality) ----
 # Age and sex
 brc_jun22_23 |> 
-  distinct(MainPSN, Age, Sex = Main_Gender) |> 
+  distinct(MainPSN, Age, Gender = Main_Gender) |> 
   
   filter(!is.na(Age)) |> 
-  filter(!is.na(Sex)) |> 
+  filter(!is.na(Gender)) |> 
   
   # Make age groups
   mutate(`Age group` = case_when(
@@ -64,12 +64,15 @@ brc_jun22_23 |>
     Age >= 70 ~ "70+"
   )) |> 
   
-  mutate(Sex = if_else(Sex == "NULL", "Unknown", Sex)) |> 
+  mutate(Gender = if_else(!Gender %in% c("Female", "Male"), "Other", Gender)) |> 
   
-  count(`Age group`, Sex, sort = TRUE) |> 
+  count(`Age group`, Gender, sort = TRUE) |> 
   
-  pivot_wider(names_from = Sex, values_from = n)
-
+  pivot_wider(names_from = Gender, values_from = n) |> 
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender.csv")
 
 # Country of origin
 brc_jun22_23 |> 
@@ -80,3 +83,6 @@ brc_jun22_23 |>
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
 
 # ---- How has the support we have provided to people changed in the last 12 months and what are the possible causes? ----
+
+
+# number of actions per person (in last 12 months) by 'beneficiary since'
