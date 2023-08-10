@@ -57,6 +57,48 @@ asylum::decisions_resettlement |>
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn.csv")
 
+# - Caption -
+library(zoo)
+
+# Proportion of claims withdrawn over last 12 months
+asylum::decisions_resettlement |> 
+  filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
+  
+  filter(`Case type` == "Asylum Case") |> 
+  mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
+  
+  group_by(`Case outcome group`) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Proportion = Decisions / sum(Decisions))
+
+# Rolling sums of withdrawals - to check highest on record
+asylum::decisions_resettlement |> 
+  # filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
+  
+  filter(`Case type` == "Asylum Case") |> 
+  mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
+  
+  group_by(Date, `Case outcome group`) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  pivot_wider(names_from = `Case outcome group`, values_from = Decisions) |> 
+  
+  arrange(desc(Date)) |> 
+  
+  # Calculate the annual rolling sum, starting with the most recent quarter
+  mutate(
+    Granted = rollsum(Granted, k = 4, na.pad = TRUE),
+    Refused = rollsum(Refused, k = 4, na.pad = TRUE),
+    Withdrawn = rollsum(Withdrawn, k = 4, na.pad = TRUE)
+  ) |> 
+  
+  # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
+  slice(seq(2, n(), by = 4)) |> 
+  arrange(desc(Withdrawn))
+
 # ---- What is the number of people waiting for an initial decision on their asylum claim (and what is their nationality, age, gender)? ----
 # - Nationality -
 awaiting_decision_by_nationality <- 
