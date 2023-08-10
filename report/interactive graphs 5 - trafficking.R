@@ -26,10 +26,9 @@ nrm_referrals <-
   asylum::nrm_referrals_2022_q2
 )
 
-unique(nrm_referrals$Nationality)
-
-# By first responder
-nrm_referrals |> 
+# ---- By first responder ----
+nrm_referrals_first_responder <- 
+  nrm_referrals |> 
   filter(`Exploitation type` == "Total" & `Age at exploitation` == "Total" & Gender == "Total" & Nationality != "Total") |> 
   filter(
     (`First responder type` == "Government agency" & `First responder` != "Government agency total") |
@@ -42,11 +41,22 @@ nrm_referrals |>
   group_by(`First responder type`, `UK national?`) |> 
   summarise(People = sum(People)) |> 
   
-  pivot_wider(names_from = `UK national?`, values_from = People) |> 
-  
+  pivot_wider(names_from = `UK national?`, values_from = People)
+
+nrm_referrals_first_responder |> 
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by first responder.csv")
 
-# By age and sex
+# - Caption -
+# Proportin of referrals over last 12 months that were from Home Office
+nrm_referrals_first_responder |> 
+  mutate(Total = `Other nationality` + `UK national`) |> 
+  mutate(`First responder type` = if_else(str_detect(`First responder type`, "Home Office"), "Home Office", "Other")) |> 
+  group_by(`First responder type`) |> 
+  summarise(Total = sum(Total)) |> 
+  ungroup() |> 
+  mutate(Proportion = Total / sum(Total))
+
+# ---- By age and sex ----
 nrm_referrals |> 
   filter(`Age at exploitation` != "Total" & Nationality == "Total") |> 
   filter(Gender %in% c("Female", "Male")) |> 
@@ -59,7 +69,7 @@ nrm_referrals |>
   
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by age and gender.csv")
 
-# By nationality and first responder (top 40 only)
+# ---- By nationality and first responder (top 40 only) ----
 nrm_referrals |> 
   filter(Nationality != "Total") |> 
   #filter(str_detect(`First responder`, "total")) |> 
