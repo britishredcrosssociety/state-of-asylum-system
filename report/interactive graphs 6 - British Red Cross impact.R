@@ -134,7 +134,26 @@ brc_jun22_23 |>
 # ---- What is the breakdwon of enquiries that we have received to refugee support? ----
 
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
+rs_actions <- 
+  brc_jun22_23 |> 
+  filter(ActionStatusName == "Completed - Successful") |> 
+  mutate(
+    Response_Type = str_remove(Response_Type, " - RFC") |> 
+      str_replace("&", "and") |> 
+      str_to_sentence()
+  ) |> 
+  count(Response_Type, sort = TRUE) |> 
+  filter(Response_Type != "Null") |> 
+  rename(`Type of response` = Response_Type, `Number of actions in last year` = n)
+  
+rs_actions |> 
+  filter(!str_detect(`Type of response`, "General")) |> 
+  write_csv("data-raw/flourish/6 - BRC/types of actions.csv")
 
+# How many general actions?
+rs_actions |> 
+  filter(str_detect(`Type of response`, "General")) |> 
+  summarise(sum(`Number of actions in last year`))
 
 # ---- How has the support we have provided to people changed in the last 12 months and what are the possible causes? ----
 
