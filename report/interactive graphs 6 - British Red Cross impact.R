@@ -156,8 +156,25 @@ rs_actions |>
   summarise(sum(`Number of actions in last year`))
 
 # ---- How has the support we have provided to people changed in the last 12 months and what are the possible causes? ----
+# We do not have data for this
 
-
-# ---- Number of actions per person (in last 12 months) by length of time we've supported someone ----
-
-
+# ---- Length of support ----
+brc_jun22_23 |> 
+  distinct(MainPSN, BeneficiarySince) |> 
+  select(BeneficiarySince) |> 
+  na.omit() |> 
+  
+  mutate(MonthsOfSupport = interval(start = BeneficiarySince, end = ymd("2023-07-31")) %/% months(1)) |> 
+  
+  # ggplot(aes(x = MonthsOfSupport)) + geom_histogram(binwidth = 12)
+  
+  mutate(`Length of British Red Cross support` = case_when(
+    MonthsOfSupport <= 12 ~ "1 year",
+    MonthsOfSupport > 12 & MonthsOfSupport <= 24 ~ "2 years",
+    MonthsOfSupport > 24 & MonthsOfSupport <= (12*5) ~ "3-5 years",
+    MonthsOfSupport > (12*5) & MonthsOfSupport <= (12*10) ~ "6-10 years",
+    MonthsOfSupport > (12*10) ~ "More than 10 years"
+  )) |> 
+  count(`Length of British Red Cross support`, name = "Number of people supported") |> 
+  
+  write_csv("data-raw/flourish/6 - BRC/length of support.csv")
