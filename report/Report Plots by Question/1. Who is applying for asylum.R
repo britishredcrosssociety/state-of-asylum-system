@@ -37,9 +37,10 @@ age_and_sex_analysis <- applications |>
 view(age_and_sex_analysis)
 
 age_and_sex_analysis <- age_and_sex_analysis |>
-  group_by(Age, Sex, Year, Date) |>
-  summarise(Total = sum(Applications))
-
+  group_by(Date, Age, Sex, Year) |>
+  summarise(Total = sum(Applications)) |>
+  ungroup()
+  
 age_and_sex_analysis <- age_and_sex_analysis |>
   filter(Sex != "Unknown Sex") |>
   filter(Age != "Unknown")
@@ -48,15 +49,15 @@ age_and_sex_analysis <- age_and_sex_analysis |>
 age_and_sex_analysis$Age <- factor(age_and_sex_analysis$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
 
 age_and_sex_analysis |>
-  filter(Date >= max(Date) -dmonths(11)) |>
+  filter(Date >= max(Date) -dmonths(11)) |> 
   ggplot(aes(fill = Age, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   #geom_text(aes(label = Total), position = position_stack(vjust = -0.25),size = rel(2)) + 
   theme_brc() +
-  labs(title = "Number of asylum applicants by age and sex for year ending March 2023 ", 
+  labs(title = "Number of asylum applicants by age and sex from March 2022 to March 2023 ", 
        x = "Sex", 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_mercer,
