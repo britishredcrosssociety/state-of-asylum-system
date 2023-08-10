@@ -75,8 +75,30 @@ brc_jun22_23 |>
   write_csv("data-raw/flourish/6 - BRC/people supported by age and gender.csv")
 
 # Country of origin
+# brc_jun22_23 |> 
+#   distinct(MainPSN, Main_CountryofOrigin) |> 
+#   count(Main_CountryofOrigin, sort = TRUE) |> 
+#   filter(Main_CountryofOrigin != "NULL") |> 
+#   
+#   mutate(Main_CountryofOrigin = case_match(
+#     Main_CountryofOrigin,
+#     "French Guiana" ~ 
+#   ))
+
+# Nationality
 brc_jun22_23 |> 
-  distinct(MainPSN, AgeMain_CountryofOrigin)
+  distinct(MainPSN, Main_Nationality) |> 
+  count(Main_Nationality, sort = TRUE) |> 
+  filter(Main_Nationality != "NULL") |> 
+  rename(Nationality = Main_Nationality, `Number of people supported` = n) |> 
+  slice(1:30) |> 
+  write_csv("data-raw/flourish/6 - BRC/people supported by nationality.csv")
+
+# How many nulls/unknowns?
+brc_jun22_23 |> 
+  distinct(MainPSN, Main_Nationality) |> 
+  filter(Main_Nationality %in% c("NULL", "Unknown")) |> 
+  count()
 
 # ---- What is the breakdwon of enquiries that we have received to refugee support? ----
 
