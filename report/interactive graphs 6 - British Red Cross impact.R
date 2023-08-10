@@ -50,10 +50,10 @@ brc_jun22_23 |>
 # ---- Who have we supported? (age, gender, nationality) ----
 # Age and sex
 brc_jun22_23 |> 
-  distinct(MainPSN, Age, Sex = Main_Gender) |> 
+  distinct(MainPSN, Age, Gender = Main_Gender) |> 
   
   filter(!is.na(Age)) |> 
-  filter(!is.na(Sex)) |> 
+  filter(!is.na(Gender)) |> 
   
   # Make age groups
   mutate(`Age group` = case_when(
@@ -64,19 +64,47 @@ brc_jun22_23 |>
     Age >= 70 ~ "70+"
   )) |> 
   
-  mutate(Sex = if_else(Sex == "NULL", "Unknown", Sex)) |> 
+  mutate(Gender = if_else(!Gender %in% c("Female", "Male"), "Other", Gender)) |> 
   
-  count(`Age group`, Sex, sort = TRUE) |> 
+  count(`Age group`, Gender, sort = TRUE) |> 
   
-  pivot_wider(names_from = Sex, values_from = n)
-
+  pivot_wider(names_from = Gender, values_from = n) |> 
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender.csv")
 
 # Country of origin
+# brc_jun22_23 |> 
+#   distinct(MainPSN, Main_CountryofOrigin) |> 
+#   count(Main_CountryofOrigin, sort = TRUE) |> 
+#   filter(Main_CountryofOrigin != "NULL") |> 
+#   
+#   mutate(Main_CountryofOrigin = case_match(
+#     Main_CountryofOrigin,
+#     "French Guiana" ~ 
+#   ))
+
+# Nationality
 brc_jun22_23 |> 
-  distinct(MainPSN, AgeMain_CountryofOrigin)
+  distinct(MainPSN, Main_Nationality) |> 
+  count(Main_Nationality, sort = TRUE) |> 
+  filter(Main_Nationality != "NULL") |> 
+  rename(Nationality = Main_Nationality, `Number of people supported` = n) |> 
+  slice(1:30) |> 
+  write_csv("data-raw/flourish/6 - BRC/people supported by nationality.csv")
+
+# How many nulls/unknowns?
+brc_jun22_23 |> 
+  distinct(MainPSN, Main_Nationality) |> 
+  filter(Main_Nationality %in% c("NULL", "Unknown")) |> 
+  count()
 
 # ---- What is the breakdwon of enquiries that we have received to refugee support? ----
 
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
 
 # ---- How has the support we have provided to people changed in the last 12 months and what are the possible causes? ----
+
+
+# number of actions per person (in last 12 months) by 'beneficiary since'
