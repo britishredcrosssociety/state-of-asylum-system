@@ -5,7 +5,7 @@ source("report/theme_brc.R")
 
 # ---- QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS) ----
 
-# ---- Total Asylum Applications ----
+# ---- 1. Total Asylum Applications ----
 total_applications <- applications |>
   group_by(Year) |>
   summarise(Total = sum(Applications))
@@ -17,55 +17,19 @@ total_applications |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_point(aes(size = Total, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
+  geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
+  annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
+  annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
   theme_brc() +
   scale_x_continuous(breaks = c(2001:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = "Year", 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023")
-
-# ---- Top 5 Nationalities Each Year ----
-application_by_nationality <- applications |>
-  select(Year, Nationality, Applications) |>
-  group_by(Year, Nationality) |>
-  summarise(Total = sum(Applications))
-
-application_by_nationality |>
-  slice_max(Total, n = 5) |>
-  ggplot(aes(x = Year, y = Total, fill = Nationality), show.legend = FALSE) + 
-  geom_bar(stat = "identity") +
-  theme_brc() +
-  labs(title = "Number of asylum applications to the United Kingdom by nationality from 2001 to 2023",
-        subtitle = "Top 5 nationalities with the highest number of asylum applications to the United Kingdom each year",
-        x = "Year", 
-        y = "Number of asylum applications", 
-        caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023") +
-  scale_x_continuous(breaks = c(2001 : 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
-  theme(axis.text.x = element_text(vjust = 0.5, hjust=1)) +
-  scale_fill_manual(values = c(brc_colours$red_dunant,
-                               brc_colours$red_deep,
-                               brc_colours$red_mercer,
-                               brc_colours$red_earth,
-                               brc_colours$red_light,
-                               brc_colours$claret,
-                               brc_colours$sand,
-                               brc_colours$earth,
-                               brc_colours$green,
-                               brc_colours$green_dark,
-                               brc_colours$duck,
-                               brc_colours$steel,
-                               brc_colours$sky,
-                               brc_colours$teal,
-                               brc_colours$blue,
-                               brc_colours$grey,
-                               brc_colours$black_full
-                               )) 
-  
+       caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023") 
 
 
-# ---- Age and Sex Analysis 2022/23 ----
+# ---- 2. Age and Sex Analysis 2023 Q1 Only ----
 age_and_sex_analysis <- applications |>
   select(Year, Age, Sex, Applications) |>
   filter(Year > '2008')
@@ -95,42 +59,42 @@ age_and_sex_analysis |>
        caption = "British Red Cross analysis of Home Office data, March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
-                                     brc_colours$red_light,
-                                     brc_colours$red_dunant,
-                                     brc_colours$red_mercer,
-                                     brc_colours$red_earth))
+                               brc_colours$red_mercer,
+                               brc_colours$red_light,
+                               brc_colours$steel,
+                               brc_colours$teal))
 
-# ---- UASC ----
+# ---- 3. Dependent Children ----
+dependent_children <- applications |>
+  select(Year, `Applicant type`, Age, Applications) |>
+  group_by(Year, `Applicant type`, Age) |>
+  summarise(Total = sum(Applications))
+
+dependent_children <- dependent_children |>
+  filter(`Applicant type` == "Dependant", Age == "Under 18")
+
+view(DependentC)
+
+dependent_children |>
+  ggplot(aes(Year, Total)) +
+  geom_point(aes(size = Total, colour = brc_colours$red_dunant, alpha = 0.5), show.legend = FALSE) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
+  theme_brc() +
+  labs(title = "Number of asylum applications with dependent children from 2009 to 2023", 
+       x = "Year", 
+       y = 'Applications', 
+       caption = 'British Red Cross analysis of Home Office data, March 2009 to March 2023') +
+  scale_x_continuous(breaks = c(2009:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 10000), expand = c(0, NA))
+
+# ---- 4. UASC ----
 UASC <- applications |>
   select(Date, Year, Nationality, UASC, Applications) |>
   group_by(Date, Year, UASC, Nationality) |>
   summarise(Total = sum(Applications))
 
 view(UASC)
-
-# ---- UASC Nationality ----
-UASC22 <- UASC |>
-  filter(Year > 2021, UASC == "UASC") |>
-  group_by(Year, Nationality)
-
-UASC22$Nationality <- factor(UASC22$Nationality, levels = UASC22$Nationality[order(UASC22$Total, decreasing = TRUE)])
-
-UASC22 |>
-  group_by(Nationality) |>
-  summarise(Total = sum(Total)) |>
-  filter(Total > 120) |>
-  ggplot(aes(x = reorder(Nationality, desc(Total), sum), y = Total)) +
-  geom_col(fill = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
-  theme_brc() +
-  labs(title = "Number of asylum applications of Unaccompanied asylum seeking children for year ending March 2023",
-       subtitle =  "Top 10 nationalities with the highest applications",
-       x = "Country", 
-       y = 'Number of Children', 
-       caption = 'British Red Cross analysis of Home Office data, March 2022 to March 2023') +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0,NA)) +
-  theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=0.5))
-
 
 # ---- UASC Total Applications ----
 UASCOnly <- UASC |>
@@ -150,28 +114,65 @@ UASCOnly |>
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2006 to March 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0, NA))
-  
 
-# ---- Dependent Children ----
-dependent_children <- applications |>
-  select(Year, `Applicant type`, Age, Applications) |>
-  group_by(Year, `Applicant type`, Age) |>
+# ---- 5. UASC Nationality ----
+UASC22 <- UASC |>
+  filter(Year > 2021, UASC == "UASC") |>
+  group_by(Year, Nationality)
+
+UASC22$Nationality <- factor(UASC22$Nationality, levels = UASC22$Nationality[order(UASC22$Total, decreasing = TRUE)])
+
+UASC22 |>
+  group_by(Nationality) |>
+  summarise(Total = sum(Total)) |>
+  filter(Total > 120) |>
+  ggplot(aes(x = reorder(Nationality, desc(Total), sum), y = Total)) +
+  geom_col(fill = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  theme_brc() +
+  labs(title = "Number of asylum applications of unaccompanied asylum seeking children for year ending March 2023",
+       subtitle =  "Top 10 nationalities with the highest applications",
+       x = "Country", 
+       y = 'Number of Children', 
+       caption = 'British Red Cross analysis of Home Office data, March 2022 to March 2023') +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0,NA)) +
+  theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=0.5))
+
+
+# ---- 6. Top 5 Nationalities Each Year ----
+application_by_nationality <- applications |>
+  select(Year, Nationality, Applications) |>
+  group_by(Year, Nationality) |>
   summarise(Total = sum(Applications))
 
-dependent_children <- dependent_children |>
-  filter(`Applicant type` == "Dependant", Age == "Under 18")
-
-view(DependentC)
-
-dependent_children |>
-  ggplot(aes(Year, Total)) +
-  geom_point(aes(size = Total, colour = brc_colours$red_dunant, alpha = 0.5), show.legend = FALSE) +
-  geom_line(colour = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
+application_by_nationality |>
+  slice_max(Total, n = 5) |>
+  ggplot(aes(x = Year, y = Total, fill = Nationality), show.legend = FALSE) + 
+  geom_bar(stat = "identity") +
   theme_brc() +
-  labs(title = "Number of asylum applications by dependent children from 2009 to 2023", 
+  labs(title = "Number of asylum applications to the United Kingdom by nationality from 2001 to 2023",
+       subtitle = "Top 5 nationalities with the highest number of asylum applications to the United Kingdom each year",
        x = "Year", 
-       y = 'Applications', 
-       caption = 'British Red Cross analysis of Home Office data, March 2009 to March 2023') +
-  scale_x_continuous(breaks = c(2009:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 10000), expand = c(0, NA))
+       y = "Number of asylum applications", 
+       caption = "British Red Cross analysis of Home Office data, March 2001 to March 2023") +
+  scale_x_continuous(breaks = c(2001 : 2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0, NA)) +
+  theme(axis.text.x = element_text(vjust = 0.5, hjust=1)) +
+  scale_fill_manual(values = c(brc_colours$red_dunant,
+                               brc_colours$red_deep,
+                               brc_colours$red_mercer,
+                               brc_colours$red_light,
+                               brc_colours$red_earth,
+                               brc_colours$earth,
+                               brc_colours$grey,
+                               brc_colours$grey_fog,
+                               brc_colours$green,
+                               brc_colours$green_dark,
+                               brc_colours$blue,
+                               brc_colours$teal,
+                               brc_colours$sky,
+                               brc_colours$steel,
+                               brc_colours$duck,
+                               brc_colours$sand,
+                               brc_colours$black_full
+  )) 
