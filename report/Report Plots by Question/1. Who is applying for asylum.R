@@ -31,13 +31,13 @@ total_applications |>
 
 # ---- 2. Age and Sex Analysis 2023 Q1 Only ----
 age_and_sex_analysis <- applications |>
-  select(Year, Age, Sex, Applications) |>
+  select(Date, Year, Age, Sex, Applications) |>
   filter(Year > '2008')
 
 view(age_and_sex_analysis)
 
 age_and_sex_analysis <- age_and_sex_analysis |>
-  group_by(Age, Sex, Year) |>
+  group_by(Age, Sex, Year, Date) |>
   summarise(Total = sum(Applications))
 
 age_and_sex_analysis <- age_and_sex_analysis |>
@@ -48,7 +48,7 @@ age_and_sex_analysis <- age_and_sex_analysis |>
 age_and_sex_analysis$Age <- factor(age_and_sex_analysis$Age, levels=c('70+', '50-69', '30-49', '18-29', 'Under 18'))
 
 age_and_sex_analysis |>
-  filter(Year > 2022) |>
+  filter(Date >= max(Date) -dmonths(11)) |>
   ggplot(aes(fill = Age, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   #geom_text(aes(label = Total), position = position_stack(vjust = -0.25),size = rel(2)) + 
@@ -57,10 +57,11 @@ age_and_sex_analysis |>
        x = "Sex", 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_mercer,
                                brc_colours$red_light,
+                               brc_colours$sky,
                                brc_colours$steel,
                                brc_colours$teal))
 
