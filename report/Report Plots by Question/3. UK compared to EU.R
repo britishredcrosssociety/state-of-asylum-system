@@ -1,14 +1,50 @@
 library(tidyverse)
 library(asylum)
-library(readxl)
+library(compositr)
 source("report/brc_colours.R")
 source("report/theme_brc.R")
 
+# EU country lookup
+case_country_lookup <- function(country_code) {
+  case_when(
+    country_code == "AT" ~ "Austria",
+    country_code == "BE" ~ "Belgium",
+    country_code == "BG" ~ "Bulgaria",
+    country_code == "CH" ~ "Switzerland",
+    country_code == "CY" ~ "Cyprus",
+    country_code == "CZ" ~ "Czechia",
+    country_code == "DE" ~ "Germany",
+    country_code == "DK" ~ "Denmark",
+    country_code == "EE" ~ "Estonia",
+    country_code == "EL" ~ "Greece",
+    country_code == "ES" ~ "Spain",
+    country_code == "FI" ~ "Finland",
+    country_code == "FR" ~ "France",
+    country_code == "HR" ~ "Croatia",
+    country_code == "HU" ~ "Hungary",
+    country_code == "IE" ~ "Ireland",
+    country_code == "IS" ~ "Iceland",
+    country_code == "IT" ~ "Italy",
+    country_code == "LI" ~ "Liechtenstein",
+    country_code == "LT" ~ "Lithuania",
+    country_code == "LU" ~ "Luxembourg",
+    country_code == "LV" ~ "Latvia",
+    country_code == "ME" ~ "Montenegro",
+    country_code == "MT" ~ "Malta",
+    country_code == "NL" ~ "Netherlands",
+    country_code == "NO" ~ "Norway",
+    country_code == "PL" ~ "Poland",
+    country_code == "PT" ~ "Portugal",
+    country_code == "RO" ~ "Romania",
+    country_code == "SE" ~ "Sweden",
+    country_code == "SI" ~ "Slovenia",
+    country_code == "SK" ~ "Slovakia",
+    country_code == "UK" ~ "United Kingdom",
+    .default = "NOT FOUND"
+  )
+}
 
-
-# Download "Asylum and first time asylum applicants - annual aggregated data (tps00191)"
-# Source: https://ec.europa.eu/eurostat/web/migration-asylum/asylum/database
-tf <- download.file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00191.tsv.gz", destfile = ".tsv.gz")
+tf <- download_file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00191.tsv.gz",".tsv.gz")
 
 eu_asylum_raw <- read_tsv(tf)
 
@@ -57,27 +93,14 @@ eu_asylum <-
   bind_rows(uk_asylum) |> 
   arrange(desc(`2022`))
 
-
-
-
-------
-
-
-# EU Data
-EU_stat_ <- read_excel("~/EU stat .xlsx")
-View(EU_stat_)
-
-# UKTotal 
-AppsQ1T <- applications %>%
-  group_by(Year) %>%
-  filter(Year == 2022) %>%
-  summarise(Total = sum(Applications))
+eu_asylum <- eu_asylum |>
+ pivot_longer(cols = `2011`:`2022`, names_to = "Year", values_to = "Applications")
 
 # ---- EU Across 10 Years ----
-EU_Stats_10_Years %>%
+eu_asylum |>
   group_by(Year) |> 
   slice_max(Applications, n = 10) |> 
-  ggplot(aes(fill = Country, x = Year, y = Applications)) +
+  ggplot(aes(fill = Nation, x = Year, y = Applications)) +
   geom_bar(position = "stack", stat = "identity") + 
   theme_classic() +
   labs(title = "Number of asylum applications to European countries from 2013 to 2022",
@@ -86,8 +109,8 @@ EU_Stats_10_Years %>%
        y = "Number of Asylum Applications", 
        caption = "British Red Cross analysis of EuroStat Data, MONTH 2022") +
   scale_y_continuous(labels = scales::unit_format(unit = "m", scale = 1e-6)) +
-  scale_x_continuous(breaks = c(2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
-  scale_fill_manual(values = c(brc_colours$black_full,
+  scale_x_continuous(breaks = c(2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022)) +
+  scale_fill_continuous(values = c(brc_colours$black_full,
                                brc_colours$blue,
                                brc_colours$teal,
                                brc_colours$green,
@@ -103,6 +126,8 @@ EU_Stats_10_Years %>%
                                brc_colours$red_mercer,
                                brc_colours$red_light,
                                brc_colours$red_dunant))
+
+scale_fill_continuous()
 
 # Can't do "Other" for the Across 10 Year plots because of the way that the data is coded.
 
