@@ -117,26 +117,29 @@ UASCOnly |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0, NA))
 
 # ---- 5. UASC Nationality ----
-UASC22 <- UASC |>
-  filter(Year > 2021, UASC == "UASC") |>
-  group_by(Year, Nationality)
+UASC <- UASC |>
+  filter(UASC == "UASC") |>
+  group_by(Date, Nationality)
 
-UASC22$Nationality <- factor(UASC22$Nationality, levels = UASC22$Nationality[order(UASC22$Total, decreasing = TRUE)])
 
-UASC22 |>
+UASC <- UASC |>
+  filter(Date >= max(Date) - dmonths(11)) |>
   group_by(Nationality) |>
-  summarise(Total = sum(Total)) |>
-  filter(Total > 120) |>
-  ggplot(aes(x = reorder(Nationality, desc(Total), sum), y = Total)) +
+  summarise(TotalUASC = sum(Total))
+
+
+UASC |>
+  filter(TotalUASC > 950) |>
+  ggplot(aes(x = reorder(Nationality, desc(TotalUASC), sum), y = TotalUASC)) +
   geom_col(fill = brc_colours$red_dunant) +
-  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  geom_text(aes(label = scales::comma(TotalUASC)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
   labs(title = "Number of asylum applications of unaccompanied asylum seeking children for year ending March 2023",
        subtitle =  "Top 10 nationalities with the highest applications",
-       x = "Country", 
+       x = "Nationality", 
        y = 'Number of Children', 
        caption = 'British Red Cross analysis of Home Office data, March 2022 to March 2023') +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0,NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) +
   theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=0.5))
 
 
