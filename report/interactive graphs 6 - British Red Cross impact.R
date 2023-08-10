@@ -100,11 +100,45 @@ brc_jun22_23 |>
   filter(Main_Nationality %in% c("NULL", "Unknown")) |> 
   count()
 
+# By immigration status
+brc_jun22_23 |> 
+  distinct(MainPSN, Main_Immigration_Status) |> 
+  count(Main_Immigration_Status, sort = TRUE) |> 
+  filter(Main_Immigration_Status != "NULL") |> 
+  mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
+  mutate(Main_Immigration_Status = case_match(
+    Main_Immigration_Status,
+    "Indefinite leave to remain (ilr)" ~ "Indefinite leave to remain",
+    "Discretionary leave to remain (dlr)" ~ "Discretionary leave to remain",
+    "Homes for ukraine scheme" ~ "Homes for Ukraine Scheme",
+    "Ukraine family visa scheme" ~ "Ukraine Family Visa Scheme",
+    "Ukraine extension scheme" ~ "Ukraine Extension Scheme",
+    "Syrian resettlement scheme" ~ "Syrian Resettlement Scheme",
+    "Vulnerable children resettlement scheme" ~ "Vulnerable Children Resettlement Scheme",
+    "Fully refused - no further reps" ~ "Fully refused - no further legal representations",
+    "Fully refused - further reps submitted" ~ "Fully refused - further legal representations submitted",
+    "Asylum seeker" ~ "People seeking asylum",
+    "Uasc leave" ~ "Unaccompanied Asylum-Seeking Children",
+    "Eea national" ~ "EEA national",
+    .default = Main_Immigration_Status
+  )) |>
+  rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status.csv")
+
+# How many nulls/unknowns?
+brc_jun22_23 |> 
+  distinct(MainPSN, Main_Immigration_Status) |> 
+  filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
+  count()
+
 # ---- What is the breakdwon of enquiries that we have received to refugee support? ----
 
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
 
+
 # ---- How has the support we have provided to people changed in the last 12 months and what are the possible causes? ----
 
 
-# number of actions per person (in last 12 months) by 'beneficiary since'
+# ---- Number of actions per person (in last 12 months) by length of time we've supported someone ----
+
+
