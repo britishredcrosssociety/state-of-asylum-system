@@ -45,6 +45,18 @@ backlog_total |>
   filter(Date == max(Date)) |> 
   summarise(Total = sum(Backlog))
 
+# ---- Grants, refusals, and withdrawn claims over time ----
+asylum::decisions_resettlement |> 
+  filter(`Case type` == "Asylum Case") |> 
+  mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
+  
+  group_by(Date, `Case outcome group`) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  
+  pivot_wider(names_from = `Case outcome group`, values_from = Decisions) |> 
+  
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn.csv")
+
 # ---- What is the number of people waiting for an initial decision on their asylum claim (and what is their nationality, age, gender)? ----
 # - Nationality -
 awaiting_decision_by_nationality <- 
