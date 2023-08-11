@@ -120,13 +120,13 @@ nrm_reasonable_grounds <- nrm_reasonable_grounds |>
          `Age group` != "Age not specified or unknown - Negative reasonable grounds",
          `Age group` != "Age not specified or unknown - Positive reasonable grounds")
 
-nrm_reasonable_grounds |>
+nrm_reasonable_grounds |> view()
   mutate(`Age group` = 
            case_match(
              `Age group`,
-             (c("Adult (18 or over) - Negative reasonable grounds" ,
-                "Child (17 or under) - Negative reasonable grounds") ~ "Negative reasonable grounds"),
-             ("Adult (18 or over) - Positive reasonable grounds" ,
+             c("Adult (18 or over) - Negative reasonable grounds" ,
+                "Child (17 or under) - Negative reasonable grounds") ~ "Negative reasonable grounds",
+             c("Adult (18 or over) - Positive reasonable grounds" ,
               "Child (17 or under) - Positive reasonable grounds") ~ "Positive reasonable grounds")) |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
