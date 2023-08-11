@@ -120,7 +120,7 @@ nrm_reasonable_grounds <- nrm_reasonable_grounds |>
          `Age group` != "Age not specified or unknown - Negative reasonable grounds",
          `Age group` != "Age not specified or unknown - Positive reasonable grounds")
 
-nrm_reasonable_grounds |> view()
+nrm_reasonable_grounds |> 
   mutate(`Age group` = 
            case_match(
              `Age group`,
@@ -134,18 +134,17 @@ nrm_reasonable_grounds |> view()
   labs(title = "Proportion of people who recieved positive reasonable grounds by age from 2014 to 2023", 
        x = "Year", 
        y = "Number of people",
+       fill = "Reasonable grounds decision",
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   scale_x_continuous(breaks = c(2014:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0,NA)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$steel,
-                               brc_colours$teal))
+  scale_fill_manual(values = c(brc_colours$red_deep,
+                               brc_colours$red_dunant))
 
 #check with Matt on why this doesnt work as well.
 
 
-# ---- Positive Conclusive Grounds ---- 
+# ---- 5. Positive Conclusive Grounds ---- 
 nrm_conclusive_grounds <- nrm_conclusive_grounds |>
   filter(Quarter == "Total") |> 
   pivot_longer(cols = `Adult (18 or over) - Negative conclusive grounds`:`Age not specified or unknown - Total`, names_to = "Age group", values_to = "People") 
@@ -159,6 +158,13 @@ nrm_conclusive_grounds |>
          `Age group` != "Age not specified or unknown - Total",
          `Age group` != "Age not specified or unknown - Negative conclusive grounds",
          `Age group` != "Age not specified or unknown - Positive conclusive grounds") |>
+  mutate(`Age group` = 
+           case_match(
+             `Age group`,
+             c("Adult (18 or over) - Negative conclusive grounds" ,
+               "Child (17 or under) - Negative conclusive grounds") ~ "Negative conclusive grounds",
+             c("Adult (18 or over) - Positive conclusive grounds" ,
+               "Child (17 or under) - Positive conclusive grounds") ~ "Positive conclusive grounds")) |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
@@ -168,10 +174,5 @@ nrm_conclusive_grounds |>
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0,NA)) +
-  scale_fill_manual(values = c(brc_colours$red_light,
-                               brc_colours$red_dunant,
-                               brc_colours$steel,
-                               brc_colours$teal))
-
-
-
+  scale_fill_manual(values = c(brc_colours$red_deep,
+                               brc_colours$red_dunant))
