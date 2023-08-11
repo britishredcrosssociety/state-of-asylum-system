@@ -141,7 +141,7 @@ eu_asylum |>
        x = "Nation", 
        y = "Number of people", 
        caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 250000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 250000), expand = c(0,NA)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 
