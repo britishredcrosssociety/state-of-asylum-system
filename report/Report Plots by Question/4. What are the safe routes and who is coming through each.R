@@ -131,20 +131,31 @@ FamilyReunion22 |>
                                brc_colours$red_earth))
 
 
+# ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
+source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")
 
+ukraine <- 
+  visas_scraped |> 
+  ungroup() |> 
+  filter(str_detect(Stage, "arrival")) |> 
+  select(Date, Scheme, Arrivals = Visas_imputed) |> 
+  pivot_wider(names_from = Scheme, values_from = Arrivals)
 
+ukraine <- ukraine |>
+  pivot_longer(cols = `Ukraine Family Scheme`:`Ukraine Sponsorship Scheme`, names_to = "Scheme", values_to = "People")
 
-
-
-
-
-
-
-
-
-
-
-
+ukraine |>
+  ggplot(aes(fill = Scheme, x = Date, y = People)) +
+  geom_area(position = "stack", stat = "identity") +
+  theme_brc() +
+  labs(title = "Number of people arriving by Ukraine Family Scheme and Ukraine Sponsorship Scheme from April 2022 to August 2023", 
+       x = "Date", 
+       y = "Number of people", 
+       caption = "British Red Cross analysis of Home Office data, April 2022 to August 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 200000), expand = c(0, NA)) +
+  scale_fill_manual(values = c(brc_colours$sky,
+                               brc_colours$mustard))
+  
 
 
 
