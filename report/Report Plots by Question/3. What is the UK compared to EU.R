@@ -219,7 +219,7 @@ eu_grants |>
         subtitle = "Top 10 countries with the highest number of asylum grants",
         x = "Country", 
         y = "Number of Asylum Grants", 
-        caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
+        caption = "British Red Cross analysis of EuroStat data, June 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 150000)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
@@ -234,7 +234,7 @@ eu_grants |>
        x = "Year", 
        y = "Number of asylum grants", 
        fill = "Nationality",
-       caption = "British Red Cross analysis of EuroStat Data, MONTH 2022") +
+       caption = "British Red Cross analysis of EuroStat Data, June 2022") +
   scale_y_continuous(labels = scales::comma, expand = c(0,NA), limits = c(0,125000)) +
   scale_fill_manual(values = c(brc_colours$black_shadow,
                                brc_colours$blue,
