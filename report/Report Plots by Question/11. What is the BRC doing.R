@@ -1,7 +1,7 @@
 library(tidyverse)
 library(asylum)
 library(readxl) 
-  RS_Actions_June_22_to_23 <- readxl::read_excel("C:/Users/MathuraKugan/OneDrive - British Red Cross Society/RS Actions June 22 to 23.xlsx") %>%
+  RS_Actions_June_22_to_23 <- readxl::read_excel("C:/Users/MathuraKugan/OneDrive - British Red Cross Society/RS Actions June 22 to 23.xlsx") 
  
   view(RS_Actions_June_22_to_23) 
 
@@ -58,7 +58,7 @@ BRC_supported_where|>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = "Top 10 cities where the British Red Cross has provided support over the last 12 months",
+  labs(title = "Top 10 cities where the British Red Cross has provided support for year ending June 2023",
        subtitle = str_wrap("18,328 people have been helped across the United Kingdom including the Midlands, East of England, London, the North East, the North West, 
                           Northern Ireland, South East, South West, Scotland, Wales and Yorkshire"), 
        x = "City", 
@@ -106,7 +106,8 @@ BRC_support_sex_age |>
   ggplot(aes(fill = `Age group`, x = Gender, y = People)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Number of people assisted by the British Red Cross by Age and Sex from 2022 to 2023",
+  labs(title = "Number of people assisted by the British Red Cross by Age and Sex for year ending June 2023",
+       subtitle = "'Other' includes those who prefer not to disclose their gender, who are gender fluid, non-binary and other genders",
        x = "Sex", 
        y = "Number of people", 
        fill = "Age",
@@ -138,8 +139,8 @@ BRC_support_nationality |>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = "Top 10 nationalities of the people supported by the British Red Cross over the last 12 months",
-       subtitle = "Over the last 12 months, individuals from 143 different countries have been supported by the British Red Cross",
+  labs(title = "Top 10 nationalities of the people supported by the British Red Cross for year ending June 2023",
+       subtitle = "Over the last 12 month period, individuals from 143 different countries have been supported by the British Red Cross",
        x = "Nationality", 
        y = "Number of people", 
        caption = "British Red Cross analysis of British Red Cross data, June 2022 to June 2023") +
@@ -188,12 +189,12 @@ BRC_support_immigration |>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = "Immigration statuses of the people supported by the British Red Cross over the last 12 months",
+  labs(title = "Immigration statuses of the people supported by the British Red Cross for year ending June 2023",
        x = "Immigration Status", 
        y = "Number of people", 
        caption = "British Red Cross analysis of British Red Cross data, June 2022 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) +
-  theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=0.5))
+  theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 
 # How many nulls/unknowns?
@@ -231,7 +232,7 @@ BRC_support_length |>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = "Length of time people have been supported by the British Red Cross over the last 12 months",
+  labs(title = "Length of time people have been supported by the British Red Cross from year ending June 2023",
        x = "Length of time", 
        y = "Number of people", 
        caption = "British Red Cross analysis of British Red Cross data, June 2022 to June 2023") +
@@ -264,12 +265,12 @@ rs_actions |>
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
   theme_brc() +
-  labs(title = "Types of support provided by the British Red Cross over the last 12 months",
+  labs(title = "Types of support provided by the British Red Cross from year ending June 2023",
        x = "Methods of support", 
        y = "Number of people", 
        caption = "British Red Cross analysis of British Red Cross data, June 2022 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0,NA)) +
-  theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=0.5))
+  theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
 
 # How many general actions?
