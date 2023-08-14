@@ -148,11 +148,12 @@ ukraine |>
   ggplot(aes(fill = Scheme, x = Date, y = People)) +
   geom_area(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Number of people arriving by Ukraine Family Scheme and Ukraine Sponsorship Scheme from April 2022 to August 2023", 
+  labs(title = str_wrap("Number of people arriving by Ukraine Family Scheme and Ukraine Sponsorship Scheme from April 2022 to August 2023"), 
        x = "Date", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, April 2022 to August 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 200000), expand = c(0, NA)) +
+  scale_x_date(date_labels = "%b/%Y") +
   scale_fill_manual(values = c(brc_colours$sky,
                                brc_colours$mustard))
   

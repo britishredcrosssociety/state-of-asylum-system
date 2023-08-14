@@ -108,7 +108,7 @@ eu_asylum |>
        x = "Year", 
        y = "Number of aylum applications", 
        fill = "Nationality",
-       caption = "British Red Cross analysis of EuroStat Data, MONTH 2022") +
+       caption = "British Red Cross analysis of EuroStat Data, June 2022") +
   scale_y_continuous(labels = scales::unit_format(unit = "m", scale = 1e-6)) +
   scale_fill_manual(values = c(brc_colours$black_full,
                                brc_colours$green,
@@ -140,7 +140,7 @@ eu_asylum |>
        subtitle =  "Top 10 countries with the highest asylum applications",
        x = "Nation", 
        y = "Number of people", 
-       caption = "British Red Cross analysis of EuroStat data, MONTH 2022") +
+       caption = "British Red Cross analysis of EuroStat data, June 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 250000), expand = c(0,NA)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
 
