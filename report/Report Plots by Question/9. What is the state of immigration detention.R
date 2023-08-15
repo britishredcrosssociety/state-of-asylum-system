@@ -190,5 +190,26 @@ detention_length |>
                                brc_colours$red_deep))
 
 
-                               
+# ---- How many people are in immigration detention and what is the size of immigration detention estate? Baseline from previous years ----
 
+# calculate % increase since April 2021
+asylum::detention_cost_per_day |> 
+  select(Date, Cost) |> 
+  filter(Date %in% c(ymd("2021-07-01"), max(Date))) |> 
+  # arrange(desc(Date)) |> 
+  mutate(Percent_change = (Cost - lag(Cost)) / lag(Cost))
+
+# Cost of Detention 
+                               
+detention_cost_per_day |>
+  ggplot(aes(Date, Cost)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  #geom_text(aes(label = scales::comma(Cost)), show.legend = FALSE, size = rel(3)) +
+  theme_brc() +
+  labs(title = "Cost of immigration detention per day from 2013 to 2023",
+       subtitle = "Average cost (£) per day to hold a person in immigration detention",
+       x = "Year",
+       y = "Average cost (£)",
+       caption = "British Red Cross analysis of Home Office data, March 2013 to March 2023") +
+  #scale_x_continuous(breaks = c(2013:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA))

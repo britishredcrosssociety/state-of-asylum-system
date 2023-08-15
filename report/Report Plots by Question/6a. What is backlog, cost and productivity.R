@@ -102,3 +102,42 @@ decisions_resettlement %>%
   summarise(Total = sum(Decisions)) %>%
   ggplot(aes(Year, Total)) +
   geom_bar(stat = "identity")
+
+
+---- # Cost and Number of People Waiting over 6 months 
+  
+# Creating new data fame of cost and number of people waiting over 6 months. 
+  
+  cost_and_backlog <- data.frame(asylum_costs_and_productivity,
+                                 asylum_work_in_progress$`Total Work In Progress`)
+  
+  
+cost_and_backlog <- cost_and_backlog |>
+   rename("Year" = Financial.Year,
+          "Total Cost" = Total.Asylum.Costs,
+          "Staff" = Asylum.Caseworking.Staff,
+          "Backlog" = asylum_work_in_progress..Total.Work.In.Progress.)
+  
+  # Plot of Appeals lodged x grant rate 
+
+## Not working as well- can discuss with Matt, but can also create a table 
+  
+  ggplot(cost_and_backlog) +
+  geom_col(aes(x = Year, y = `Total Cost`), fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
+  geom_line(aes(x = Year, y = `Backlog`), stat = "identity", colour = brc_colours$black_shadow) +
+  geom_text(aes(x = Year, y = `Backlog`), label = scales::comma(`Backlog`), show.legend = FALSE, size = rel(2.5), vjust = -1) +
+  theme_brc() +
+  labs(title = "Asylum backlog and the cost of the asylum system from 2010 to 2022",
+       x = "Financial Year",
+       y = "Cost of asylum system",
+       caption = "British Red Cross analysis of Home Office data, June 2010 to June 2023") +
+    scale_y_continuous(labels = scales::dollar_format(prefix = "£", suffix = "b", scale = 1e-9, accuracy = 0.1), 
+                       limit = c(0,NA), 
+                       expand = c(0, NA),
+                       sec.axis = ~.*.0001, 
+                       name = "Number of backlog cases ") 
+
+    
+
+
+
