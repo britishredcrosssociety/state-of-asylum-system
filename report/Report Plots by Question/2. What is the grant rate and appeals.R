@@ -157,3 +157,41 @@ grant_rates_initial_final |>
     caption = "British Red Cross analysis of Home Office data, March 2004 to March 2021") +
   scale_color_manual(values = c(brc_colours$red_dunant,
                                 brc_colours$teal))
+
+
+---- # 7. Grant Rate Initial and Appeals ----
+
+#Creating new data frame of appeals lodged and grant rate at initial decision. 
+appeals_by_year <- appeals_lodged |>
+  group_by(Year) |>
+  summarise(Total = sum(`Appeals lodged`))
+
+grant_2010_onwards <- grant_rate_by_year |>
+  filter(Year > "2009")
+
+appeals_and_grant <- data.frame(grant_2010_onwards,appeals_by_year$Total)
+
+appeals_and_grant <- appeals_and_grant |>
+  rename("Appeals" = appeals_by_year.Total)
+
+appeals_and_grant$GrantRate <- (100*appeals_and_grant$GrantRate)
+
+# Plot of Appeals lodged x grant rate 
+
+ggplot(appeals_and_grant) +
+  geom_col(aes(x = Year, y = `Appeals`), fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
+  geom_line(aes(x = Year, y = 100*`GrantRate`), stat = "identity", colour = brc_colours$black_shadow) +
+  geom_text(aes(x = Year, y = `Appeals`, label = scales::comma(`Appeals`)), show.legend = FALSE, size = rel(2.5), vjust = -1) +
+  theme_brc() +
+  labs(title = "Grant rate at initial decision and number of appeals lodged from 2010 to 2023",
+       x = "Year",
+       y = "Number of appeals lodged",
+       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
+  scale_y_continuous(labels = scales::comma, 
+                     limits = c(0,15000), 
+                     expand = c(0,NA),
+                     sec.axis=sec_axis(
+    ~.*0.0001,name="Initial grant rate", labels=scales::percent)) +
+  scale_x_continuous(breaks = c(2010:2023))
+
+  

@@ -9,7 +9,7 @@ smallboat <- irregular_migration |>
   
 # ---- 1. Nationalities Small Boat ----
 SmallBoatNat <- smallboat |>
-  filter(Year > 2022) |>
+  filter(Date >= max(Date) -dmonths(11)) |>
   select(Year, Nationality, `Number of detections`) |>
   group_by(Nationality) |>
   summarise(Total = sum(`Number of detections`)) |> 
@@ -26,12 +26,12 @@ SmallBoatNat |>
   #coord_flip() +
   theme_brc() +
   theme(axis.text.x = element_text(vjust = 0.5, hjust=0.5)) +
-  labs(title = "Top 10 nationalities detected crossing the Channel in small boats for year ending March 2023",
+  labs(title = "Top 10 nationalities detected crossing the Channel in small boats from 2022 to 2023",
        #subtitle = "Top 10 nationalities detected crossing the channel",
-       x = "Year", 
+       x = "Nationalities", 
        y = "Number of people detected", 
-       caption = "British Red Cross analysis of Home Office data, March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 1000)) 
+       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) 
 
 view(smallboat)
 
@@ -50,10 +50,10 @@ SmallboatAsylum |>
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
   theme_brc() +
-  labs(title = strwrap("Number of asylum applications from people crossing the Channel in small boats from 2018 to 2023"),
+  labs(title = str_wrap("Number of asylum applications from people crossing the Channel in small boats from 2018 to 2023"),
        x = NULL, 
        y = "Number of applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023")
+       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023. Earliest available home office data is from 2018")
 
 # ---- 3. Irregular Migration by Method of Entry ----  
 irregular_migration |>
@@ -69,7 +69,7 @@ irregular_migration |>
        x = "Year",
        y = "Number of people detected", 
        caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0,NA)) +
   scale_colour_manual(values = c(brc_colours$teal,
                                  brc_colours$green_dark,
                                  brc_colours$black_shadow,
@@ -116,6 +116,7 @@ Smallboatbyquarter |>
        y = "Number of people detected",
        fill = "Quarter",
        caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022") +
+  scale_x_continuous(breaks = c(2018:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_earth,
