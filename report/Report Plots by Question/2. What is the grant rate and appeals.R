@@ -158,7 +158,6 @@ grant_rates_initial_final |>
   scale_color_manual(values = c(brc_colours$red_dunant,
                                 brc_colours$teal))
 
-
 ---- # 7. Grant Rate Initial and Appeals ----
 
 #Creating new data frame of appeals lodged and grant rate at initial decision. 
