@@ -230,7 +230,7 @@ eu_grants |>
   geom_bar(position = "stack", stat = "identity") + 
   theme_brc() +
   labs(title = "Number of asylum grants across European countries from 2011 to 2022",
-       subtitle = "Top 5 countries with the highest number of asylum grants over over the last decade",
+       subtitle = "Top 5 countries with the highest number of asylum grants over the last decade",
        x = "Year", 
        y = "Number of asylum grants", 
        fill = "Nationality",
