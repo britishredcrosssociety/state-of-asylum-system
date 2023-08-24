@@ -17,9 +17,9 @@ total_applications |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_point(aes(size = Total, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
-  geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
-  annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
-  annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
+  #geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
+  #annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
+  #annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
   theme_brc() +
   scale_x_continuous(breaks = c(2001:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
@@ -111,7 +111,7 @@ UASCOnly |>
   geom_text(aes(label = scales::comma(UASCTotal)), show.legend = FALSE, size = rel(4)) +
   theme_brc() +
   scale_x_continuous(breaks = c(2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
-  labs(title = "Applications for asylum by unaccompanied asylum-seeking children (UASC), 2006-2023", 
+  labs(title = "Applications for asylum by unaccompanied asylum seeking children (UASC) from 2006-2023", 
        x = "Year", 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2006 to March 2023") +
