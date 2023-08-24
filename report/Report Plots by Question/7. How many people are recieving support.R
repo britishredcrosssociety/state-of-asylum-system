@@ -59,6 +59,8 @@ SupportType %>%
   filter(`Accommodation Type`!= "Subsistence Only") |>
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
+  geom_text(aes(label = scales::comma(Total)),
+            position = position_stack(vjust = .5), size = 2) +
   theme_brc() +
   labs(title = "Number of people in receipt of support by accomodation type as of March 2023", 
        x = "Type of asylum support", 
