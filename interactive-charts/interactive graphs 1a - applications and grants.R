@@ -82,6 +82,16 @@ immigration <-
   mutate(`Percentage of people immigrating` = `Number of people` / sum(`Number of people`)) |> 
   mutate(`Percentage of people immigrating` = scales::percent(`Percentage of people immigrating`, accuracy = 0.1))
 
+# Add definitions
+immigration <- 
+  immigration |> 
+  mutate(Definition = case_match(
+    `Migration type`,
+    "Resettlement and other safe routes" ~ "Resettlement is the selection and transfer of refugees from a country in which they have sought protection to a third country that has agreed to admit them as refugees with permanent settlement status. (For example, the resettlement of Afghans from Pakistan to the UK.) This route is operated and facilitated by UNHCR.",
+    "British nationals (overseas)" ~ "A visa to settle in the UK for people from Hong Kong who are British national (overseas) citizens (a type of British nationality) and their families.",
+    .default = ""
+  ))
+
 # immigration <- 
 #   tribble(
 #   ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
