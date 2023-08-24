@@ -23,7 +23,7 @@ appeals_total |>
   theme_brc() +
   labs(
     title = "Number of asylum appeals lodged from 2010 to 2023",  
-    subtitle = "Number of appeals lodged with the first-tier tribunal where an asylum claim has been refused at initial decision",
+    subtitle = "Decisions on asylum claims should be made quickly and should be right the first time",
     x = "Year",
     y = "Number of appeals",
     caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
@@ -192,5 +192,5 @@ ggplot(appeals_and_grant) +
                      sec.axis=sec_axis(
     ~.*0.0001,name="Initial grant rate", labels=scales::percent)) +
   scale_x_continuous(breaks = c(2010:2023))
-
+#scales::rescale()??
   

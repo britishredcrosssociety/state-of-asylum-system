@@ -18,7 +18,7 @@ SmallBoatNat <- smallboat |>
 SmallBoatNat$Nationality <- factor(SmallBoatNat$Nationality, levels = SmallBoatNat$Nationality[order(SmallBoatNat$Total, decreasing = TRUE)])
 
 SmallBoatNat |>
-  slice_max(Total, n = 10) |> 
+  slice_max(Total, n = 11) |> 
   filter(Nationality != "Not currently recorded") |>
   ggplot(aes(Nationality, Total)) +
   geom_col(fill = brc_colours$red_dunant, show.legend = FALSE) +
@@ -36,14 +36,18 @@ SmallBoatNat |>
 view(smallboat)
 
 # ---- 2. Small Boat x Asylum Applications ----
-SmallboatAsylum <- small_boat_asylum_applications |>
-  select(Year, `Age Group`, Sex, Region, Applications, `Asylum application`) |>
-  filter("Asylum application" != "No asylum application raised")
+SmallboatAsylum <-
+  {  
+  small_boat_asylum_applications |>
+  select(Year, `Age Group`, Sex, Region, Applications, `Applicant type`) |>
+  filter(`Applicant type` != "N/A - No asylum application")
+  }
 
 SmallboatAsylum |>
-  select(Year, `Age Group`, Applications) |>
-  group_by(Year) |>
-  summarise(Total = sum(Applications)) |>
+  select(Year, `Age Group`, Applications, `Applicant type`) |>
+  #filter("Asylum application" == "Asylum application raised") |> 
+  group_by(Year) |> 
+  summarise(Total = sum(Applications)) |> 
   ggplot(aes(Year, Total)) +
   geom_point(aes(colour = brc_colours$red_dunant, size = 3), alpha = 0.5, show.legend = FALSE) +
   geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
@@ -63,12 +67,12 @@ irregular_migration |>
   ggplot(aes(Year, TotalbyMethod), group = `Method of entry`) +
   geom_point(aes(group = `Method of entry`, size = 3, alpha = 0.5, colour = `Method of entry`), show.legend = FALSE) +
   geom_line(aes(group = `Method of entry`, colour = `Method of entry`)) +
-  ggrepel::geom_text_repel(aes(label = scales::comma(TotalbyMethod)), show.legend = FALSE, size = rel(3)) +
+  #ggrepel::geom_text_repel(aes(label = scales::comma(TotalbyMethod)), show.legend = FALSE, size = rel(3)) +
   theme_brc() +
   labs(title =  "Number of people detected by 'irregular' methods of entry from 2018 to 2023",
        x = "Year",
        y = "Number of people detected", 
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023. Earliest available home office data is from 2018") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0,NA)) +
   scale_colour_manual(values = c(brc_colours$teal,
                                  brc_colours$green_dark,
@@ -115,10 +119,10 @@ Smallboatbyquarter |>
        x = "Year", 
        y = "Number of people detected",
        fill = "Quarter",
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022") +
+       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022. Earliest available Home Office data is from 2018") +
   scale_x_continuous(breaks = c(2018:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_earth,
-                               brc_colours$red_dunant,
+                               brc_colours$red_mercer,
                                brc_colours$red_light))

@@ -29,7 +29,7 @@ Productivity |>
   geom_text(aes(label = scales::comma(Productivity)), show.legend = FALSE, size = rel(3)) +
   theme_brc() +
   scale_y_continuous(labels = scales::comma, limits = c(0, 20), expand = c(0, NA)) +
-  labs(title = "Asylum caseworker productivity from 2011/12 to 2021/22", 
+  labs(title = "Asylum caseworker productivity from financial year 2011/12 to 2021/22", 
        subtitle = "Average number of substantive interviews or decisions completed by asylum caseworkers each month",
        x = "Financial Year",
        y = "Productivity", 
