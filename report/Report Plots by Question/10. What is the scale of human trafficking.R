@@ -131,7 +131,7 @@ nrm_reasonable_grounds |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Proportion of people who recieved positive reasonable grounds by age from 2014 to 2023", 
+  labs(title = "Proportion of people who received positive reasonable grounds by age from 2014 to 2023", 
        x = "Year", 
        y = "Number of people",
        fill = "Reasonable grounds decision",
@@ -168,9 +168,9 @@ nrm_conclusive_grounds |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Proportion of people who recieved positive conclusive grounds by age from 2014 to 2023", 
+  labs(title = "Proportion of people who received positive conclusive grounds by age from 2014 to 2023", 
        x = "Year", 
-       y = "Number of People",
+       y = "Number of people",
        caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
   scale_x_continuous(breaks = c(2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0,NA)) +
