@@ -1,11 +1,13 @@
-Support Type,Accommodation Type,People
-Section 4,Dispersed Accommodation,4700
-Section 4,Contingency Accommodation - Hotel,80
-Section 4,Contingency Accommodation - Other,18
-Section 4,Initial Accommodation,2
-Section 95,Dispersed Accommodation,51890
-Section 95,Subsistence Only,4058
-Section 98,Contingency Accommodation - Hotel,47438
-Section 98,Contingency Accommodation - Other,2070
-Section 98,Initial Accommodation,1649
-Section 98,Dispersed Accommodation,389
+Support Type,Accommodation Type,People,Definition
+Section 4,Dispersed Accommodation,3915,Support provided to people whose asylum claim was unsuccessful and they have no more right to appeal.
+Section 4,Contingency Accommodation - Hotel,108,Support provided to people whose asylum claim was unsuccessful and they have no more right to appeal.
+Section 4,Initial Accommodation,85,Support provided to people whose asylum claim was unsuccessful and they have no more right to appeal.
+Section 95,Dispersed Accommodation,54518,Support provided to people seeking asylum to prevent destitution while their asylum application is considered.
+Section 95,Contingency Accommodation - Hotel,44273,Support provided to people seeking asylum to prevent destitution while their asylum application is considered.
+Section 95,Subsistence Only,4176,Support provided to people seeking asylum to prevent destitution while their asylum application is considered.
+Section 95,Contingency Accommodation - Other,1980,Support provided to people seeking asylum to prevent destitution while their asylum application is considered.
+Section 95,Initial Accommodation,1660,Support provided to people seeking asylum to prevent destitution while their asylum application is considered.
+Section 98,Contingency Accommodation - Hotel,6165,Emergency support for people seeking asylum while an application for section 95 support is being considered.
+Section 98,Initial Accommodation,234,Emergency support for people seeking asylum while an application for section 95 support is being considered.
+Section 98,Dispersed Accommodation,203,Emergency support for people seeking asylum while an application for section 95 support is being considered.
+Section 98,Contingency Accommodation - Other,133,Emergency support for people seeking asylum while an application for section 95 support is being considered.
