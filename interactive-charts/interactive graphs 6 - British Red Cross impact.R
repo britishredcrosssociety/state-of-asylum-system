@@ -143,8 +143,11 @@ brc_length_of_support <-
 brc_length_of_support |> 
   write_csv("data-raw/flourish/6 - BRC/length of support.csv")
 
+# - CAPTION -
 brc_length_of_support |> 
-  mutate(`Proportion of people` = `Number of people supported` / sum(`Number of people supported`))
+  mutate(`Proportion of people` = `Number of people supported` / sum(`Number of people supported`)) |> 
+  arrange(`Number of people supported`) |> 
+  mutate(`Cumulative proportion` = cumsum(`Proportion of people`))
 
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
 rs_actions <- 
