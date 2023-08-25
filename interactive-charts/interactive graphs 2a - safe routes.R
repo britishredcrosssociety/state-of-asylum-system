@@ -228,10 +228,10 @@ irregular_migration_by_nationality |>
   mutate(Proportion_cumulative = cumsum(Proportion))
 
 # ---- 'Irregular' migration by age/sex ----
-asylum::irregular_migration |> 
-  group_by(Date, `Age Group`, Sex) |> 
-  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
+# asylum::irregular_migration |> 
+#   group_by(Date, `Age Group`, Sex) |> 
+#   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
 
 # ---- How many people have arrived in the UK in the last 12 months through family reunion pathways? ----
 asylum::family_reunion |> 
@@ -266,39 +266,3 @@ family_reunion_rolling_sum
 ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +
   geom_line() +
   scale_y_continuous(limits = c(0, NA))
-
-# ---- Family reunion by age and sex ----
-# Age/sex pyramid
-family_reunion_age_sex <- 
-  asylum::family_reunion |> 
-  # Filter applications within the last 12 months
-  filter(Date >= max(Date) - dmonths(11)) |> 
-  group_by(Age, Sex) |> 
-  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  
-  filter(Age != "Unknown") |> 
-  filter(Sex != "Unknown Sex") |> 
-  
-  pivot_wider(names_from = Sex, values_from = `Visas granted`) |> 
-  mutate(Female = Female * -1) |> 
-  
-  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) 
-
-family_reunion_age_sex |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion - by age and sex.csv")
-
-# - Caption -
-# % within age groups
-family_reunion_age_sex |> 
-  mutate(Female = Female * -1) |> 
-  mutate(Proportion_female = Female / (Female + Male))
-
-# % overall
-family_reunion_age_sex |> 
-  mutate(Female = Female * -1) |> 
-  ungroup() |> 
-  summarise(
-    Female = sum(Female),
-    Male = sum(Male)
-  ) |> 
-  mutate(Proportion_female = Female / (Female + Male))
