@@ -103,7 +103,8 @@ bind_rows(
 ) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category.csv")
 
-# resettlement_by_nationality
+# - CAPTION -
+# Proportions of resettlement cases by nationality
 resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
@@ -113,8 +114,8 @@ resettlement_grants_without_evacuation |>
   arrange(desc(Decisions)) |> 
   mutate(Prop = Decisions / sum(Decisions))
 
-resettlement_by_age <- 
-  resettlement_grants_without_evacuation |> 
+# Proportion of resettlement cases by age
+resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age) |> 
@@ -127,13 +128,13 @@ resettlement_by_age <-
   pivot_wider(names_from = Category, values_from = Age) |> 
   relocate(`Under 18`, .after = Type)
 
-resettlement_by_age
+# resettlement_by_age
+# 
+# resettlement_by_age |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
 
-resettlement_by_age |> 
-  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
-
-resettlement_by_sex <- 
-  resettlement_grants_without_evacuation |> 
+# Proportion of resettlement cases by sex
+resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Sex) |> 
@@ -145,10 +146,10 @@ resettlement_by_sex <-
   mutate(Sex = Sex / sum(Sex)) |> 
   pivot_wider(names_from = Category, values_from = Sex)
 
-resettlement_by_sex
-
-resettlement_by_sex |> 
-  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
+# resettlement_by_sex
+# 
+# resettlement_by_sex |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
 
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
 source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")
