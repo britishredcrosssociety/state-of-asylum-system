@@ -395,7 +395,7 @@ grant_rates_initial_quarterly |>
 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial grant rates - by quarter.csv")
 
- # ---- Asylum and non-asylum returns in 2022 ----
+ # ---- Asylum and non-asylum returns ----
 asylum::returns_asylum |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
