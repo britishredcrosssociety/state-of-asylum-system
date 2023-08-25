@@ -177,10 +177,11 @@ dtn |>
   slice(1:20) |> 
   write_csv("data-raw/flourish/5 - Trafficking/duty to notify - nationality.csv")
 
-# What proportion of DtNs are from the top five countries?
+# - CAPTION -
+# What proportion of DtNs are from the top four nationalities?
 scales::percent(
   dtn |> slice(1:4) |> summarise(Total = sum(Total)) |> pull(Total) / dtn |> summarise(Total = sum(Total)) |> pull(Total)
 )
 
-# ---- How many people were detained for removal having consented to enter the NRM? ----
-# Not sure data exists
+# Which are the top four nationalities?
+dtn |> slice(1:4)
