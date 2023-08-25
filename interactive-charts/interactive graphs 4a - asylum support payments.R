@@ -73,7 +73,7 @@ real_asylum_payments |>
   pivot_longer(cols = -Date, names_to = "Adjusted", values_to = "Asylum support payment (£)") |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - inflation adjusted.csv")
 
-# - Caption -
+# - CAPTION -
 # Calculate % change since 2000
 real_asylum_payments |> 
   filter(Date %in% c(min(Date), max(Date))) |> 
