@@ -363,7 +363,39 @@ grant_rates_initial_final |>
   select(`Year of application`, contains("rate")) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/grant rates - initial and final.csv")
 
-# ---- Asylum and non-asylum returns in 2022 ----
+# - CAPTION -
+# ...
+
+# ---- Initial grant rate changes between years ----
+# Top ten nations, by number of grants and grant rate in the most recent year
+top_ten_nations <-
+  grant_rates_initial_annual |>
+  filter(Year == max(Year)) |>
+  arrange(desc(Grant), desc(`Initial grant rate`)) |>
+  slice(1:10) |>
+  pull(Nationality)
+
+grant_rates_initial_annual |>
+  filter(Year >= max(Year) - 1) |>
+  filter(Nationality %in% top_ten_nations) |>
+  select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |>
+  arrange(desc(`Initial grant rate`)) |>
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
+
+# Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
+grant_rates_initial_quarterly |>
+  select(Date, Quarter, Nationality, `Initial grant rate`) |>
+  pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |>
+
+  # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
+  relocate(Date, Quarter, any_of(top_ten_nations)) |>
+
+  # Remove columns that contain only NAs
+  select(where(~!all(is.na(.x)))) |>
+
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial grant rates - by quarter.csv")
+
+ # ---- Asylum and non-asylum returns in 2022 ----
 asylum::returns_asylum |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum.csv")
