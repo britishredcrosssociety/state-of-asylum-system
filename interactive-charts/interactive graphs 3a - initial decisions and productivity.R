@@ -11,6 +11,7 @@ backlog_total <-
   )) |> 
   group_by(Date, Stage) |> 
   summarise(Backlog = sum(Applications)) |> 
+  ungroup() |> 
   mutate(Nationality = "Total")
 
 backlog_nationality <- 
@@ -21,7 +22,9 @@ backlog_nationality <-
     Duration == "N/A - Further review" ~ "Pending further review"
   )) |> 
   group_by(Date, Stage, Nationality) |> 
-  summarise(Backlog = sum(Applications))
+  summarise(Backlog = sum(Applications)) |> 
+  ungroup() |> 
+  arrange(Nationality)
 
 bind_rows(backlog_total, backlog_nationality) |> 
   pivot_wider(names_from = Stage, values_from = Backlog) |> 
@@ -44,6 +47,60 @@ backlog_total |>
   ungroup() |>
   filter(Date == max(Date)) |> 
   summarise(Total = sum(Backlog))
+
+# ---- What is the number of people waiting for an initial decision by nationality ----
+awaiting_decision_by_nationality <- 
+  asylum::awaiting_decision |> 
+  filter(Date == max(Date)) |>
+  group_by(Nationality, Duration) |> 
+  summarise(Applications = sum(Applications)) |> 
+  ungroup() |> 
+  arrange(desc(Applications)) |> 
+  pivot_wider(names_from = Duration, values_from = Applications) |> 
+  mutate(
+    `6 months or less` = replace_na(`6 months or less`, 0),
+    `More than 6 months` = replace_na(`More than 6 months`, 0),
+  ) |> 
+  
+  mutate(Total = `6 months or less` + `More than 6 months`) |> 
+  slice_max(Total, n = 20) |> 
+  select(-Total)
+  
+awaiting_decision_by_nationality |> 
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality.csv")
+
+# - Caption -
+# Which nationalities have a grant rate > 80%?
+high_grant_nationalities <- 
+  asylum::grant_rates_initial_annual |> 
+  filter(Year == max(Year)) |> 
+  filter(`Initial grant rate` > 0.8) |> 
+  pull(Nationality)
+
+# How many and what proportion of people from high-grant-rate nationalities are waiting for a decision?
+asylum::awaiting_decision |> 
+  filter(Date == max(Date)) |> 
+  mutate(high_grant = if_else(Nationality %in% high_grant_nationalities, "High", "Low")) |> 
+  group_by(high_grant) |> 
+  summarise(Applications = sum(Applications)) |> 
+  ungroup() |> 
+  mutate(Proportion = Applications / sum(Applications))
+
+# # Calculate total waiting as of most recent quarter
+# asylum::awaiting_decision |> 
+#   filter(Date == max(Date)) |> 
+#   summarise(sum(Applications))
+# 
+# # Proportion waiting - use the `Proportion_waiting_cumulative` column to judge which nationalities to include in the caption
+# awaiting_decision_by_nationality |> 
+#   ungroup() |> 
+#   mutate(
+#     Proportion_waiting = (`More than 6 months` + `6 months or less`) / (sum(`More than 6 months`) + sum(`6 months or less`)),
+#     Proportion_more_than_6_months = `More than 6 months` / sum(`More than 6 months`)
+#   ) |> 
+#   mutate(
+#     Proportion_waiting_cumulative = cumsum(Proportion_waiting)
+#   )
 
 # ---- Grants, refusals, and withdrawn claims over time ----
 asylum::decisions_resettlement |> 
@@ -98,41 +155,6 @@ asylum::decisions_resettlement |>
   # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
   slice(seq(2, n(), by = 4)) |> 
   arrange(desc(Withdrawn))
-
-# ---- What is the number of people waiting for an initial decision on their asylum claim (and what is their nationality, age, gender)? ----
-# - Nationality -
-awaiting_decision_by_nationality <- 
-  asylum::awaiting_decision |> 
-  filter(Date == max(Date)) |>
-  group_by(Nationality, Duration) |> 
-  summarise(Applications = sum(Applications)) |> 
-  arrange(desc(Applications)) |> 
-  pivot_wider(names_from = Duration, values_from = Applications) |> 
-  mutate(
-    `6 months or less` = replace_na(`6 months or less`, 0),
-    `More than 6 months` = replace_na(`More than 6 months`, 0),
-  )
-
-awaiting_decision_by_nationality |> 
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality.csv")
-
-# - Caption -
-# Calculate total waiting as of most recent quarter
-asylum::awaiting_decision |> 
-  filter(Date == max(Date)) |> 
-  summarise(sum(Applications))
-
-awaiting_decision_by_nationality |> 
-  ungroup() |> 
-  mutate(
-    Proportion_waiting = (`More than 6 months` + `6 months or less`) / (sum(`More than 6 months`) + sum(`6 months or less`)),
-    Proportion_more_than_6_months = `More than 6 months` / sum(`More than 6 months`)
-  ) |> 
-  mutate(
-    Proportion_waiting_cumulative = cumsum(Proportion_waiting)
-  )
-
-# - Data by age and sex doesn't exist -
 
 # ---- What is the impact of the streamlined asylum process (SAP) and what has the impact of this policy been on the backlog? ----
 # Not sure we can answer this from Home Office data...
