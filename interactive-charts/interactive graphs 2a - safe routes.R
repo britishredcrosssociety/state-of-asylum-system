@@ -159,7 +159,8 @@ ukraine <-
   ungroup() |> 
   filter(str_detect(Stage, "arrival")) |> 
   select(Date, Scheme, Arrivals = Visas_imputed) |> 
-  pivot_wider(names_from = Scheme, values_from = Arrivals)
+  pivot_wider(names_from = Scheme, values_from = Arrivals) |> 
+  relocate(`Ukraine Sponsorship Scheme`, .before = `Ukraine Family Scheme`)
 
 ukraine |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
@@ -167,6 +168,7 @@ ukraine |>
 # - Caption -
 ukraine |> 
   filter(Date == max(Date)) |> 
+  mutate(Total = `Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`) |> 
   mutate(Proportion_Sponsorship = `Ukraine Sponsorship Scheme` / (`Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`))
 
 # ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
