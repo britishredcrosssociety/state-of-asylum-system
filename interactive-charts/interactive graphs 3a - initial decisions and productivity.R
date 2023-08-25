@@ -1,5 +1,6 @@
 library(tidyverse)
 library(asylum)
+library(zoo)
 
 # ---- Backlog over time, by nationality ----
 backlog_total <- 
@@ -115,8 +116,6 @@ asylum::decisions_resettlement |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn.csv")
 
 # - Caption -
-library(zoo)
-
 # Proportion of claims withdrawn over last 12 months
 asylum::decisions_resettlement |> 
   filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
@@ -166,36 +165,6 @@ asylum::asylum_costs_and_productivity |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office productivity.csv")
 
 # - Caption -
-# Plot asylum caseworking staff and principal stages completed side by side to check trends
-asylum::asylum_costs_and_productivity |> 
-  select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`, Productivity) |> 
-  na.omit() |> 
-  
-  # Check that productivity is calculated this way:
-  mutate(Productivity2 = `Average Principal Stages Completed Per Month` / `Asylum Caseworking Staff`) |> 
-  #--> It is.
-  
-  # Plot asylum caseworkers and principal stages completed side by side
-  select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`) |> 
-  pivot_longer(cols = -`Financial Year`) |> 
-  
-  ggplot(aes(x = `Financial Year`, y = value, group = name)) +
-  geom_line() +
-  facet_wrap(~name, scales = "free") +
-  labs(
-    title = "More asylum caseworking staff are completing fewer principal stages per month, on average"
-  )
-
-asylum::asylum_costs_and_productivity |> 
-  select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`) |> 
-  na.omit() |> 
-  
-  # Calculate growth rates
-  mutate(
-    `Asylum caseworking staff (% change year on year)` = (`Asylum Caseworking Staff` - lag(`Asylum Caseworking Staff`)) / lag(`Asylum Caseworking Staff`),
-    `Average Principal Stages Completed Per Month (% change year on year)` = (`Average Principal Stages Completed Per Month` - lag(`Average Principal Stages Completed Per Month`)) / lag(`Average Principal Stages Completed Per Month`)
-  )
-
 # Calculate % changes in caseworking staff and principal stages completed since 2015
 asylum::asylum_costs_and_productivity |> 
   select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`) |> 
@@ -207,6 +176,25 @@ asylum::asylum_costs_and_productivity |>
     `Average Principal Stages Completed Per Month (% change year on year)` = (`Average Principal Stages Completed Per Month` - lag(`Average Principal Stages Completed Per Month`)) / lag(`Average Principal Stages Completed Per Month`)
   )
 
+# Plot asylum caseworking staff and principal stages completed side by side to check trends
+# asylum::asylum_costs_and_productivity |> 
+#   select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`, Productivity) |> 
+#   na.omit() |> 
+#   
+#   # Check that productivity is calculated this way:
+#   mutate(Productivity2 = `Average Principal Stages Completed Per Month` / `Asylum Caseworking Staff`) |> 
+#   #--> It is.
+#   
+#   # Plot asylum caseworkers and principal stages completed side by side
+#   select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`) |> 
+#   pivot_longer(cols = -`Financial Year`) |> 
+#   
+#   ggplot(aes(x = `Financial Year`, y = value, group = name)) +
+#   geom_line() +
+#   facet_wrap(~name, scales = "free") +
+#   labs(
+#     title = "More asylum caseworking staff are completing fewer principal stages per month, on average"
+#   )
 
 # ---- What is the current backlog for decisions on family reunion cases? ----
 # Not sure this data exists...
