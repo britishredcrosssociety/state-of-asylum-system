@@ -143,29 +143,3 @@ flows_international <-
 
 flows_international |> 
   write_csv("data-raw/flourish/1b - International comparisons/international displacement.csv")
-
-# - Caption -
-flows_international |> 
-  filter(Year == max(Year)) |> 
-  group_by(`Country of asylum`) |> 
-  summarise(`People displaced internationally` = sum(`People displaced internationally`, na.rm = TRUE)) |> 
-  ungroup() |> 
-  mutate(Proportion = `People displaced internationally` / sum(`People displaced internationally`)) |> 
-  arrange(desc(`People displaced internationally`)) |> 
-  mutate(Cumulative = cumsum(Proportion))
-
-# flows_idp_total <- 
-#   flows_idp |> 
-#   group_by(Year) |> 
-#   summarise(`People displaced internally` = sum(`IDPs of concern to UNHCR`, na.rm = TRUE))
-# 
-# flows_international_total <- 
-#   flows_international |> 
-#   group_by(Year) |> 
-#   summarise(`People displaced internationally` = sum(`People displaced internationally`))
-# 
-# left_join(flows_idp_total, flows_international_total) |> 
-#   mutate(`IDP %` = `People displaced internally` / (`People displaced internally` + `People displaced internationally`)) |> 
-#   ggplot(aes(x = Year, y = `IDP %`)) +
-#   geom_line()
-  
