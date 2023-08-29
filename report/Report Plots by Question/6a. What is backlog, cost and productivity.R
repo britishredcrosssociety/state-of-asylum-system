@@ -123,9 +123,9 @@ cost_and_backlog <- cost_and_backlog |>
 ## Not working as well- can discuss with Matt, but can also create a table 
   
   ggplot(cost_and_backlog) +
-  geom_col(aes(x = Year, y = `Total Cost`), fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
-  geom_line(aes(x = Year, y = `Backlog`), stat = "identity", colour = brc_colours$black_shadow) +
-  geom_text(aes(x = Year, y = `Backlog`), label = scales::comma(`Backlog`), show.legend = FALSE, size = rel(2.5), vjust = -1) +
+  geom_line(aes(x = Year, y = `Total Cost`, group = 1), stat = "identity", colour = brc_colours$red_dunant) +
+  geom_line(aes(x = Year, y = `Backlog`, group = 1), stat = "identity", colour = brc_colours$black_shadow) +
+  #geom_text(aes(x = Year, y = `Backlog`), label = scales::comma(`Backlog`), show.legend = FALSE, size = rel(2.5), vjust = -1) +
   theme_brc() +
   labs(title = "Asylum backlog and the cost of the asylum system from 2010 to 2022",
        x = "Financial Year",
@@ -133,11 +133,8 @@ cost_and_backlog <- cost_and_backlog |>
        caption = "British Red Cross analysis of Home Office data, June 2010 to June 2023") +
     scale_y_continuous(labels = scales::dollar_format(prefix = "£", suffix = "b", scale = 1e-9, accuracy = 0.1), 
                        limit = c(0,NA), 
-                       expand = c(0, NA),
-                       sec.axis = ~.*.0001, 
+                       expand = c(0, NA)),
+                       (sec.axis = ~.*.000001, 
                        name = "Number of backlog cases ") 
 
     
-
-
-

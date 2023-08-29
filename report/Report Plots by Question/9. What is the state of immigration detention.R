@@ -200,7 +200,9 @@ asylum::detention_cost_per_day |>
   mutate(Percent_change = (Cost - lag(Cost)) / lag(Cost))
 
 # Cost of Detention 
-                               
+                   
+year(detention_cost_per_day)
+            
 detention_cost_per_day |>
   ggplot(aes(Date, Cost)) +
   geom_line(colour = brc_colours$red_dunant) +
