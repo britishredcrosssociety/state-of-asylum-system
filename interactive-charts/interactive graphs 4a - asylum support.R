@@ -17,53 +17,20 @@ backlog |>
   select(Date, `Pending initial decision (more than 6 months)`, `Pending initial decision (6 months or less)`, `Pending further review`) |> 
   write_csv("data-raw/flourish/4a - Asylum support/backlog trend.csv")
 
-# - Caption -
+# - CAPTION -
 backlog |> 
   ungroup() |>
   filter(Date == max(Date)) |> 
   summarise(Backlog = sum(Backlog))
 
-# ---- How many people seeking asylum are in receipt of asylum support, and which kind of support? ----
-# Trend
+# ---- Asylum support payments ----
 asylum::support_received |> 
   group_by(Date, `Support Type`) |> 
   summarise(People = sum(People)) |> 
   pivot_wider(names_from = `Support Type`, values_from = People) |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - longitudinal.csv")
 
-# Most recent stats
-support_received_recently <- 
-  asylum::support_received |> 
-  filter(Date == max(Date)) |> 
-  
-  group_by(`Support Type`, `Accommodation Type`) |> 
-  summarise(People = sum(People)) |> 
-  ungroup() |> 
-  arrange(`Support Type`, desc(People))
-
-support_received_recently |> 
-  write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
-
-# - Caption -
-# What proportion of people receiving Section 95 support only receive subsistence?
-# support_received_recently |> 
-#   filter(`Support Type` == "Section 95") |> 
-#   mutate(Proportion = People / sum(People))
-
-# What proportion of people receiving Section 98 support are in hotels?
-support_received_recently |> 
-  filter(`Support Type` == "Section 98") |> 
-  mutate(Proportion = People / sum(People))
-
-# asylum::support_received |> 
-#   filter(`Support Type` == "Section 98") |> 
-#   filter(str_detect(`Accommodation Type`, "Hotel")) |> 
-#   group_by(Date, `Support Type`, `Accommodation Type`) |> 
-#   summarise(People = sum(People)) |> 
-#   ungroup()
-
 # ---- What is the rate of destitution among people seeking asylum in the UK? ----
-# - Could this be number receiving support divided by total number of people on the backlog? -
 # Total receiving destitution support
 receiving_support <- 
   asylum::support_received |> 
@@ -88,17 +55,33 @@ receiving_support |>
   ) |> 
   write_csv("data-raw/flourish/4a - Asylum support/destitution rate.csv")
 
-# receiving_support
-# backlog
-# backlog - receiving_support
+# - CHART TITLE AND CAPTION -
+# What percentage are receiving asylum support?
 scales::percent(sum(receiving_support$People) / backlog)
 
-# ---- How many people deemed inadmissible are in receipt of support? ----
-# Not sure data exists
+# ---- Asylum support payments ----
+# Most recent stats
+support_received_recently <- 
+  asylum::support_received |> 
+  filter(Date == max(Date)) |> 
+  
+  group_by(`Support Type`, `Accommodation Type`) |> 
+  summarise(People = sum(People)) |> 
+  ungroup() |> 
+  arrange(`Support Type`, desc(People))
 
-# ---- For those who have been granted refugee status, what is the rate of destitution (move on period)? ----
-# Not sure data exists, but could show destitution among people BRC supports
+# Add definitions for each support type
+support_received_recently |> 
+  mutate(Definition = case_match(
+    `Support Type`,
+    "Section 4" ~ "Support provided to people whose asylum claim was unsuccessful and they have no more right to appeal.",
+    "Section 95" ~ "Support provided to people seeking asylum to prevent destitution while their asylum application is considered.",
+    "Section 98" ~ "Emergency support for people seeking asylum while an application for section 95 support is being considered."
+  )) |> 
+  write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
 
-# ---- How many people seeking asylum have been granted the right to work? (related – how many vacancies are there in the UK job market?) ----
-# Not sure data exists
-
+# - CAPTION -
+# What proportion of people receiving Section 98 support are in hotels?
+support_received_recently |> 
+  filter(`Support Type` == "Section 98") |> 
+  mutate(Proportion = People / sum(People))

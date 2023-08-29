@@ -2,13 +2,15 @@ library(tidyverse)
 library(asylum)
 library(zoo)
 
-resettlement_grants_without_ARAP <- 
+resettlement_grants_without_evacuation <- 
   asylum::decisions_resettlement |> 
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
-  filter(!str_detect(`Case outcome`, "Relocation - ARAP"))
+  filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
+  filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 1")) |> 
+  filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 3"))
 
 # ---- How many people have been granted protection in the UK having arrived through a safe route? ----
-resettlement_grants_without_ARAP |> 
+resettlement_grants_without_evacuation |> 
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -22,26 +24,32 @@ resettlement_grants_without_ARAP |>
   write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total.csv")
 
 # Check the spike in decisions in Q2 2021
-resettlement_grants_without_ARAP |> 
-  filter(Date == ymd("2021-07-01")) |> 
-  
-  group_by(`Case outcome`, Nationality) |> 
-  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
-  ungroup() |> 
-  
-  arrange(desc(Decisions)) |> 
-  
-  # separate_wider_delim(`Case outcome`, delim = " - ", names = c("Resettlement", "Scheme", "Accommodation"))
-  mutate(ACRS = if_else(str_detect(`Case outcome`, "ACRS"), "ACRS", "Other")) |> 
-  
-  group_by(ACRS) |> 
-  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
-  ungroup() |> 
-  mutate(Proportion = Decisions / sum(Decisions))
+# resettlement_grants_without_evacuation |> 
+#   filter(Date == ymd("2021-07-01")) |> 
+#   
+#   group_by(`Case outcome`, Nationality) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   
+#   arrange(desc(Decisions)) |> 
+#   
+#   # separate_wider_delim(`Case outcome`, delim = " - ", names = c("Resettlement", "Scheme", "Accommodation"))
+#   mutate(ACRS = if_else(str_detect(`Case outcome`, "ACRS"), "ACRS", "Other")) |> 
+#   
+#   group_by(ACRS) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   mutate(Proportion = Decisions / sum(Decisions))
 
-# - How do current levels of resettlement compare to historical levels? -
+# - CAPTION -
+# Number of people resettled over last 12 months
+resettlement_grants_without_evacuation |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  summarise(Decisions = sum(Decisions, na.rm = TRUE))
+
+# How do current levels of resettlement compare to historical levels?
 resettlement_by_quarter <- 
-  resettlement_grants_without_ARAP |> 
+  resettlement_grants_without_evacuation |> 
   
   group_by(Date) |> 
   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
@@ -63,7 +71,7 @@ resettlement_by_quarter |>
 
 # ---- What safe routes have been available in the last 12 months and how many people (and age, nationality and gender) have arrived through each? ----
 bind_rows(
-  resettlement_grants_without_ARAP |> 
+  resettlement_grants_without_evacuation |> 
     # Filter applications within the last 12 months
     filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Nationality) |> 
@@ -74,7 +82,7 @@ bind_rows(
     rename(Category = Nationality, Nationality = Decisions) |> 
     mutate(Type = "Nationality"),
   
-  resettlement_grants_without_ARAP |> 
+  resettlement_grants_without_evacuation |> 
     # Filter applications within the last 12 months
     filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Age) |> 
@@ -84,7 +92,7 @@ bind_rows(
     arrange(match(Category, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
     mutate(Type = "Age"),
   
-  resettlement_grants_without_ARAP |> 
+  resettlement_grants_without_evacuation |> 
     # Filter applications within the last 12 months
     filter(Date >= max(Date) - dmonths(11)) |> 
     group_by(Sex) |> 
@@ -93,10 +101,11 @@ bind_rows(
     rename(Category = Sex, Sex = Decisions) |> 
     mutate(Type = "Sex")
 ) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - What safe routes have been available in the last 12 months - by category.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category.csv")
 
-# resettlement_by_nationality
-resettlement_grants_without_ARAP |> 
+# - CAPTION -
+# Proportions of resettlement cases by nationality
+resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
@@ -105,8 +114,8 @@ resettlement_grants_without_ARAP |>
   arrange(desc(Decisions)) |> 
   mutate(Prop = Decisions / sum(Decisions))
 
-resettlement_by_age <- 
-  resettlement_grants_without_ARAP |> 
+# Proportion of resettlement cases by age
+resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Age) |> 
@@ -119,13 +128,13 @@ resettlement_by_age <-
   pivot_wider(names_from = Category, values_from = Age) |> 
   relocate(`Under 18`, .after = Type)
 
-resettlement_by_age
+# resettlement_by_age
+# 
+# resettlement_by_age |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
 
-resettlement_by_age |> 
-  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by age.csv")
-
-resettlement_by_sex <- 
-  resettlement_grants_without_ARAP |> 
+# Proportion of resettlement cases by sex
+resettlement_grants_without_evacuation |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Sex) |> 
@@ -137,10 +146,10 @@ resettlement_by_sex <-
   mutate(Sex = Sex / sum(Sex)) |> 
   pivot_wider(names_from = Category, values_from = Sex)
 
-resettlement_by_sex
-
-resettlement_by_sex |> 
-  write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
+# resettlement_by_sex
+# 
+# resettlement_by_sex |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/Resettlement - by sex.csv")
 
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
 source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")
@@ -150,7 +159,8 @@ ukraine <-
   ungroup() |> 
   filter(str_detect(Stage, "arrival")) |> 
   select(Date, Scheme, Arrivals = Visas_imputed) |> 
-  pivot_wider(names_from = Scheme, values_from = Arrivals)
+  pivot_wider(names_from = Scheme, values_from = Arrivals) |> 
+  relocate(`Ukraine Sponsorship Scheme`, .before = `Ukraine Family Scheme`)
 
 ukraine |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
@@ -158,6 +168,7 @@ ukraine |>
 # - Caption -
 ukraine |> 
   filter(Date == max(Date)) |> 
+  mutate(Total = `Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`) |> 
   mutate(Proportion_Sponsorship = `Ukraine Sponsorship Scheme` / (`Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`))
 
 # ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
@@ -217,10 +228,10 @@ irregular_migration_by_nationality |>
   mutate(Proportion_cumulative = cumsum(Proportion))
 
 # ---- 'Irregular' migration by age/sex ----
-asylum::irregular_migration |> 
-  group_by(Date, `Age Group`, Sex) |> 
-  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
+# asylum::irregular_migration |> 
+#   group_by(Date, `Age Group`, Sex) |> 
+#   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
 
 # ---- How many people have arrived in the UK in the last 12 months through family reunion pathways? ----
 asylum::family_reunion |> 
@@ -255,39 +266,3 @@ family_reunion_rolling_sum
 ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +
   geom_line() +
   scale_y_continuous(limits = c(0, NA))
-
-# ---- Family reunion by age and sex ----
-# Age/sex pyramid
-family_reunion_age_sex <- 
-  asylum::family_reunion |> 
-  # Filter applications within the last 12 months
-  filter(Date >= max(Date) - dmonths(11)) |> 
-  group_by(Age, Sex) |> 
-  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  
-  filter(Age != "Unknown") |> 
-  filter(Sex != "Unknown Sex") |> 
-  
-  pivot_wider(names_from = Sex, values_from = `Visas granted`) |> 
-  mutate(Female = Female * -1) |> 
-  
-  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) 
-
-family_reunion_age_sex |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion - by age and sex.csv")
-
-# - Caption -
-# % within age groups
-family_reunion_age_sex |> 
-  mutate(Female = Female * -1) |> 
-  mutate(Proportion_female = Female / (Female + Male))
-
-# % overall
-family_reunion_age_sex |> 
-  mutate(Female = Female * -1) |> 
-  ungroup() |> 
-  summarise(
-    Female = sum(Female),
-    Male = sum(Male)
-  ) |> 
-  mutate(Proportion_female = Female / (Female + Male))

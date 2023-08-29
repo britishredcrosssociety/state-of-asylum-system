@@ -1,112 +1,77 @@
 Date,Age,Positive conclusive grounds,Negative conclusive grounds
 2014-03-31,Adult (18 or over),174,79
 2014-03-31,Child (17 or under),70,32
-2014-03-31,Age not specified or unknown,0,0
 2014-06-30,Adult (18 or over),180,107
 2014-06-30,Child (17 or under),76,38
-2014-06-30,Age not specified or unknown,0,0
 2014-09-30,Adult (18 or over),214,170
 2014-09-30,Child (17 or under),85,66
-2014-09-30,Age not specified or unknown,0,0
 2014-12-31,Adult (18 or over),139,83
 2014-12-31,Child (17 or under),40,39
-2014-12-31,Age not specified or unknown,0,0
 2015-03-31,Adult (18 or over),136,106
 2015-03-31,Child (17 or under),56,42
-2015-03-31,Age not specified or unknown,0,0
 2015-06-30,Adult (18 or over),167,142
 2015-06-30,Child (17 or under),59,43
-2015-06-30,Age not specified or unknown,0,0
 2015-09-30,Adult (18 or over),174,140
 2015-09-30,Child (17 or under),71,41
-2015-09-30,Age not specified or unknown,0,0
 2015-12-31,Adult (18 or over),260,122
 2015-12-31,Child (17 or under),81,59
-2015-12-31,Age not specified or unknown,0,0
 2016-03-31,Adult (18 or over),178,119
 2016-03-31,Child (17 or under),67,53
-2016-03-31,Age not specified or unknown,0,0
-2016-06-30,Adult (18 or over),197,142
+2016-06-30,Adult (18 or over),197,141
 2016-06-30,Child (17 or under),91,61
-2016-06-30,Age not specified or unknown,0,0
 2016-09-30,Adult (18 or over),180,144
 2016-09-30,Child (17 or under),116,66
-2016-09-30,Age not specified or unknown,0,0
 2016-12-31,Adult (18 or over),156,136
 2016-12-31,Child (17 or under),107,65
-2016-12-31,Age not specified or unknown,0,0
 2017-03-31,Adult (18 or over),217,142
 2017-03-31,Child (17 or under),108,49
-2017-03-31,Age not specified or unknown,0,0
 2017-06-30,Adult (18 or over),159,130
 2017-06-30,Child (17 or under),82,46
-2017-06-30,Age not specified or unknown,0,0
 2017-09-30,Adult (18 or over),174,108
 2017-09-30,Child (17 or under),117,23
-2017-09-30,Age not specified or unknown,0,0
 2017-12-31,Adult (18 or over),168,104
 2017-12-31,Child (17 or under),196,41
-2017-12-31,Age not specified or unknown,0,0
 2018-03-31,Adult (18 or over),207,105
 2018-03-31,Child (17 or under),160,53
-2018-03-31,Age not specified or unknown,0,0
 2018-06-30,Adult (18 or over),230,139
-2018-06-30,Child (17 or under),116,77
-2018-06-30,Age not specified or unknown,0,0
-2018-09-30,Adult (18 or over),290,136
+2018-06-30,Child (17 or under),117,77
+2018-09-30,Adult (18 or over),290,135
 2018-09-30,Child (17 or under),342,130
-2018-09-30,Age not specified or unknown,0,0
 2018-12-31,Adult (18 or over),481,198
 2018-12-31,Child (17 or under),431,132
-2018-12-31,Age not specified or unknown,0,0
 2019-03-31,Adult (18 or over),489,182
 2019-03-31,Child (17 or under),610,105
-2019-03-31,Age not specified or unknown,0,0
-2019-06-30,Adult (18 or over),320,107
+2019-06-30,Adult (18 or over),321,107
 2019-06-30,Child (17 or under),292,47
-2019-06-30,Age not specified or unknown,0,0
 2019-09-30,Adult (18 or over),267,81
 2019-09-30,Child (17 or under),217,28
-2019-09-30,Age not specified or unknown,0,0
 2019-12-31,Adult (18 or over),410,77
 2019-12-31,Child (17 or under),357,25
-2019-12-31,Age not specified or unknown,1,0
 2020-03-31,Adult (18 or over),327,75
 2020-03-31,Child (17 or under),266,16
-2020-03-31,Age not specified or unknown,15,2
 2020-06-30,Adult (18 or over),306,51
 2020-06-30,Child (17 or under),433,28
-2020-06-30,Age not specified or unknown,12,0
 2020-09-30,Adult (18 or over),365,62
 2020-09-30,Child (17 or under),454,12
-2020-09-30,Age not specified or unknown,16,1
 2020-12-31,Adult (18 or over),447,66
 2020-12-31,Child (17 or under),414,18
-2020-12-31,Age not specified or unknown,19,3
-2021-03-31,Adult (18 or over),164,50
+2021-03-31,Adult (18 or over),164,49
 2021-03-31,Child (17 or under),161,2
-2021-03-31,Age not specified or unknown,14,1
 2021-06-30,Adult (18 or over),208,43
 2021-06-30,Child (17 or under),209,6
-2021-06-30,Age not specified or unknown,18,3
 2021-09-30,Adult (18 or over),369,51
 2021-09-30,Child (17 or under),338,19
-2021-09-30,Age not specified or unknown,23,3
 2021-12-31,Adult (18 or over),480,43
 2021-12-31,Child (17 or under),585,22
-2021-12-31,Age not specified or unknown,28,3
-2022-03-31,Adult (18 or over),523,47
+2022-03-31,Adult (18 or over),522,47
 2022-03-31,Child (17 or under),562,37
-2022-03-31,Age not specified or unknown,28,5
-2022-06-30,Adult (18 or over),708,66
+2022-06-30,Adult (18 or over),708,65
 2022-06-30,Child (17 or under),496,39
-2022-06-30,Age not specified or unknown,55,6
 2022-09-30,Adult (18 or over),730,88
 2022-09-30,Child (17 or under),591,38
-2022-09-30,Age not specified or unknown,53,10
-2022-12-31,Adult (18 or over),946,214
+2022-12-31,Adult (18 or over),946,213
 2022-12-31,Child (17 or under),755,86
-2022-12-31,Age not specified or unknown,63,22
-2023-03-31,Adult (18 or over),810,396
-2023-03-31,Child (17 or under),840,130
-2023-03-31,Age not specified or unknown,64,35
+2023-03-31,Adult (18 or over),807,388
+2023-03-31,Child (17 or under),839,127
+2023-06-30,Adult (18 or over),695,313
+2023-06-30,Child (17 or under),813,162
