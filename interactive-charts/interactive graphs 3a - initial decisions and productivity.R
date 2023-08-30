@@ -236,11 +236,3 @@ asylum::asylum_costs_and_productivity |>
 #   labs(
 #     title = "More asylum caseworking staff are completing fewer principal stages per month, on average"
 #   )
-
-# ---- What is the current backlog for decisions on family reunion cases? ----
-# Not sure this data exists...
-# ... thought possibly in VSI_03 worksheet in https://www.gov.uk/government/publications/visas-and-citizenship-data-q1-2023
-
-# ---- How long are families currently waiting to be reunited? ----
-# Not sure this data exists
-
