@@ -266,3 +266,76 @@ family_reunion_rolling_sum
 ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +
   geom_line() +
   scale_y_continuous(limits = c(0, NA))
+
+# ---- Arrivals through resettlement routes and other routes ----
+# Stacked bar chart by nationality, showing the proportion of people who arrived 
+# through resettlement routes and proportion of those who arrived outside of them. 
+# For the last 12 months.
+# The nationalities we select can be the 10 most common when considering both means of arrival?
+
+# People arriving through resettlement routes
+arrivals_resettlement <- 
+  resettlement_grants_without_evacuation |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Nationality) |> 
+  summarise(`People resettled` = sum(Decisions, na.rm = TRUE)) |> 
+  ungroup()
+
+# People arriving through family reunion
+arrivals_family_reunion <- 
+  family_reunion |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Nationality) |> 
+  summarise(`Family reunion visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
+  ungroup()
+
+# People arriving on small boats who claimed asylum
+arrivals_small_boats <- 
+  asylum::small_boat_asylum_applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(`Asylum application` == "Asylum application raised") |> 
+  group_by(Nationality) |> 
+  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
+  ungroup()
+
+# People arriving to claim asylum (including small boats)
+arrivals_asylum <- 
+  asylum::applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Nationality) |> 
+  summarise(`People applying for asylum` = sum(Applications, na.rm = TRUE)) |> 
+  ungroup()
+
+# Combine datasets
+arrivals_all <- 
+  arrivals_asylum |> 
+  left_join(arrivals_small_boats) |> 
+  left_join(arrivals_family_reunion) |> 
+  left_join(arrivals_resettlement) |>
+  
+  mutate(across(where(is.numeric), ~replace_na(.x, 0))) |> 
+  
+  # Calculate people applying for asylum who didn't arrive via small boats
+  mutate(`People arriving via other routes and claiming asylum` = `People applying for asylum` - `People arriving via small boat and claiming asylum`) |> 
+  select(-`People applying for asylum`) |> 
+  
+  mutate(Total = `People arriving via other routes and claiming asylum` + `People arriving via small boat and claiming asylum` + `People resettled` + `Family reunion visas granted`) |> 
+  relocate(`People arriving via other routes and claiming asylum`, .after = `People arriving via small boat and claiming asylum`)
+
+# Save top ten nationalities by total numbers of people arriving
+arrivals_all |> 
+  slice_max(Total, n = 10) |> 
+  select(-Total) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/arrival routes.csv")
+
+# Proportions
+arrivals_all |> 
+  slice_max(Total, n = 10) |> 
+  mutate(
+    `People arriving via other routes and claiming asylum` = `People arriving via other routes and claiming asylum` / Total,
+    `People arriving via small boat and claiming asylum` = `People arriving via small boat and claiming asylum` / Total,
+    `People resettled` = `People resettled` / Total,
+    `Family reunion visas granted` = `Family reunion visas granted` / Total
+  ) |> 
+  select(-Total) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/arrival routes - proportions.csv")
