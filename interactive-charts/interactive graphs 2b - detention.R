@@ -33,7 +33,7 @@ people_in_detention_by_age_sex |>
   ) |> 
   mutate(Proportion = Male / (Male + Female))
 
-# ---- How long have people been in immigration detention? How many detained for more than 28 days? ----
+# ---- Length of detention ----
 detention_length <- 
   asylum::people_leaving_detention |>
   filter(Date >= max(Date) - dmonths(11)) |> 
@@ -58,7 +58,7 @@ detention_length <-
 detention_length |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - by length.csv")
 
-# ---- How many people are in immigration detention and what is the size of immigration detention estate? Baseline from previous years ----
+# ---- Average cost per day to hold a person in immigration detention ----
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")

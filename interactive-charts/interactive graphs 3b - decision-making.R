@@ -1,8 +1,7 @@
 library(tidyverse)
 library(asylum)
 
-# ---- How many people have been age disputed in the last 12 months by nationality and gender and what was the outcome of the dispute? ----
-# Data doesn't contain gender/sex
+# ---- Resolved age disputes over the last 12 months ----
 age_disputes_nation <- 
   asylum::age_disputes |> 
   # Filter within the last 12 months
@@ -32,7 +31,7 @@ age_disputes_nation |>
   
   write_csv("data-raw/flourish/3b - Decision-making/age disputes.csv")
 
-# - Caption -
+# - CAPTION -
 # What proportion of all resolved age disputes found that people were children?
 age_disputes_nation |> 
   ungroup() |> 

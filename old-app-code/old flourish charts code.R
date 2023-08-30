@@ -80,6 +80,53 @@
 # applications_sex |> 
 #   mutate(Percent = scales::percent(Sex / sum(Sex)))
 
+# ---- Asylum applications by age and sex ----
+asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  
+  filter(!str_detect(Age, "Unknown")) |> 
+  filter(!str_detect(Sex, "Unknown")) |> 
+  
+  pivot_wider(names_from = Sex, values_from = Applications) |> 
+  mutate(Female = Female * -1) |> 
+  
+  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
+
+# - CAPTION -
+# Percentage of people applying for asylum over the last year, by age and sex
+asylum::applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  
+  # Make a single age group for working age people
+  mutate(Age = case_when(
+    Age %in% c("18-29", "30-49") ~ "18-49",
+    .default = Age
+  )) |> 
+  
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Percent = scales::percent(Applications / sum(Applications)))
+
+# Percentage of children
+asylum::applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  
+  # Make a single age group for working age people
+  mutate(Age = if_else(Age == "Under 18", "Under 18", "Older")) |> 
+  
+  group_by(Age) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Percent = scales::percent(Applications / sum(Applications)))
+
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
 # top_ten_nations <- 
@@ -236,6 +283,102 @@ asylum::inadmissibility_cases_considered |>
 # asylum::notices_of_intent |> 
 #   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
 
+# Check the spike in decisions in Q2 2021
+# resettlement_grants_without_evacuation |> 
+#   filter(Date == ymd("2021-07-01")) |> 
+#   
+#   group_by(`Case outcome`, Nationality) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   
+#   arrange(desc(Decisions)) |> 
+#   
+#   # separate_wider_delim(`Case outcome`, delim = " - ", names = c("Resettlement", "Scheme", "Accommodation"))
+#   mutate(ACRS = if_else(str_detect(`Case outcome`, "ACRS"), "ACRS", "Other")) |> 
+#   
+#   group_by(ACRS) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   mutate(Proportion = Decisions / sum(Decisions))
+
+# # Calculate total waiting as of most recent quarter
+# asylum::awaiting_decision |> 
+#   filter(Date == max(Date)) |> 
+#   summarise(sum(Applications))
+# 
+# # Proportion waiting - use the `Proportion_waiting_cumulative` column to judge which nationalities to include in the caption
+# awaiting_decision_by_nationality |> 
+#   ungroup() |> 
+#   mutate(
+#     Proportion_waiting = (`More than 6 months` + `6 months or less`) / (sum(`More than 6 months`) + sum(`6 months or less`)),
+#     Proportion_more_than_6_months = `More than 6 months` / sum(`More than 6 months`)
+#   ) |> 
+#   mutate(
+#     Proportion_waiting_cumulative = cumsum(Proportion_waiting)
+#   )
+
+
+# ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
+# Cumulative arrivals
+asylum::irregular_migration |> 
+  group_by(Year, `Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  pivot_wider(names_from = `Method of entry`, values_from = `Number of detections`) |> 
+  mutate(across(-Year, cumsum)) |> 
+  select(Year, `Small boat arrivals`, `Recorded detections in the UK`, `Inadequately documented air arrivals`, `Recorded detections at UK ports`) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - trend.csv")
+
+# - Caption -
+irregular_migration_last_12_months <- 
+  asylum::irregular_migration |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(`Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`))
+
+irregular_migration_last_12_months
+sum(irregular_migration_last_12_months$`Number of detections`)
+
+# ---- 'Irregular' migration by nationality ----
+irregular_migration_by_nationality <- 
+  asylum::irregular_migration |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Nationality) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  arrange(desc(`Number of detections`))
+
+# Top five nations, by number of returns in the most recent year
+top_five_nations <- 
+  irregular_migration_by_nationality |> 
+  slice(1:5) |> 
+  pull(Nationality)
+
+# By nationality
+asylum::irregular_migration |> 
+  select(Date, Nationality, `Number of detections`) |> 
+  
+  group_by(Date, Nationality) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  
+  pivot_wider(names_from = Nationality, values_from = `Number of detections`) |> 
+  
+  # Move the top five nations to the left, so they get shown on the chart by default
+  relocate(Date, any_of(top_five_nations)) |> 
+  
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by nationality.csv")
+
+# - Caption -
+irregular_migration_by_nationality |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`)) |> 
+  mutate(Proportion_cumulative = cumsum(Proportion))
+
+# ---- 'Irregular' migration by age/sex ----
+# asylum::irregular_migration |> 
+#   group_by(Date, `Age Group`, Sex) |> 
+#   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
 
 # ---- Which countries in the EU have granted the most asylum claims? ----
 # Final decisions on asylum applications - annual data (tps00193)

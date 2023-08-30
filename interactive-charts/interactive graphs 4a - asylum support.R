@@ -1,7 +1,7 @@
 library(tidyverse)
 library(asylum)
 
-# ---- Backlog over time ----
+# ---- Asylum backlog ----
 backlog <- 
   asylum::awaiting_decision |> 
   mutate(Stage = case_when(
@@ -30,7 +30,7 @@ asylum::support_received |>
   pivot_wider(names_from = `Support Type`, values_from = People) |> 
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - longitudinal.csv")
 
-# ---- What is the rate of destitution among people seeking asylum in the UK? ----
+# ---- Per cent of people awaiting a decision receiving asylum support ----
 # Total receiving destitution support
 receiving_support <- 
   asylum::support_received |> 
@@ -60,7 +60,6 @@ receiving_support |>
 scales::percent(sum(receiving_support$People) / backlog)
 
 # ---- Asylum support payments ----
-# Most recent stats
 support_received_recently <- 
   asylum::support_received |> 
   filter(Date == max(Date)) |> 
