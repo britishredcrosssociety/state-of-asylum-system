@@ -49,6 +49,28 @@ backlog_total |>
   filter(Date == max(Date)) |> 
   summarise(Total = sum(Backlog))
 
+# ---- Asylum applications and backlog ----
+quarterly_applications <- 
+  asylum::applications |> 
+  group_by(Date) |> 
+  summarise(`New asylum applications` = sum(Applications, na.rm = TRUE)) |> 
+  ungroup()
+
+quarterly_backlog <- 
+  asylum::awaiting_decision |> 
+  group_by(Date) |> 
+  summarise(`Applications waiting for an initial decision` = sum(Applications)) |> 
+  ungroup()
+
+applications_and_backlog <- 
+  quarterly_applications |> 
+  left_join(quarterly_backlog) |> 
+  drop_na()
+
+applications_and_backlog |>
+  pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications") |> 
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog.csv")
+
 # ---- What is the number of people waiting for an initial decision by nationality ----
 awaiting_decision_by_nationality <- 
   asylum::awaiting_decision |> 
