@@ -177,8 +177,27 @@ asylum::decisions_resettlement |>
   slice(seq(2, n(), by = 4)) |> 
   arrange(desc(Withdrawn))
 
-# ---- What is the impact of the streamlined asylum process (SAP) and what has the impact of this policy been on the backlog? ----
-# Not sure we can answer this from Home Office data...
+# ---- Appeals lodged and initial grant rate ----
+grant_rate_overall <- 
+  asylum::grant_rates_initial_quarterly |> 
+  group_by(Date) |> 
+  summarise(
+    Grant = sum(Grant, na.rm = TRUE),
+    Refused = sum(Refused, na.rm = TRUE)
+  ) |>
+  ungroup() |>
+  mutate(`Grant rate at initial decision` = Grant / (Grant + Refused)) |>
+  select(Date, `Grant rate at initial decision`)
+
+asylum::appeals_lodged |> 
+  group_by(Date) |> 
+  summarise(`Appeals lodged` = sum(`Appeals lodged`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  left_join(grant_rate_overall) |> 
+  relocate(`Initial grant rate`, .after = Date) |> 
+  
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates.csv")
 
 # ---- What is the productivity of the Home Office asylum decision making (using Home Office quarterly transparency data)? ----
 asylum::asylum_costs_and_productivity |> 
@@ -224,3 +243,4 @@ asylum::asylum_costs_and_productivity |>
 
 # ---- How long are families currently waiting to be reunited? ----
 # Not sure this data exists
+
