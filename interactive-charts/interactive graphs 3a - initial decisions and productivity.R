@@ -2,7 +2,7 @@ library(tidyverse)
 library(asylum)
 library(zoo)
 
-# ---- Backlog over time, by nationality ----
+# ---- Asylum backlog over time, by nationality ----
 backlog_total <- 
   asylum::awaiting_decision |> 
   mutate(Stage = case_when(
@@ -37,7 +37,7 @@ bind_rows(backlog_total, backlog_nationality) |>
   select(Date, Nationality, `Pending initial decision (more than 6 months)`, `Pending initial decision (6 months or less)`, `Pending further review`) |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality.csv")
 
-# - Caption -
+# - CAPTION -
 # Proportion of people currently waiting for a decision who have been waiting more than three months
 backlog_total |> 
   ungroup() |>
@@ -71,7 +71,7 @@ applications_and_backlog |>
   pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications") |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog.csv")
 
-# ---- What is the number of people waiting for an initial decision by nationality ----
+# ---- Asylum backlog, by nationality ----
 awaiting_decision_by_nationality <- 
   asylum::awaiting_decision |> 
   filter(Date == max(Date)) |>
@@ -92,7 +92,7 @@ awaiting_decision_by_nationality <-
 awaiting_decision_by_nationality |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality.csv")
 
-# - Caption -
+# - CAPTION -
 # Which nationalities have a grant rate > 80%?
 high_grant_nationalities <- 
   asylum::grant_rates_initial_annual |> 
@@ -109,23 +109,7 @@ asylum::awaiting_decision |>
   ungroup() |> 
   mutate(Proportion = Applications / sum(Applications))
 
-# # Calculate total waiting as of most recent quarter
-# asylum::awaiting_decision |> 
-#   filter(Date == max(Date)) |> 
-#   summarise(sum(Applications))
-# 
-# # Proportion waiting - use the `Proportion_waiting_cumulative` column to judge which nationalities to include in the caption
-# awaiting_decision_by_nationality |> 
-#   ungroup() |> 
-#   mutate(
-#     Proportion_waiting = (`More than 6 months` + `6 months or less`) / (sum(`More than 6 months`) + sum(`6 months or less`)),
-#     Proportion_more_than_6_months = `More than 6 months` / sum(`More than 6 months`)
-#   ) |> 
-#   mutate(
-#     Proportion_waiting_cumulative = cumsum(Proportion_waiting)
-#   )
-
-# ---- Grants, refusals, and withdrawn claims over time ----
+# ---- Asylum claims granted, refused, and withdrawn ----
 asylum::decisions_resettlement |> 
   filter(`Case type` == "Asylum Case") |> 
   mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
@@ -137,7 +121,7 @@ asylum::decisions_resettlement |>
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn.csv")
 
-# - Caption -
+# - CAPTION -
 # Proportion of claims withdrawn over last 12 months
 asylum::decisions_resettlement |> 
   filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
@@ -153,8 +137,6 @@ asylum::decisions_resettlement |>
 
 # Rolling sums of withdrawals - to check highest on record
 asylum::decisions_resettlement |> 
-  # filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
-  
   filter(`Case type` == "Asylum Case") |> 
   mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
   
@@ -177,7 +159,7 @@ asylum::decisions_resettlement |>
   slice(seq(2, n(), by = 4)) |> 
   arrange(desc(Withdrawn))
 
-# ---- Appeals lodged and initial grant rate ----
+# ---- Grant rate at initial decision and number of appeals lodged ----
 grant_rate_overall <- 
   asylum::grant_rates_initial_quarterly |> 
   group_by(Date) |> 
@@ -199,13 +181,13 @@ asylum::appeals_lodged |>
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates.csv")
 
-# ---- What is the productivity of the Home Office asylum decision making (using Home Office quarterly transparency data)? ----
+# ---- Asylum caseworker productivity ----
 asylum::asylum_costs_and_productivity |> 
   select(`Financial Year`, Productivity) |> 
   drop_na() |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office productivity.csv")
 
-# - Caption -
+# - CAPTION -
 # Calculate % changes in caseworking staff and principal stages completed since 2015
 asylum::asylum_costs_and_productivity |> 
   select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`) |> 

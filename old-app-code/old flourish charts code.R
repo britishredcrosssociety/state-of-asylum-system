@@ -301,6 +301,23 @@ asylum::inadmissibility_cases_considered |>
 #   ungroup() |> 
 #   mutate(Proportion = Decisions / sum(Decisions))
 
+# # Calculate total waiting as of most recent quarter
+# asylum::awaiting_decision |> 
+#   filter(Date == max(Date)) |> 
+#   summarise(sum(Applications))
+# 
+# # Proportion waiting - use the `Proportion_waiting_cumulative` column to judge which nationalities to include in the caption
+# awaiting_decision_by_nationality |> 
+#   ungroup() |> 
+#   mutate(
+#     Proportion_waiting = (`More than 6 months` + `6 months or less`) / (sum(`More than 6 months`) + sum(`6 months or less`)),
+#     Proportion_more_than_6_months = `More than 6 months` / sum(`More than 6 months`)
+#   ) |> 
+#   mutate(
+#     Proportion_waiting_cumulative = cumsum(Proportion_waiting)
+#   )
+
+
 # ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
 # Cumulative arrivals
 asylum::irregular_migration |> 
