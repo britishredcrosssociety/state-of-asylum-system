@@ -129,13 +129,11 @@ flows <-
   flows |>
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   mutate(`People displaced internationally` = `Refugees under UNHCR's mandate` + `Asylum-seekers` + `Other people in need of international protection`)
-  # rowwise() |> 
-  # mutate(`People displaced internationally` = sum(c_across(`Refugees under UNHCR's mandate`:`Others of concern`), na.rm = TRUE))
 
 # Internally displaced persons
-flows_idp <- 
-  flows |> 
-  filter(`Country of origin (ISO)` == `Country of asylum (ISO)`)
+# flows_idp <- 
+#   flows |> 
+#   filter(`Country of origin (ISO)` == `Country of asylum (ISO)`)
 
 flows_international <- 
   flows |> 
