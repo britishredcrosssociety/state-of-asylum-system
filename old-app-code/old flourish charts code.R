@@ -120,6 +120,29 @@
 # 
 #   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-quarterly-wide.csv")
 
+# ---- Grant rates ----
+# Calculate initial and final grant rates from Outcomes data
+grant_rates_initial_final <- 
+  asylum::outcomes |>
+  drop_na() |> 
+  select(`Year of application`, `Granted asylum`:Refused, `Allowed appeals`:`Dismissed appeals`, `Final outcome: Grants of asylum`:`Final outcomes: Refused asylum or HP or DL or other leave`) |> 
+  group_by(`Year of application`) |> 
+  summarise(across(everything(), sum)) |> 
+  ungroup() |> 
+  
+  mutate(
+    `Initial grant rate` = (`Granted asylum` + `Granted HP/DL` + `Other grants`) / (`Granted asylum` + `Granted HP/DL` + `Other grants` + Refused),
+    # `Appeal grant rate` = `Allowed appeals` / (`Allowed appeals` + `Dismissed appeals`),
+    `Final grant rate` = (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other`) / (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other` + `Final outcomes: Refused asylum or HP or DL or other leave`)
+  )
+
+grant_rates_initial_final |> 
+  select(`Year of application`, contains("rate")) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/grant rates - initial and final.csv")
+
+# - CAPTION -
+# ...
+
 # ---- Returns ----
 # How many and who have been returned
 # asylum::returns |> 

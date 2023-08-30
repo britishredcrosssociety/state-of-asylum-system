@@ -327,15 +327,3 @@ arrivals_all |>
   slice_max(Total, n = 10) |> 
   select(-Total) |> 
   write_csv("data-raw/flourish/2a - Safe routes/arrival routes.csv")
-
-# Proportions
-arrivals_all |> 
-  slice_max(Total, n = 10) |> 
-  mutate(
-    `People arriving via other routes and claiming asylum` = `People arriving via other routes and claiming asylum` / Total,
-    `People arriving via small boat and claiming asylum` = `People arriving via small boat and claiming asylum` / Total,
-    `People resettled` = `People resettled` / Total,
-    `Family reunion visas granted` = `Family reunion visas granted` / Total
-  ) |> 
-  select(-Total) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/arrival routes - proportions.csv")
