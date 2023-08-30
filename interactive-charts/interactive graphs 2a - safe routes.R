@@ -12,12 +12,12 @@ resettlement_grants_without_evacuation <-
 # ---- How many people have been granted protection in the UK having arrived through a safe route? ----
 resettlement_grants_without_evacuation |> 
   group_by(Date) |> 
-  summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+  summarise(Arrivals = sum(Decisions, na.rm = TRUE)) |> 
   ungroup() |> 
   
   # Manually add missing rows - no resettlement during lockdowns
-  add_row(Date = ymd("2020-07-01"), Decisions = 0) |>
-  add_row(Date = ymd("2020-04-01"), Decisions = 0) |>
+  add_row(Date = ymd("2020-07-01"), Arrivals = 0) |>
+  add_row(Date = ymd("2020-04-01"), Arrivals = 0) |>
   
   arrange(Date) |> 
   
