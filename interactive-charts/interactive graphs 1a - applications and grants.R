@@ -1,3 +1,6 @@
+# Install our {compositr} package if you haven't already
+# devtools::install_github("humaniverse/compositr")
+
 library(tidyverse)
 library(asylum)
 library(compositr)
@@ -15,6 +18,8 @@ migration_small_boats <-
 # Migration stats from ONS
 # Data: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/datasets/longterminternationalimmigrationemigrationandnetmigrationflowsprovisional
 tf <- download_file("https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/internationalmigration/datasets/longterminternationalimmigrationemigrationandnetmigrationflowsprovisional/yearendingdecember2022/longterminternationalmigrationprovisional2018to2022.xlsx", ".xlsx")
+
+# excel_sheets(tf)  # Check worksheets in the ONS file
 
 immigration_non_EU <- read_excel(tf, sheet = "2. Non-EU reason immigration", skip = 3)
 
@@ -83,7 +88,7 @@ immigration |>
   ungroup() |> 
   mutate(Proportion = scales::percent(Total / sum(Total)))
 
-# ---- Total annual applications over time ----
+# ---- Total quarterly applications over time ----
 asylum::applications |> 
   group_by(Date) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -91,8 +96,6 @@ asylum::applications |>
 
 # - CAPTION -
 # Number of people applying for asylum so far this year
-current_year <- max(asylum::applications$Year)
-
 asylum::applications |> 
   filter(Year == max(Year)) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE))
@@ -135,8 +138,8 @@ applications_nationality <-
   filter(Date >= max(Date) - dmonths(11)) |> 
   group_by(Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
-  arrange(desc(Applications)) |> 
-  slice(1:10) |> 
+  ungroup() |> 
+  slice_max(Applications, n = 10) |> 
   rename(Category = Nationality, Nationality = Applications) |> 
   mutate(Type = "Nationality")
 
@@ -269,7 +272,7 @@ grant_rates_initial_annual |>
   arrange(desc(`Initial grant rate`)) |>
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
 
-# Make a wider version of initial grant rates quarterly data for testing in a Flourish Studio chart
+# ---- Initial grant rates by nation and quarter ----
 grant_rates_initial_quarterly |>
   select(Date, Quarter, Nationality, `Initial grant rate`) |>
   pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |>
@@ -307,24 +310,3 @@ asylum::returns_asylum |>
 asylum::returns_asylum |>
   mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
   summarise(sum(Total))
-
-# Asylum-related returns over time
-asylum::returns_asylum_longitudinal |> 
-  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum - over time.csv")
-
-asylum::returns_asylum_longitudinal |> 
-  filter(Category == "Asylum") |> 
-  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only - over time.csv")
-
-# ---- Inadmissibility ----
-unique(asylum::inadmissibility_cases_considered$Stage)
-
-asylum::inadmissibility_cases_considered |> 
-  group_by(Stage) |> 
-  summarise(Cases = sum(Cases)) |> 
-  ungroup()
-
-# asylum::notices_of_intent |> 
-#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")

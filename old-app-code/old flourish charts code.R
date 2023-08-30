@@ -140,8 +140,26 @@ grant_rates_initial_final |>
   select(`Year of application`, contains("rate")) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/grant rates - initial and final.csv")
 
-# - CAPTION -
-# ...
+# ---- What is the asylum grant rate at initial decision vs appeal? ----
+# Calculate initial and final grant rates from Outcomes data
+grant_rates_initial_final <- 
+  asylum::outcomes |>
+  drop_na() |> 
+  select(`Year of application`, `Granted asylum`:Refused, `Allowed appeals`:`Dismissed appeals`, `Final outcome: Grants of asylum`:`Final outcomes: Refused asylum or HP or DL or other leave`) |> 
+  group_by(`Year of application`) |> 
+  summarise(across(everything(), sum)) |> 
+  ungroup() |> 
+  
+  mutate(
+    `Initial grant rate` = (`Granted asylum` + `Granted HP/DL` + `Other grants`) / (`Granted asylum` + `Granted HP/DL` + `Other grants` + Refused),
+    # `Appeal grant rate` = `Allowed appeals` / (`Allowed appeals` + `Dismissed appeals`),
+    `Final grant rate` = (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other`) / (`Final outcome: Grants of asylum` + `Final outcomes: Grants of HP/DL and other` + `Final outcomes: Refused asylum or HP or DL or other leave`)
+  )
+
+grant_rates_initial_final |> 
+  select(`Year of application`, contains("rate")) |> 
+  write_csv("data-raw/flourish/3b - Decision-making/grant rates - initial and final.csv")
+
 
 # ---- Returns ----
 # How many and who have been returned
@@ -196,6 +214,27 @@ grant_rates_initial_final |>
 #   relocate(Date, any_of(top_five_nations)) |> 
 #   
 #   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by destination.csv")
+
+# Asylum-related returns over time
+asylum::returns_asylum_longitudinal |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum - over time.csv")
+
+asylum::returns_asylum_longitudinal |> 
+  filter(Category == "Asylum") |> 
+  relocate(`Voluntary returns`, .after = Category) |>  # Reorder so voluntary returns comes first in the stacked bars
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only - over time.csv")
+
+# ---- Inadmissibility ----
+unique(asylum::inadmissibility_cases_considered$Stage)
+
+asylum::inadmissibility_cases_considered |> 
+  group_by(Stage) |> 
+  summarise(Cases = sum(Cases)) |> 
+  ungroup()
+
+# asylum::notices_of_intent |> 
+#   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
 
 
 # ---- Which countries in the EU have granted the most asylum claims? ----
