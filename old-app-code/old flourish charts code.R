@@ -80,6 +80,53 @@
 # applications_sex |> 
 #   mutate(Percent = scales::percent(Sex / sum(Sex)))
 
+# ---- Asylum applications by age and sex ----
+asylum::applications |> 
+  # Filter applications within the last 12 months
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  
+  filter(!str_detect(Age, "Unknown")) |> 
+  filter(!str_detect(Sex, "Unknown")) |> 
+  
+  pivot_wider(names_from = Sex, values_from = Applications) |> 
+  mutate(Female = Female * -1) |> 
+  
+  arrange(match(Age, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - age pyramid.csv")
+
+# - CAPTION -
+# Percentage of people applying for asylum over the last year, by age and sex
+asylum::applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  
+  # Make a single age group for working age people
+  mutate(Age = case_when(
+    Age %in% c("18-29", "30-49") ~ "18-49",
+    .default = Age
+  )) |> 
+  
+  group_by(Age, Sex) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Percent = scales::percent(Applications / sum(Applications)))
+
+# Percentage of children
+asylum::applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  
+  # Make a single age group for working age people
+  mutate(Age = if_else(Age == "Under 18", "Under 18", "Older")) |> 
+  
+  group_by(Age) |> 
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+  ungroup() |> 
+  
+  mutate(Percent = scales::percent(Applications / sum(Applications)))
+
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
 # top_ten_nations <- 
