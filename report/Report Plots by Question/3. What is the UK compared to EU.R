@@ -4,6 +4,8 @@ library(compositr)
 source("report/brc_colours.R")
 source("report/theme_brc.R")
 
+# Source of data will update at the end of 2023? Then can update. #
+
 # EU country lookup
 case_country_lookup <- function(country_code) {
   case_when(
