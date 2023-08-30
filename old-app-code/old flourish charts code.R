@@ -1,3 +1,85 @@
+# ---- Immigration ----
+# Total applications in 2022
+# migration_asylum <- 
+#   asylum::applications |> 
+#   filter(Year == 2022) |> 
+#   filter(`Applicant type` == "Main applicant") |> 
+#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+#   pull(Applications)
+
+# asylum::irregular_migration |> 
+#   filter(Year == 2022 & str_detect(`Method of entry`, "boat")) |>   
+#   summarise(Boats = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   pull(Boats)
+
+# resettlement <- 
+#   asylum::decisions_resettlement |> 
+#   filter(Year == 2022 & str_detect(`Case type`, "Resettlement")) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   pull(Decisions)
+
+# These migration figures are taken from ONS
+# Source: https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/internationalmigration/bulletins/longterminternationalmigrationprovisional/yearendingdecember2022
+# net_migration <- 606000 
+# immigration_2022 <- 1163000
+# ukraine <- 114000
+# bno <- 52000  # British Nationals Overseas - BN(O)
+
+# immigration <- 
+#   tribble(
+#   ~Category, ~`Sub-category`, ~`Migration type`, ~`Number of people`,
+#   "Immigration", "Other migration", "Other migration", (immigration_2022 - ukraine - bno - migration_asylum - resettlement),
+#   "Immigration", "Other migration", "Ukraine visas", ukraine,
+#   "Immigration", "Other migration", "British Nationals Overseas", bno,
+#   "Immigration", "Asylum claims", "Asylum claims (not via small boats)", (migration_asylum - migration_small_boats),
+#   "Immigration", "Asylum claims", "Small boat arrivals claiming asylum", migration_small_boats,
+#   "Immigration", "Other migration", "Resettlement and other safe routes", resettlement
+# )
+# 
+# # Calculate proportions
+# immigration <- 
+#   immigration |> 
+#   mutate(`Percentage of people immigrating` = `Number of people` / sum(`Number of people`)) |> 
+#   mutate(`Percentage of people immigrating` = scales::percent(`Percentage of people immigrating`, accuracy = 0.1))
+
+
+# Check historical numbers of applications for the same quarter as the most recently published stats
+# current_quarter <- quarter(max(asylum::applications$Date))
+# 
+# asylum::applications |> 
+#   filter(quarter(Date) == current_quarter) |> 
+#   group_by(Date) |> 
+#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+#   arrange(desc(Applications))
+
+# Nationality
+# applications_nationality <- 
+#   asylum::applications |> 
+#   filter(Date >= max(Date) - dmonths(11)) |> 
+#   group_by(Nationality) |> 
+#   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   mutate(Percent = scales::percent(Applications / sum(Applications))) |> 
+#   arrange(desc(Applications))
+# 
+# # How many applications in total?
+# sum(applications_nationality$Applications)
+# 
+# # Top five nationalities
+# applications_nationality |> 
+#   slice(1:5)
+# 
+# # What % of the total were from the top 5 nationalities
+# applications_nationality |> 
+#   slice(1:5) |> 
+#   summarise(Total = sum(Applications)) |> 
+#   pull(Total) / sum(applications_nationality$Applications)
+# 
+# 
+# # Sex %
+# applications_sex |> 
+#   mutate(Percent = scales::percent(Sex / sum(Sex)))
+
 # ---- Initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
 # top_ten_nations <- 
