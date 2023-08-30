@@ -128,7 +128,7 @@ ukraine <-
 ukraine |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
 
-# - Caption -
+# - CAPTION -
 ukraine |> 
   filter(Date == max(Date)) |> 
   mutate(Total = `Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`) |> 
@@ -201,7 +201,7 @@ asylum::family_reunion |>
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
 
-# - Caption -
+# - CAPTION -
 asylum::family_reunion |> 
   # Filter visas within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
