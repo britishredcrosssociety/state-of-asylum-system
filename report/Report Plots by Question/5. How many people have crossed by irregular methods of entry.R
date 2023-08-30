@@ -30,8 +30,8 @@ SmallBoatNat |>
        #subtitle = "Top 10 nationalities detected crossing the channel",
        x = "Nationalities", 
        y = "Number of people detected", 
-       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA)) 
+       caption = "British Red Cross analysis of Home Office data, June 2022 to June 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 12500), expand = c(0,NA)) 
 
 view(smallboat)
 
@@ -57,7 +57,7 @@ SmallboatAsylum |>
   labs(title = str_wrap("Number of asylum applications from people crossing the Channel in small boats from 2018 to 2023"),
        x = NULL, 
        y = "Number of applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023. Earliest available home office data is from 2018")
+       caption = "British Red Cross analysis of Home Office data, March 2018 to June 2023. Earliest available home office data is from 2018")
 
 # ---- 3. Irregular Migration by Method of Entry ----  
 irregular_migration |>
@@ -72,7 +72,7 @@ irregular_migration |>
   labs(title =  "Number of people detected by 'irregular' methods of entry from 2018 to 2023",
        x = "Year",
        y = "Number of people detected", 
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2023. Earliest available home office data is from 2018") +
+       caption = "British Red Cross analysis of Home Office data, March 2018 to June 2023. Earliest available home office data is from 2018") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0,NA)) +
   scale_colour_manual(values = c(brc_colours$teal,
                                  brc_colours$green_dark,
@@ -85,17 +85,17 @@ smallboat$`Age Group` <- factor(smallboat$`Age Group`, levels=c('40 and over', '
 smallboat |>
   filter(`Age Group` != "Not currently recorded") |>
   filter(Sex != "Unknown") |>
-  filter(Year == 2022) |>
+  filter(Date >= max(Date) -dmonths(11)) |>
   select(Date, Year, Sex, `Age Group`, Nationality, `Number of detections`) |>
   group_by(Year, `Age Group`, Sex) %>%
   summarise(Total = sum(`Number of detections`)) |>
   ggplot(aes(fill = `Age Group`, x = Sex, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Small boat Channel crossings by age and sex for year ending 2022",
+  labs(title = "Small boat Channel crossings by age and sex for year ending June 2023",
        x = "Sex", 
        y = "Number of people detected",
-       caption = "British Red Cross analysis of Home Office data, January 2022 to December 2022") +
+       caption = "British Red Cross analysis of Home Office data, June 2022 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 40000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_earth,
@@ -119,7 +119,7 @@ Smallboatbyquarter |>
        x = "Year", 
        y = "Number of people detected",
        fill = "Quarter",
-       caption = "British Red Cross analysis of Home Office data, March 2018 to March 2022. Earliest available Home Office data is from 2018") +
+       caption = "British Red Cross analysis of Home Office data, March 2018 to June 2023. Earliest available Home Office data is from 2018") +
   scale_x_continuous(breaks = c(2018:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 50000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
