@@ -99,7 +99,7 @@ family_reunion |>
   labs(title = "Number of family reunion visas granted from 2010 to 2023",
        x = NULL,
        y = "Number of visas granted", 
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023")
 
 # ---- Family Reunion Visas by Sex and Age ----
 FamilyReunion <- family_reunion |> 
@@ -121,10 +121,10 @@ FamilyReunion22 |>
                            position = position_stack(vjust = 0.5), direction = "y", 
                            box.padding = unit(0.01, "lines")) +
   theme_brc() +
-  labs(title = "Family reunion visas granted by sex and age for year ending December 2022", 
+  labs(title = "Family reunion visas granted by sex and age for year ending June 2023", 
        x = "Sex", 
        y = "Number of visas granted", 
-       caption = "British Red Cross analysis of Home Office data, year ending December 2022") +
+       caption = "British Red Cross analysis of Home Office data, year ending June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 3500), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
                                brc_colours$red_light,
