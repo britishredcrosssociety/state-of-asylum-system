@@ -236,6 +236,85 @@ asylum::inadmissibility_cases_considered |>
 # asylum::notices_of_intent |> 
 #   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility - notices of intent.csv")
 
+# Check the spike in decisions in Q2 2021
+# resettlement_grants_without_evacuation |> 
+#   filter(Date == ymd("2021-07-01")) |> 
+#   
+#   group_by(`Case outcome`, Nationality) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   
+#   arrange(desc(Decisions)) |> 
+#   
+#   # separate_wider_delim(`Case outcome`, delim = " - ", names = c("Resettlement", "Scheme", "Accommodation"))
+#   mutate(ACRS = if_else(str_detect(`Case outcome`, "ACRS"), "ACRS", "Other")) |> 
+#   
+#   group_by(ACRS) |> 
+#   summarise(Decisions = sum(Decisions, na.rm = TRUE)) |> 
+#   ungroup() |> 
+#   mutate(Proportion = Decisions / sum(Decisions))
+
+# ---- How many people have crossed the channel in a small boat and other ‘irregular entry’ ----
+# Cumulative arrivals
+asylum::irregular_migration |> 
+  group_by(Year, `Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  pivot_wider(names_from = `Method of entry`, values_from = `Number of detections`) |> 
+  mutate(across(-Year, cumsum)) |> 
+  select(Year, `Small boat arrivals`, `Recorded detections in the UK`, `Inadequately documented air arrivals`, `Recorded detections at UK ports`) |> 
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - trend.csv")
+
+# - Caption -
+irregular_migration_last_12_months <- 
+  asylum::irregular_migration |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(`Method of entry`) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  ungroup() |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`))
+
+irregular_migration_last_12_months
+sum(irregular_migration_last_12_months$`Number of detections`)
+
+# ---- 'Irregular' migration by nationality ----
+irregular_migration_by_nationality <- 
+  asylum::irregular_migration |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  group_by(Nationality) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  arrange(desc(`Number of detections`))
+
+# Top five nations, by number of returns in the most recent year
+top_five_nations <- 
+  irregular_migration_by_nationality |> 
+  slice(1:5) |> 
+  pull(Nationality)
+
+# By nationality
+asylum::irregular_migration |> 
+  select(Date, Nationality, `Number of detections`) |> 
+  
+  group_by(Date, Nationality) |> 
+  summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+  
+  pivot_wider(names_from = Nationality, values_from = `Number of detections`) |> 
+  
+  # Move the top five nations to the left, so they get shown on the chart by default
+  relocate(Date, any_of(top_five_nations)) |> 
+  
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by nationality.csv")
+
+# - Caption -
+irregular_migration_by_nationality |> 
+  mutate(Proportion = `Number of detections` / sum(`Number of detections`)) |> 
+  mutate(Proportion_cumulative = cumsum(Proportion))
+
+# ---- 'Irregular' migration by age/sex ----
+# asylum::irregular_migration |> 
+#   group_by(Date, `Age Group`, Sex) |> 
+#   summarise(`Number of detections` = sum(`Number of detections`, na.rm = TRUE)) |> 
+#   write_csv("data-raw/flourish/2a - Safe routes/2a - Irregular migration - by age and sex.csv")
 
 # ---- Which countries in the EU have granted the most asylum claims? ----
 # Final decisions on asylum applications - annual data (tps00193)
