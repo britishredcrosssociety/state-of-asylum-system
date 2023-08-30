@@ -195,7 +195,7 @@ asylum::appeals_lodged |>
   ungroup() |> 
   
   left_join(grant_rate_overall) |> 
-  relocate(`Initial grant rate`, .after = Date) |> 
+  relocate(`Grant rate at initial decision`, .after = Date) |> 
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates.csv")
 
