@@ -23,9 +23,8 @@ resettlement_scheme <- decisions_resettlement |>
   summarise(Total = sum(Decisions))
 
 resettlement_scheme <- resettlement_scheme |>
-  filter(Year > 2021) |>
-  #filter(Date >= max(Date) - dmonths(11)) %>%
-  group_by(Year, `Case outcome`) |>
+  filter(Date >= max(Date) - dmonths(11)) |>
+  group_by(Date, Year, `Case outcome`) |>
   summarise(Total = sum(Total))
   
 resettlement_scheme <- resettlement_scheme |>
@@ -61,13 +60,14 @@ resettlement_scheme |>
                "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route"), 
              ("Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme"),
              ("Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme"),
-             ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme")
+             ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme"),
+             (.default = `Case outcome`)
              )
          ) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_mercer,
                                brc_colours$red_deep,
@@ -80,6 +80,8 @@ resettlement_scheme |>
        fill = "Resettlement route")
 
 # Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
+
+# check to see why this is not working?? .defult was working before, now its coming up as NA#
 
 # ---- QUESTION: HOW MANY PEOPLE HAVE COME THROUGH FAMILY REUINION PATHWAYS 
 # ---- Family Reunion ----
