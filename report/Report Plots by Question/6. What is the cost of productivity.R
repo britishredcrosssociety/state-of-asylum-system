@@ -10,12 +10,12 @@ ggplot(asylum_costs_and_productivity, aes(x = `Financial Year`, y = `Total Asylu
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::dollar(`Total Asylum Costs`, prefix = "£")), vjust = -0.5, show.legend = FALSE, size = rel(3)) +
   theme_brc() +
-  scale_y_continuous(labels = scales::dollar_format(prefix = "£", suffix = "b", scale = 1e-9, accuracy = 0.1), limit = c(0, 2500000000), expand = c(0, NA)) +
-  labs(title = "Yearly cost of the asylum system from 2010/11 to 2021/22",
-       subtitle = "In 2022, the cost of the asylum system surpassed 2 billion (£)", 
+  scale_y_continuous(labels = scales::dollar_format(prefix = "£", suffix = "b", scale = 1e-9, accuracy = 0.1), limit = c(0, 4500000000), expand = c(0, NA)) +
+  labs(title = "Yearly cost of the asylum system from 2010/11 to 2022/23",
+       subtitle = "In 2023, the cost of the asylum system is nearly 4 billion (£)", 
        x = "Financial year",
        y = " Total cost (£ billions)",
-       caption = "British Red Cross analysis of Home Office data, financial year 2010/11 to 2021/22")
+       caption = "British Red Cross analysis of Home Office data, financial year 2010/11 to 2022/23")
 
 # ---- Productivity ---- 
 Productivity <- asylum_costs_and_productivity %>%
@@ -29,8 +29,8 @@ Productivity |>
   geom_text(aes(label = scales::comma(Productivity)), show.legend = FALSE, size = rel(3)) +
   theme_brc() +
   scale_y_continuous(labels = scales::comma, limits = c(0, 20), expand = c(0, NA)) +
-  labs(title = "Asylum caseworker productivity from financial year 2011/12 to 2021/22", 
+  labs(title = "Asylum caseworker productivity from financial year 2011/12 to 2023/23", 
        subtitle = "Average number of substantive interviews or decisions completed by asylum caseworkers each month",
        x = "Financial Year",
        y = "Productivity", 
-       caption = "British Red Cross analysis of Home Office data, financial year 2011/12 to 2021/22")
+       caption = "British Red Cross analysis of Home Office data, financial year 2011/12 to 2022/23")
