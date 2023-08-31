@@ -80,7 +80,14 @@ support_received_recently |>
   write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
 
 # - CAPTION -
-# What proportion of people receiving Section 98 support are in hotels?
+# What proportion of people receiving asylum support are in hotels?
 support_received_recently |> 
-  filter(`Support Type` == "Section 98") |> 
+  # filter(`Support Type` == "Section 98") |> 
+  filter(!str_detect(tolower(`Accommodation Type`), "subsistence")) |> 
+  mutate(Hotels = if_else(str_detect(tolower(`Accommodation Type`), "hotel"), "Hotel", "Other accommodation")) |> 
+  
+  group_by(Hotels) |> 
+  summarise(People = sum(People)) |> 
+  ungroup() |> 
+  
   mutate(Proportion = People / sum(People))
