@@ -50,18 +50,18 @@ resettlement_scheme |>
   mutate(`Case outcome` = 
            case_match(
              `Case outcome`,
-             (c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
+             c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
                "Resettlement - ACRS Pathway 1 - Temporary accommodation", 
                "Resettlement - ACRS Pathway 2 - Settled accommodation",
                "Resettlement - ACRS Pathway 3 - Settled accommodation", 
                "Resettlement - ACRS Pathway 3 - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation",
                "Resettlement - Afghan route not recorded - Settled accommodation",
-               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route"), 
-             ("Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme"),
-             ("Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme"),
-             ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme"),
-             (.default = `Case outcome`)
+               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route", 
+             "Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme",
+             "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
+             "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
+             .default = `Case outcome`
              )
          ) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
