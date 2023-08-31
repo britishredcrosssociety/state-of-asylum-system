@@ -22,7 +22,7 @@ people_in_detention_by_age_sex |>
 asylum::detention_pregnant_women |> 
   filter(Date == max(Date))
 
-# - Caption -
+# - CAPTION -
 people_in_detention_by_age_sex |> 
   ungroup() |> 
   mutate(Female = Female * -1) |> 
@@ -63,6 +63,7 @@ asylum::detention_cost_per_day |>
   select(Date, Cost) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")
 
+# - CAPTION -
 # calculate % increase since April 2021
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 

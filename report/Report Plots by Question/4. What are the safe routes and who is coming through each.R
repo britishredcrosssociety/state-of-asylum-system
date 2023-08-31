@@ -60,6 +60,7 @@ resettlement_scheme |>
                "Resettlement - ACRS Pathway 3 - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation",
                "Resettlement - Afghan route not recorded - Settled accommodation",
+<<<<<<< HEAD
                "Resettlement - Afghan route not recorded - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship",
                "Resettlement - ACRS Pathway 2 - Settled accommodation - Community Sponsorship",
@@ -71,6 +72,15 @@ resettlement_scheme |>
            )
   ) |>
   filter(Year > 2021) |>
+=======
+               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route", 
+             "Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme",
+             "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
+             "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
+             .default = `Case outcome`
+             )
+         ) |>
+>>>>>>> b13903b9c276b2f54be6f345ace26c53f32afb6d
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2010:2023)) +
