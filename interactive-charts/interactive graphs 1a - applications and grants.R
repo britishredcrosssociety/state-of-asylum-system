@@ -227,6 +227,13 @@ grant_rates_initial_annual |>
 
 # ---- Initial grant rates, by quarter ----
 grant_rates_initial_quarterly |>
+  
+  mutate(
+    Grant = replace_na(Grant, 0),
+    Refused = replace_na(Refused, 0)
+  ) |> 
+  mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
+  
   select(Date, Quarter, Nationality, `Initial grant rate`) |>
   pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |>
 
