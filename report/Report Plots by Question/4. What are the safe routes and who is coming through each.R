@@ -25,7 +25,7 @@ resettlement_scheme <- decisions_resettlement |>
 resettlement_scheme <- resettlement_scheme |>
   filter(Date >= max(Date) - dmonths(11)) |>
   group_by(Date, Year, `Case outcome`) |>
-  summarise(Total = sum(Total))
+  summarise(Total = sum(Total)) |> view()
   
 resettlement_scheme <- resettlement_scheme |>
   filter(`Case outcome` != "3rd Country Refusal") |>	
@@ -44,44 +44,56 @@ resettlement_scheme <- resettlement_scheme |>
   filter(`Case outcome` != "Relocation - ARAP - Settled accommodation") |>
   filter(`Case outcome` != "Relocation - ARAP - Temporary accommodation") |>
   filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded ") |>
-  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded")
+  filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded") |>
+  filter(`Case outcome` != "Calais Leave") |>
+  filter(`Case outcome` != "Exceptional Leave to Remain") |>
+  filter(`Case outcome` != "Non-Compliance Refusal") 
   
 resettlement_scheme |> 
   mutate(`Case outcome` = 
            case_match(
              `Case outcome`,
-             (c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
+             c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
                "Resettlement - ACRS Pathway 1 - Temporary accommodation", 
                "Resettlement - ACRS Pathway 2 - Settled accommodation",
                "Resettlement - ACRS Pathway 3 - Settled accommodation", 
                "Resettlement - ACRS Pathway 3 - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation",
                "Resettlement - Afghan route not recorded - Settled accommodation",
-               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route"), 
-             ("Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme"),
-             ("Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme"),
-             ("Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme"),
-             (.default = `Case outcome`)
-             )
-         ) |>
+               "Resettlement - Afghan route not recorded - Temporary accommodation",
+               "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship",
+               "Resettlement - ACRS Pathway 2 - Settled accommodation - Community Sponsorship",
+               "Resettlement - Afghan route not recorded - Accommodation not recorded") ~ "Afghan resettlement route", 
+             "Resettlement - Community Sponsorship Scheme" ~ "Community sponsorship scheme",
+             "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
+             "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
+             .default = `Case outcome`
+           )
+  ) |>
+  filter(Year > 2021) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
-  scale_x_continuous(breaks = c(2022, 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
+  scale_x_continuous(breaks = c(2010:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
-                               brc_colours$red_mercer,
-                               brc_colours$red_deep,
-                               brc_colours$red_light)) +
+                               brc_colours$red_light,
+                               brc_colours$red_earth, 
+                               brc_colours$teal,
+                               brc_colours$sky,
+                               brc_colours$steel,
+                               brc_colours$duck)) +
   theme_brc() +
-  labs(title = "Number of people granted protection under a resettlement scheme for year ending March 2023", 
+  labs(title = "Number of people granted protection under a resettlement schemes as of June 2023", 
        x = "Year",
        y = "Number of grants", 
-       caption = "British Red Cross analysis of Home Office data, March 2022 to March 2023",
+       caption = "British Red Cross analysis of Home Office data, March 2023 to June 2023",
        fill = "Resettlement route")
+
+
+# remove the filter code on line 73 to see resettlement across multiple years- also will have to change the limit for scaleycont. 
 
 # Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
 
-# check to see why this is not working?? .defult was working before, now its coming up as NA#
 
 # ---- QUESTION: HOW MANY PEOPLE HAVE COME THROUGH FAMILY REUINION PATHWAYS 
 # ---- Family Reunion ----
