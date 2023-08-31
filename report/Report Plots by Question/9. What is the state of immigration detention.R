@@ -27,8 +27,10 @@ people_in_detention %>%
        x = "Year",
        y = "Number of women",
        caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 1500)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA)) +
   scale_x_continuous(breaks = c(2010:2023))
+
+# Data not updated for people in detention for Q2?? #
 
 # ---- 2.  Children in Detention ----
 #ChildrenDetention <- people_in_detention |>
@@ -76,7 +78,7 @@ people_leaving_detention |>
        subtitle = str_wrap("Bailed includes bailed by immigration judge and Secretary of State. Other is defined as people returned to criminal detention, released unconditionally, those sectioned under the Mental Health Act, deaths, absconds and reasons unavailable when leaving detention"),
        x = "Year",
        y = "Number of people",
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 40000), expand = c(0,NA)) +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_fill_manual(values = c(brc_colours$steel,
@@ -97,7 +99,7 @@ detention_pregnant_women |>
   labs(title = "Number of pregnant people in immigration detention from 2016 to 2023",
        x = "Year", 
        y = "Number of pregnant people", 
-       caption = "British Red Cross analysis of Home Office data, July 2016 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, July 2016 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 60), expand = c(0,NA)) +
   scale_x_continuous(breaks = c(2016:2023)) 
 
@@ -121,7 +123,7 @@ AgeSexDetention |>
   labs(title = "Age of people in immigration detention from 2010 to 2023",
        x = "Year",
        y = "Number of people",
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000)) +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_fill_manual(values = c(brc_colours$teal,
@@ -129,6 +131,8 @@ AgeSexDetention |>
                                brc_colours$red_light,
                                brc_colours$red_mercer,
                                brc_colours$red_deep))
+
+# People in detention data not updated by Home office. # 
 
 # ---- 6. People in Detention ----
 OverallinDetention <- people_in_detention |>
@@ -148,6 +152,8 @@ OverallinDetention |>
        caption = "British Red Cross Analysis of Home Office data, March 2010 to March 2023") +
   scale_x_continuous(breaks = c(2010 : 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA))
+
+# People in detention not updated by Home Office. # See to use people leaving detention? 
 
 # ---- 7. Length of Time in Detention ----
 detention_length <- 
@@ -182,7 +188,7 @@ detention_length |>
   labs(title = "Length of time people have spent in immigration detention from 2010 to 2023",
        x = "Year",
        y = "Number of people",
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 40000), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,

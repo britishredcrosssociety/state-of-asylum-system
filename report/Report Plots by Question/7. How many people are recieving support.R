@@ -44,7 +44,7 @@ SupportType |>
        subtitle = "Asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999",
        x = "Year", 
        y = "Number of people", 
-       caption = "British Red Cross analysis of Home Office data, March 2014 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2014 to June 2023") +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
@@ -53,20 +53,20 @@ SupportType |>
 
 # ---- 2023 Section and Accommodation Type ---- 
 SupportType %>%
-  filter(Date == "2023-03-31") |>
+  filter(Date > "2022-12-31") |>
   filter(`Accommodation Type` != "N/A - Section 98 (pre-2023)") |>
   filter(`Accommodation Type`!= "Subsistence only") |>
-  filter(`Accommodation Type`!= "Subsistence Only") |>
+  filter(`Accommodation Type`!= "Subsistence Only") |> 
   ggplot(aes(fill = `Accommodation Type`, y = Total, x = `Support Type`)) +
   geom_bar(position ="stack", stat="identity") +
-  geom_text(aes(label = scales::comma(Total)),
-            position = position_stack(vjust = .5), size = 2) +
+  #geom_text(aes(label = scales::comma(Total)),
+            #position = position_stack(vjust = .5), size = 2) +
   theme_brc() +
-  labs(title = "Number of people in receipt of support by accomodation type as of March 2023", 
+  labs(title = "Number of people in receipt of support by accomodation type as of June 2023", 
        x = "Type of asylum support", 
        y = "Number of people", 
-       caption = "British Red Cross analysis of Home Office data, year ending March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 60000), expand = c(0, NA)) +
+       caption = "British Red Cross analysis of Home Office data, year ending June 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
   guides(color = guide_legend(override.aes = list(size = 0.5))) +
   scale_fill_manual(values = c(brc_colours$steel,
                                brc_colours$teal,

@@ -20,9 +20,9 @@ AgeDispute |>
        x = "Year",
        y = "Number of cases",
        fill = "Age dispute raised or resolved",
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
   scale_x_continuous(breaks = c(2010:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 5000), expand = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_deep))
   
@@ -45,8 +45,8 @@ ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute,
        x = "Year", 
        y = "Total cases",
        fill = 'Outcome of age dispute',
-       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023") +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2500), expand = c(0, NA)) +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 3500), expand = c(0, NA)) +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_earth))
