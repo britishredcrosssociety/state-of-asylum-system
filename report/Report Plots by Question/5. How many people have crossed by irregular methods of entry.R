@@ -59,6 +59,36 @@ SmallboatAsylum |>
        y = "Number of applications", 
        caption = "British Red Cross analysis of Home Office data, March 2018 to June 2023. Earliest available home office data is from 2018")
 
+# ---- 2b. Asylum and small boat Q2 to Q2 ----
+
+small_boat_asylum_annual <- 
+  asylum::small_boat_asylum_applications |> 
+  group_by(Date) |> 
+  summarise(Total = sum(Applications, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+small_boat_asylum_most_recent_quarter <- 
+  small_boat_asylum_annual |> 
+  rolling_annual_sum(Total)
+
+View(small_boat_asylum_most_recent_quarter)
+
+small_boat_asylum_most_recent_quarter |>
+  ggplot(aes(Date, RollingSum)) +
+  geom_point(aes(colour = brc_colours$red_dunant, size = 3), alpha = 0.5, show.legend = FALSE) +
+  geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(3)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 50000)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme_brc() +
+  labs(title = str_wrap("Number of asylum applications from people crossing the Channel in small boats from 2019 to 2023"),
+       x = NULL, 
+       y = "Number of applications", 
+       caption = "British Red Cross analysis of Home Office data, June 2019 to June 2023. Earliest available home office data is from 2018")
+
+
+
 # ---- 3. Irregular Migration by Method of Entry ----  
 irregular_migration |>
   select(Year, `Method of entry`, `Number of detections`) |>
