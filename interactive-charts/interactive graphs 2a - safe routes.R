@@ -195,6 +195,15 @@ arrivals_all |>
   select(-Total) |> 
   write_csv("data-raw/flourish/2a - Safe routes/arrival routes.csv")
 
+# - CAPTION -
+# What % of arrivals were through resettlement routes?
+arrivals_all |> 
+  mutate(Total = `People arriving via small boat and claiming asylum` + `People arriving via other routes and claiming asylum` + `Family reunion visas granted` + `People resettled`) |> 
+  summarise(across(where(is.numeric), sum)) |> 
+  mutate(Proportion = (`Family reunion visas granted` + `People resettled`) / Total) |> 
+  pull(Proportion) |> 
+  scales::percent()
+
 # ---- Family reunion visas granted ----
 asylum::family_reunion |> 
   group_by(Date) |> 
