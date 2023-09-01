@@ -1,42 +1,64 @@
 library(tidyverse)
 library(asylum)
-
+library(zoo)
 source("report/brc_colours.R")
 source("report/theme_brc.R")
+source("functions/rolling-annual-sum.R")
 
 # ---- QUESTION: WHO IS APPLYING FOR ASYLUM IN THE UK (NATIONALITY, SEX, AGE, UASC, KIDS) ----
 
 # ---- 1. Total Asylum Applications ----
 total_applications <- applications |>
-  group_by(Date) |>
-  summarise(Total = sum(Applications)) |> 
-  ungroup() |> 
+  group_by(Year) |>
+  summarise(Total = sum(Applications))
 
-  arrange(desc(Date))
-
-total_applications |> 
-  # Calculate the annual rolling sum, starting with the most recent quarter
-  mutate(TotalQ = rollsum(Total, k = 4, na.pad = TRUE)) |> 
-  
-  # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
-  slice(seq(2, n(), by = 4)) |> 
-  arrange(desc(TotalQ)) |> 
-  
-  ggplot(aes(Date, TotalQ)) +
+total_applications |>
+  ggplot(aes(Year, Total)) +
   geom_line(colour = brc_colours$red_dunant) +
-  geom_point(aes(size = TotalQ, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
-  geom_text(aes(label = scales::comma(TotalQ)), show.legend = FALSE, size = rel(2)) +
+  geom_point(aes(size = Total, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(2)) +
   #geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
   #annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
   #annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
   theme_brc() +
-  #scale_x_continuous(breaks = c(2001:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA), expand = c(0, NA)) +
+  scale_x_continuous(breaks = c(2001:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
   labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = "Year", 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023") 
 
+# ---- 1a. Total applications Q2 to Q2 ----
+  
+  # Prepare asylum applications data by calculating quarterly total numbers of applications
+  applications_annual <- 
+    asylum::applications |> 
+    group_by(Date) |> 
+    summarise(Applications = sum(Applications, na.rm = TRUE))
+  
+  # Use the `rolling_annual_sum()` function to calculate the total number of applications
+  # for the year ending June 2023, June 2022, June 2021 etc.
+  applications_year_ending_most_recent_quarter <- 
+    applications_annual |> 
+    rolling_annual_sum(Applications)
+  
+  View(applications_year_ending_most_recent_quarter)
+  
+applications_year_ending_most_recent_quarter |>
+  ggplot(aes(Date, RollingSum)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_point(aes(size = RollingSum, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(2)) +
+  #geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
+  #annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
+  #annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
+  theme_brc() +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 100000), expand = c(0, NA)) +
+  labs(title = "Total number of asylum applications from 2002 to 2023", 
+       x = "Year", 
+       y = "Applications", 
+       caption = "British Red Cross analysis of Home Office data, June 2002 to June 2023")
 
 # ---- 2. Age and Sex Analysis 2023 Q2 Only ----
 age_and_sex_analysis <- applications |>
@@ -100,6 +122,37 @@ dependent_children |>
   scale_x_continuous(breaks = c(2009:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA))
 
+# ---- 3b. Dependent Children Q2 to Q2 ----
+
+# Prepare asylum applications data by calculating quarterly total numbers of applications
+dependentchildren_annual <- 
+  asylum::applications |> 
+  filter(`Applicant type` == "Dependant", Age == "Under 18") |>
+  group_by(Date) |> 
+  summarise(Total = sum(Applications, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+dependent_children_most_recent_Q <- 
+  dependentchildren_annual |> 
+  rolling_annual_sum(Total)
+
+View(dependent_children_most_recent_Q)
+
+dependent_children_most_recent_Q |>
+  ggplot(aes(Date, RollingSum)) +
+  geom_point(aes(size = RollingSum, colour = brc_colours$red_dunant, alpha = 0.5), show.legend = FALSE) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(3)) +
+  theme_brc() +
+  labs(title = "Number of asylum applications with dependent children from 2010 to 2023", 
+       x = "Year", 
+       y = 'Applications', 
+       caption = 'British Red Cross analysis of Home Office data, June 2010 to June 2023') +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA))
+  
+
 # ---- 4. UASC ----
 UASC <- applications |>
   select(Date, Year, Nationality, UASC, Applications) |>
@@ -126,6 +179,38 @@ UASCOnly |>
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, March 2006 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 7000), expand = c(0, NA))
+
+# ---- 4b. UASC Q2 to Q2 ----
+
+# Prepare asylum applications data by calculating quarterly total numbers of applications
+UASC_annual <- 
+  asylum::applications |> 
+  select(Date, Year, UASC, Applications) |>
+  filter(UASC == "UASC") |>
+  group_by(Date) |> 
+  summarise(Total = sum(Applications, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+UASC_most_recent_Q <- 
+  UASC_annual |> 
+  rolling_annual_sum(Total)
+
+View(UASC_most_recent_Q)
+
+UASC_most_recent_Q |>
+  ggplot(aes(x = Date, y = RollingSum)) +
+  geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_point(colour = brc_colours$red_dunant, alpha = 0.5, show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(3)) +
+  theme_brc() +
+  labs(title = "Applications for asylum by unaccompanied asylum seeking children (UASC) from 2007-2023", 
+       x = "Year", 
+       y = "Applications", 
+       caption = "British Red Cross analysis of Home Office data, June 2007 to June 2023") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 6000), expand = c(0, NA))
+
 
 # ---- 5. UASC Nationality ----
 UASC <- UASC |>
