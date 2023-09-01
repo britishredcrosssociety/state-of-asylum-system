@@ -1,5 +1,6 @@
 library(tidyverse)
 library(asylum)
+library(zoo)
 source("report/brc_colours.R")
 source("report/theme_brc.R")
 
@@ -60,7 +61,6 @@ resettlement_scheme |>
                "Resettlement - ACRS Pathway 3 - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation",
                "Resettlement - Afghan route not recorded - Settled accommodation",
-<<<<<<< HEAD
                "Resettlement - Afghan route not recorded - Temporary accommodation",
                "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship",
                "Resettlement - ACRS Pathway 2 - Settled accommodation - Community Sponsorship",
@@ -69,18 +69,9 @@ resettlement_scheme |>
              "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
              "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
              .default = `Case outcome`
-           )
-  ) |>
-  filter(Year > 2021) |>
-=======
-               "Resettlement - Afghan route not recorded - Temporary accommodation") ~ "Afghan resettlement route", 
-             "Resettlement - Community Sponsorship Scheme" ~ "Community Sponsorship Scheme",
-             "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
-             "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
-             .default = `Case outcome`
              )
          ) |>
->>>>>>> b13903b9c276b2f54be6f345ace26c53f32afb6d
+  filter(Year > 2021) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2010:2023)) +
@@ -100,7 +91,7 @@ resettlement_scheme |>
        fill = "Resettlement route")
 
 
-# remove the filter code on line 73 to see resettlement across multiple years- also will have to change the limit for scaleycont. 
+# remove the filter code on line 74 to see resettlement across multiple years- also will have to change the limit for scaleycont. 
 
 # Use .default = `Case outcome` to keep the names from the mutation above, ie if you want to only mutate a few things and not others, use .default# 
 
@@ -122,6 +113,35 @@ family_reunion |>
        x = NULL,
        y = "Number of visas granted", 
        caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023")
+
+# ---- 2a. Family Reunion Q2 to Q2 ----
+
+# Prepare asylum applications data by calculating quarterly total numbers of applications
+family_reunion_annual <- 
+  asylum::family_reunion |> 
+  group_by(Date) |> 
+  summarise(Total = sum(`Visas granted`, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+family_reunion_most_recent_quarter <- 
+  family_reunion_annual |> 
+  rolling_annual_sum(Total)
+
+View(family_reunion_most_recent_quarter)
+
+family_reunion_most_recent_quarter |>
+  ggplot(aes(Date, RollingSum)) +
+  geom_line(aes(colour = "red"), show.legend = FALSE) +
+  geom_point(aes(colour = "red", alpha = 0.5, size = RollingSum), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(3)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0,NA)) +
+  theme_brc() +
+  labs(title = "Number of family reunion visas granted from 2011 to 2023",
+       x = "Year",
+       y = "Number of visas granted", 
+       caption = "British Red Cross analysis of Home Office data, June 2011 to June 2023")
 
 # ---- Family Reunion Visas by Sex and Age ----
 FamilyReunion <- family_reunion |> 
