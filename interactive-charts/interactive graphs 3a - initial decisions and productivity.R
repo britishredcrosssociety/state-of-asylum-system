@@ -199,6 +199,17 @@ asylum::asylum_costs_and_productivity |>
     `Average Principal Stages Completed Per Month (% change year on year)` = (`Average Principal Stages Completed Per Month` - lag(`Average Principal Stages Completed Per Month`)) / lag(`Average Principal Stages Completed Per Month`)
   )
 
+# ---- Cost of Asylum System ----
+
+asylum::asylum_costs_and_productivity |>
+  select(`Financial Year`, `Total Asylum Costs`) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost.csv")
+
+
+
+
+
+
 # Plot asylum caseworking staff and principal stages completed side by side to check trends
 # asylum::asylum_costs_and_productivity |> 
 #   select(`Financial Year`, `Asylum Caseworking Staff`, `Average Principal Stages Completed Per Month`, Productivity) |> 
