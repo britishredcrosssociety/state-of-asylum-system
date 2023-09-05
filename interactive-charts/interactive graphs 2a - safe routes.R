@@ -202,7 +202,7 @@ arrivals_all |>
   summarise(across(where(is.numeric), sum)) |> 
   mutate(Proportion = (`Family reunion visas granted` + `People resettled`) / Total) |> 
   pull(Proportion) |> 
-  scales::percent()
+  scales::percent() |> 
 
 # ---- Family reunion visas granted ----
 asylum::family_reunion |> 
@@ -210,6 +210,7 @@ asylum::family_reunion |>
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
 
+# Family reunion under 18
 family_reunion |>
   filter(Age == "Under 18") |>
   group_by(Date) |>
