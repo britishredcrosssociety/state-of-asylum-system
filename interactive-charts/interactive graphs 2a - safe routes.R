@@ -210,6 +210,12 @@ asylum::family_reunion |>
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
 
+family_reunion |>
+  filter(Age == "Under 18") |>
+  group_by(Date) |>
+  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |>
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18.csv")
+
 # - CAPTION -
 asylum::family_reunion |> 
   # Filter visas within the last 12 months
