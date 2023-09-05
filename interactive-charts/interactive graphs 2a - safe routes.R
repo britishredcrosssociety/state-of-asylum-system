@@ -213,7 +213,7 @@ asylum::family_reunion |>
 family_reunion |>
   filter(Age == "Under 18") |>
   group_by(Date) |>
-  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |>
+  summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18.csv")
 
 # - CAPTION -
