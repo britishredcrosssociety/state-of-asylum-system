@@ -111,7 +111,8 @@ asylum::awaiting_decision |>
 
 # ---- Asylum claims granted, refused, and withdrawn ----
 asylum::decisions_resettlement |> 
-  filter(`Case type` == "Asylum Case") |> 
+  filter(`Case type` == "Asylum Case") |>
+  filter(`Applicant type` == "Main applicant") |>
   mutate(`Case outcome group` = if_else(str_detect(`Case outcome group`, "Grant"), "Granted", `Case outcome group`)) |> 
   
   group_by(Date, `Case outcome group`) |> 
