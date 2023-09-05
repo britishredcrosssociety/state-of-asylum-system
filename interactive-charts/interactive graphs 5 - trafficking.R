@@ -169,7 +169,8 @@ dtn <-
   summarise(Total = sum(Total)) |> 
   ungroup() |> 
   arrange(desc(Total)) |> 
-  filter(Nationality != "Total")
+  filter(Nationality != "Total") |> 
+  filter(Nationality != "Unknown")
 
 dtn |> 
   slice(1:20) |> 
