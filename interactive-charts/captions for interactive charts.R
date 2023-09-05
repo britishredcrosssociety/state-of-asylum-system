@@ -109,3 +109,43 @@ nrm_referral_sex_age |>
  
 # = -13.87856
 # There has been a 14% decrease in the number of positive conclusive ground decisions for adults in the second quarter of 2023 compare to the first quarter. 
+
+# ---- 5. What is the number of people coming over by small boat, resettlement, family reunion 
+
+arrival_all <- (arrivals_all |>
+                  pivot_longer(cols = `People arriving via small boat and claiming asylum`:`People resettled`,
+                               names_to = "Arrival method",
+                               values_to = "People"))
+
+arrival_all <- arrival_all |>
+  select(`Arrival method`, People)
+
+Groupedbymethod <- arrival_all |>
+  group_by(`Arrival method`) |>
+  summarise(Total = sum(People)) |> view()
+
+Groupedbymethod |>
+summarise(TotalG = sum(Total))
+
+# = 102966
+
+# Numbers: 
+#Family reunion visas granted
+(4671/102966)*100
+
+# = 4.5364%
+
+#People arriving via other routes and claiming asylum
+(61222/102966)*100
+
+# = 59.45846
+
+#People arriving via small boat and claiming asylum
+(36168/102966)*100
+
+# = 35.12616% 
+
+#People resettled
+(905/102966)*100
+
+# = 0.8789 %
