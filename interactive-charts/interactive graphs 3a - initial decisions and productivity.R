@@ -53,13 +53,13 @@ backlog_total |>
 quarterly_applications <- 
   asylum::applications |> 
   group_by(Date) |> 
-  summarise(`New asylum applications` = sum(Applications, na.rm = TRUE)) |> 
+  summarise(`New asylum applicants` = sum(Applications, na.rm = TRUE)) |> 
   ungroup()
 
 quarterly_backlog <- 
   asylum::awaiting_decision |> 
   group_by(Date) |> 
-  summarise(`Applications waiting for an initial decision` = sum(Applications)) |> 
+  summarise(`Applicants waiting for an initial decision ` = sum(Applications)) |> 
   ungroup()
 
 applications_and_backlog <- 
@@ -122,7 +122,7 @@ asylum::decisions_resettlement |>
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn.csv")
 
-# - CAPTION -
+# - CAPTION -/
 # Proportion of claims withdrawn over last 12 months
 asylum::decisions_resettlement |> 
   filter(Date >= max(Date) - dmonths(11)) |>  # Filter applications within the last 12 months
