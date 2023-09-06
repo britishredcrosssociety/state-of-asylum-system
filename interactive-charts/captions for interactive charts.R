@@ -149,3 +149,18 @@ summarise(TotalG = sum(Total))
 (905/102966)*100
 
 # = 0.8789 %
+
+arrivals_all |> 
+  mutate(Total = `People arriving via small boat and claiming asylum` + `People arriving via other routes and claiming asylum` + `Family reunion visas granted` + `People resettled`) |> 
+  summarise(across(where(is.numeric), sum)) |> 
+  mutate(Proportion = (`People arriving via small boat and claiming asylum` / Total)) |> 
+  pull(Proportion) |> 
+  scales::percent() 
+
+arrivals_small_boats <- 
+  asylum::small_boat_asylum_applications |> 
+  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(`Asylum application` == "Asylum application raised") |> 
+  group_by(Date) |>
+  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> view()
+ungroup()
