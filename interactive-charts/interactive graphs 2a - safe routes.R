@@ -202,7 +202,7 @@ arrivals_all |>
   summarise(across(where(is.numeric), sum)) |> 
   mutate(Proportion = (`Family reunion visas granted` + `People resettled`) / Total) |> 
   pull(Proportion) |> 
-  scales::percent() |> 
+  scales::percent()  
 
 # ---- Family reunion visas granted ----
 asylum::family_reunion |> 
