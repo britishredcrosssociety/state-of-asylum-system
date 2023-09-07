@@ -22,8 +22,7 @@ appeals_total |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA)) +
   theme_brc() +
   labs(
-    title = "Number of asylum appeals lodged from 2010 to 2023",  
-    subtitle = "Decisions on asylum claims should be made quickly and should be right the first time",
+    title = "Number of asylum appeals lodged from 2010 to year ending March 2023",  
     x = "Year",
     y = "Number of appeals",
     caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
@@ -53,8 +52,7 @@ ggplot(aes(Date, RollingSum)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA)) +
   theme_brc() +
   labs(
-    title = "Number of asylum appeals lodged from 2010 to 2023",  
-    subtitle = "Decisions on asylum claims should be made quickly and should be right the first time",
+    title = "Number of asylum appeals lodged from 2011 to 2023",  
     x = "Year",
     y = "Number of appeals",
     caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
@@ -130,9 +128,9 @@ return_asylum |>
   ggplot(aes(fill = `Return Method`, x = reorder(Nationality, desc(People), sum), y = People)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Nationality of asylum-related returns by method of return as of June 2023",
+  labs(title = "Nationality of asylum-related returns by method of return in the year ending June 2023",
        x = "Nationality",
-       y = "Number of returned people",
+       y = "People returned",
        caption = "British Red Cross analysis of Home Office data, year ending June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 1500), expand = c(0,NA)) +
   scale_fill_manual(values = c(brc_colours$red_light,
@@ -147,7 +145,7 @@ return_asylum |>
   ggplot(aes(fill = `Return related`, x = reorder(Nationality, desc(Total), sum), y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Number of asylum-related and non-asylum related returns as of June 2023",
+  labs(title = "Number of asylum-related and non-asylum related returns by nationality in the year ending June 2023",
        x = "Nationality",
        y = "Number of people returned",
        caption = "British Red Cross analysis of Home Office data, year ending June 2023") +
@@ -222,7 +220,7 @@ ggplot(appeals_and_grant) +
                      limits = c(0,15000), 
                      expand = c(0,NA),
                      sec.axis=sec_axis(
-    ~.*0.0001,name="Initial grant rate", labels=scales::percent)) +
+    ~.*0.0001,name="Grant rate at initial decision", labels=scales::percent)) +
   scale_x_continuous(breaks = c(2010:2023))
 #scales::rescale()?? for secondary axis
   
