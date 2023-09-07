@@ -30,6 +30,35 @@ appeals_total |>
 
 # As Matt stated, the appeals has not been updated by Home Office for June.#
 
+# ---- 1b. Appeals lodged trends Q2 to Q2 ----
+
+appeals_lodged_annual <- 
+  asylum::appeals_lodged |> 
+  group_by(Date) |> 
+  summarise(Total = sum(`Appeals lodged`, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+appeals_lodged_most_recent_Q <- 
+ appeals_lodged_annual |> 
+  select(Date, Total) |>
+  rolling_annual_sum(Total)
+
+appeals_lodged_most_recent_Q |>
+ggplot(aes(Date, RollingSum)) +
+  geom_line(aes(colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_point(aes(size = RollingSum, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(3)) + 
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA)) +
+  theme_brc() +
+  labs(
+    title = "Number of asylum appeals lodged from 2010 to 2023",  
+    subtitle = "Decisions on asylum claims should be made quickly and should be right the first time",
+    x = "Year",
+    y = "Number of appeals",
+    caption = "British Red Cross analysis of Home Office data, March 2010 to March 2023")
+
 # ---- 2. Appeals Lodged by Nationality in 2023 ----
 appeals_2023 <- appeals_total |>
   filter(Date >= max(Date) -dmonths(11)) |>
@@ -178,7 +207,7 @@ appeals_and_grant <- appeals_and_grant |>
 
 appeals_and_grant$GrantRate <- (100*appeals_and_grant$GrantRate)
 
-# Plot of Appeals lodged x grant rate 
+# ---- Plot of Appeals lodged x grant rate ----
 
 ggplot(appeals_and_grant) +
   geom_col(aes(x = Year, y = `Appeals`), fill = brc_colours$red_dunant, colour = brc_colours$red_dunant) +
@@ -195,5 +224,5 @@ ggplot(appeals_and_grant) +
                      sec.axis=sec_axis(
     ~.*0.0001,name="Initial grant rate", labels=scales::percent)) +
   scale_x_continuous(breaks = c(2010:2023))
-#scales::rescale()??
+#scales::rescale()?? for secondary axis
   
