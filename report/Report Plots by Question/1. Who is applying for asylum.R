@@ -23,10 +23,36 @@ total_applications |>
   theme_brc() +
   scale_x_continuous(breaks = c(2001:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 120000), expand = c(0, NA)) +
+  labs(title = "Total number of people applying for asylum from 2001 to 2023", 
+       x = "Year", 
+       y = "Number of people", 
+       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023") 
+
+# ---- Number of applications (main applicants only) ----
+total_applicants_main_annual <- applications |>
+  filter(`Applicant type` == "Main applicant") |>
+  group_by(Date) |>
+  summarise(Total = sum(Applications, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+applicants_main_annual <- 
+  total_applicants_main_annual |> 
+  rolling_annual_sum(Total)
+
+applicants_main_annual |>
+  ggplot(aes(Date, RollingSum)) +
+  geom_line(colour = brc_colours$red_dunant) +
+  geom_point(aes(size = RollingSum, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
+  geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(2)) +
+  theme_brc() +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 100000), expand = c(0, NA)) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = "Year", 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023") 
+       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023. This includes `main applicants` only.") 
+
 
 # ---- 1a. Total applications Q2 to Q2 ----
   
@@ -49,13 +75,10 @@ applications_year_ending_most_recent_quarter |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_point(aes(size = RollingSum, alpha = 0.5, colour = brc_colours$red_dunant), show.legend = FALSE) +
   geom_text(aes(label = scales::comma(RollingSum)), show.legend = FALSE, size = rel(2)) +
-  #geom_vline(xintercept = c(2002, 2022), size = 0.3, linetype = "dotted") +
-  #annotate("text", x = 2002, y = 110000, label = "Conflicts in Afghanistan, Iran, Somalia and Sri Lanka", size = 2.5, hjust = -.01) +
-  #annotate("text", x = 2022, y = 100000, label = "Conflicts in Ukraine and Afghanistan", size = 2.5) +
   theme_brc() +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 100000), expand = c(0, NA)) +
-  labs(title = "Total number of asylum applications from 2002 to 2023", 
+  labs(title = "Total number of people applying for asylum from 2002 to 2023", 
        x = "Year", 
        y = "Applications", 
        caption = "British Red Cross analysis of Home Office data, June 2002 to June 2023")
@@ -248,57 +271,6 @@ application_by_nationality <- applications |>
 application_by_nationality |>
   slice_max(Total, n = 5) |>
   ggplot(aes(x = Year, y = Total, fill = Nationality), show.legend = FALSE) + 
-  geom_bar(stat = "identity") +
-  theme_brc() +
-  labs(title = "Number of asylum applications to the United Kingdom by nationality from 2001 to 2023",
-       subtitle = "Top 5 nationalities with the highest number of asylum applications to the United Kingdom each year",
-       x = "Year", 
-       y = "Number of asylum applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023") +
-  scale_x_continuous(breaks = c(2001 : 2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 60000), expand = c(0, NA)) +
-  theme(axis.text.x = element_text(vjust = 0.5, hjust=1)) +
-  scale_fill_manual(values = c(brc_colours$red_dunant,
-                               brc_colours$red_deep,
-                               brc_colours$red_mercer,
-                               brc_colours$red_light,
-                               brc_colours$red_earth,
-                               brc_colours$earth,
-                               brc_colours$grey,
-                               brc_colours$grey_fog,
-                               brc_colours$green,
-                               brc_colours$green_dark,
-                               brc_colours$blue,
-                               brc_colours$teal,
-                               brc_colours$sky,
-                               brc_colours$steel,
-                               brc_colours$duck,
-                               brc_colours$sand,
-                               brc_colours$black_full
-  )) 
-
-# ---- 6b. Top 5 Nationalities with Q2 to Q2 adjusted ----
-
-#### To come back to this and check to see why the data is not selecting for nationalities. 
-
-# Prepare asylum applications data by calculating quarterly total numbers of applications
-applications_nationality_annual <- 
-  asylum::applications |> 
-  select(Date, Nationality, Applications) |>
-  group_by(Date, Nationality) |> 
-  summarise(Total = sum(Applications, na.rm = TRUE))
-
-# Use the `rolling_annual_sum()` function to calculate the total number of applications
-# for the year ending June 2023, June 2022, June 2021 etc.
-applications_nationality_most_recent_Q <- 
-  applications_nationality_annual |> 
-  select(Date, Nationality, Total) |>
-  rolling_annual_sum_nat(Total)
-
-
-applications_nationality_most_recent_Q |>
-  slice_max(RollingSum, n = 5) |>
-  ggplot(aes(x = Year, y = RollingSum, fill = Nationality), show.legend = FALSE) + 
   geom_bar(stat = "identity") +
   theme_brc() +
   labs(title = "Number of asylum applications to the United Kingdom by nationality from 2001 to 2023",
