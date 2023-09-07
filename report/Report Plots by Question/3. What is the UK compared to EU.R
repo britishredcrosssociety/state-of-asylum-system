@@ -106,9 +106,9 @@ eu_asylum |>
   geom_bar(position = "stack", stat = "identity") + 
   theme_brc() +
   labs(title = "Number of asylum applications to European countries from 2011 to 2022",
-       subtitle = "Top 10 countries with the highest asylum applications over the last decade",
+       subtitle = "Top 10 countries with the highest asylum applications since 2011",
        x = "Year", 
-       y = "Number of aylum applications", 
+       y = "Number of asylum applications", 
        fill = "Nationality",
        caption = "British Red Cross analysis of EuroStat Data, June 2022") +
   scale_y_continuous(labels = scales::unit_format(unit = "m", scale = 1e-6)) +
@@ -140,8 +140,8 @@ eu_asylum |>
   theme_brc() +
   labs(title = "Number of asylum applications to European countries, 2022",
        subtitle =  "Top 10 countries with the highest asylum applications",
-       x = "Nation", 
-       y = "Number of people", 
+       x = "Country", 
+       y = "Number of applications", 
        caption = "British Red Cross analysis of EuroStat data, June 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 250000), expand = c(0,NA)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
@@ -232,7 +232,7 @@ eu_grants |>
   geom_bar(position = "stack", stat = "identity") + 
   theme_brc() +
   labs(title = "Number of asylum grants across European countries from 2011 to 2022",
-       subtitle = "Top 5 countries with the highest number of asylum grants over the last decade",
+       subtitle = "Top 5 countries with the highest number of asylum grants since 2011",
        x = "Year", 
        y = "Number of asylum grants", 
        fill = "Nationality",
