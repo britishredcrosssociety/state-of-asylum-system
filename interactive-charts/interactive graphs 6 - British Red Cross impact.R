@@ -3,31 +3,82 @@ library(readxl)
 
 brc_jun22_23 <- read_excel("C:/Users/040026704/Downloads/RS Actions June 22 to 23 (1).xlsx")
 
+library(readxl)
+RS_Actions_June_22_to_23_2_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions June 22 to 23 (2).xlsx")
+
+brc_jun22_23 <- RS_Actions_June_22_to_23_2_
+
+
 # ---- Support by immigration status ----
-# By immigration status
-brc_jun22_23 |> 
+brc_jun22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |> 
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
-  mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
+  #mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
   mutate(Main_Immigration_Status = case_match(
     Main_Immigration_Status,
-    "Indefinite leave to remain (ilr)" ~ "Indefinite leave to remain",
-    "Discretionary leave to remain (dlr)" ~ "Discretionary leave to remain",
-    "Homes for ukraine scheme" ~ "Homes for Ukraine Scheme",
-    "Ukraine family visa scheme" ~ "Ukraine Family Visa Scheme",
-    "Ukraine extension scheme" ~ "Ukraine Extension Scheme",
-    "Syrian resettlement scheme" ~ "Syrian Resettlement Scheme",
-    "Vulnerable children resettlement scheme" ~ "Vulnerable Children Resettlement Scheme",
-    "Fully refused - no further reps" ~ "Fully refused - no further legal representations",
-    "Fully refused - further reps submitted" ~ "Fully refused - further legal representations submitted",
-    "Asylum seeker" ~ "People seeking asylum",
-    "Uasc leave" ~ "Unaccompanied Asylum-Seeking Children",
-    "Eea national" ~ "EEA national",
+    c("Asylum Seeker",
+    "Fully Refused - Further Reps Submitted",
+    "Fully Refused - No Further Reps") ~ "People who have claimed asylum",
+    c("Refugee Status",
+    "Indefinite Leave to Remain (ILR)",
+    "Discretionary Leave to Remain (DLR)",
+    "Family Reunion Visa",
+    "Humanitarian Protection",
+    "UASC Leave",
+   "Leave to Remain") ~ "People who have been granted protection",
+    c("Spousal Visa", 
+   "British National", 
+   "EEA National") ~ "People with other forms of leave to remain",
+    c("Syrian Resettlement Scheme", 
+    "Homes for Ukraine Scheme",
+    "Ukraine Extension Scheme",
+    "Ukraine Family Visa Scheme",
+    "Vulnerable Children Resettlement Scheme") ~ "People arrived through resettlement scheme",
+    c("Overstayer",
+   "Irregular Migrant")~ "Other migrants",
     .default = Main_Immigration_Status
-  )) |>
+  )) |> 
   rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
+  group_by(`Immigration status`) |>
+  summarise(Total = sum(`Number of people supported`)) |> 
   write_csv("data-raw/flourish/6 - BRC/people supported by immigration status.csv")
+            
+
+
+BRC_immigration <- brc_jun22_23 |>
+  distinct(MainPSN, Main_Immigration_Status) |>
+  count(Main_Immigration_Status, sort = TRUE) |> 
+  filter(Main_Immigration_Status != "NULL") |> 
+  rename(`Immigration Status` = Main_Immigration_Status, `Number of people supported` = n) 
+    
+   
+## OLD CODE FROM MATT BEFORE RENAMED BY BRC OPS##
+# ---- Support by immigration status ----
+# By immigration status
+#brc_jun22_23 |> 
+  #distinct(MainPSN, Main_Immigration_Status) |> 
+  #count(Main_Immigration_Status, sort = TRUE) |> 
+  #filter(Main_Immigration_Status != "NULL") |> 
+  #mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
+  #mutate(Main_Immigration_Status = case_match(
+    #Main_Immigration_Status,
+    #c("Asylum Seeker", "Fully Refused - Further Reps Submitted", "Fully ") ~ "People who have claimed asylum",
+    #"Discretionary leave to remain (dlr)" ~ "Discretionary leave to remain",
+    #"Homes for ukraine scheme" ~ "Homes for Ukraine Scheme",
+   # "Ukraine family visa scheme" ~ "Ukraine Family Visa Scheme",
+    #"Ukraine extension scheme" ~ "Ukraine Extension Scheme",
+    #"Syrian resettlement scheme" ~ "Syrian Resettlement Scheme",
+   # "Vulnerable children resettlement scheme" ~ "Vulnerable Children Resettlement Scheme",
+   # "Fully refused - no further reps" ~ "Fully refused - no further legal representations",
+    #"Fully refused - further reps submitted" ~ "Fully refused - further legal representations submitted",
+    #"Asylum seeker" ~ "People seeking asylum",
+   # "Uasc leave" ~ "Unaccompanied Asylum-Seeking Children",
+   # "Eea national" ~ "EEA national",
+    #.default = Main_Immigration_Status
+ # )) |>
+  #rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
+  #write_csv("data-raw/flourish/6 - BRC/people supported by immigration status2.csv")
 
 # How many nulls/unknowns?
 # brc_jun22_23 |> 
@@ -55,6 +106,8 @@ brc_jun22_23 |>
 brc_jun22_23 |> 
   distinct(MainPSN) |> 
   count()
+
+# 20,085 people have been helped through our refugee and anti-trafficking services.
 
 brc_jun22_23 |> 
   distinct(MainPSN, City = Main_City) |> 
@@ -170,3 +223,43 @@ rs_actions |>
 rs_actions |> 
   filter(str_detect(`Type of response`, "General")) |> 
   summarise(sum(`Number of actions in last year`))
+
+#---- BRC Destitution ---- #
+library(readxl)
+Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/Beneficiaries with destitution action by Top 10 Country of Origin (1).xlsx", 
+                                                                                     +     skip = 2)
+View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_)
+
+DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_ 
+
+DestitutionBRC |>
+  distinct(MainPSN, Main_CountryofOrigin) |> 
+  count(Main_CountryofOrigin, sort = TRUE) |>
+  rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/destitution by nationality.csv")
+
+
+# ALL RS BRM ACTIONS NO LONGER NEEDED AS PER REQUEST FROM POLICY #
+# ---- All RS BRM Actions ---- #
+
+library(readxl)
+All_RS_BRM_Actions_ <- read_excel("C:/Users/MathuraKugan/Downloads/All RS BRM Actions!.xlsx", 
+                                  +     sheet = "BRM - RS Actions (July 23)", 
+                                  +     skip = 1)
+View(All_RS_BRM_Actions_)
+
+Updated_BRC_Ops <- All_RS_BRM_Actions_ |>
+  select(`Unique n. SU's with this action Jan 22 - July 23`, `Current BRM Category`, `Final Recommendation`)
+
+BRC_Actions_Summary <- Updated_BRC_Ops |>
+  group_by(`Final Recommendation`) |>
+  summarise(Total = sum(`Unique n. SU's with this action Jan 22 - July 23`)) 
+
+view(BRC_Actions_Summary)
+
+# Other and Workstream Specific are 0, so will be removed from dataset, before being uploaded to flourish. 
+
+BRC_Actions_Summary |>
+  filter(`Final Recommendation` != "Other") |>
+  filter(`Final Recommendation` != "Workstream Specific") |>
+  write_csv("data-raw/flourish/6 - BRC/Updated action summary.csv")
