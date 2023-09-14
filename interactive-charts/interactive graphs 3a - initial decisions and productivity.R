@@ -207,8 +207,19 @@ asylum::asylum_costs_and_productivity |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost.csv")
 
 
+# ---- % of decisions made in 6 months ---- #
 
+library(readxl)
+ Immigration_and_protection_Q2_2023 <- read_excel("C:/Users/MathuraKugan/Downloads/Immigration_and_protection_Q2_2023.xlsx", 
+                                                   +     sheet = "ASY_01", skip = 3)
+ View(Immigration_and_protection_Q2_2023)
 
+Apps_6_months <- Immigration_and_protection_Q2_2023 |>
+  select(`Quarter Application Received`, `Of those Applications received, the percentage completed within 6 Months`) |>
+  rename(`Date` = `Quarter Application Received`, `Percentage Completed` = `Of those Applications received, the percentage completed within 6 Months`)
+
+Apps_6_months |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Percentage Completed 6 months.csv")
 
 
 # Plot asylum caseworking staff and principal stages completed side by side to check trends
