@@ -51,7 +51,7 @@ applicants_main_annual |>
   labs(title = "Total number of asylum applications from 2001 to 2023", 
        x = "Year", 
        y = "Applications", 
-       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023. This includes `main applicants` only.") 
+       caption = "British Red Cross analysis of Home Office data, March 2001 to June 2023. Applications includes `main applicants` only.") 
 
 
 # ---- 1a. Total applications Q2 to Q2 ----
@@ -80,7 +80,7 @@ applications_year_ending_most_recent_quarter |>
   scale_y_continuous(labels = scales::comma, limits = c(0, 100000), expand = c(0, NA)) +
   labs(title = "Total number of people applying for asylum from 2002 to 2023", 
        x = "Year", 
-       y = "Applications", 
+       y = "People", 
        caption = "British Red Cross analysis of Home Office data, June 2002 to June 2023")
 
 # ---- 2. Age and Sex Analysis 2023 Q2 Only ----
@@ -138,12 +138,12 @@ dependent_children |>
   geom_line(colour = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3)) +
   theme_brc() +
-  labs(title = "Number of asylum applications with dependent children from 2009 to 2023", 
+  labs(title = "Number of children applying for asylum as dependents from 2009 to 2023", 
        x = "Year", 
        y = 'Applications', 
        caption = 'British Red Cross analysis of Home Office data, March 2009 to June 2023') +
   scale_x_continuous(breaks = c(2009:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0, NA))
+  scale_y_continuous(labels = scales::comma, limits = c(0, 12000), expand = c(0, NA))
 
 # ---- 3b. Dependent Children Q2 to Q2 ----
 
