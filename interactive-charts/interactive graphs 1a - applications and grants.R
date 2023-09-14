@@ -222,7 +222,7 @@ grant_rates_initial_annual |>
   filter(Year >= max(Year) - 1) |>
   filter(Nationality %in% top_ten_nations) |>
   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |>
-  arrange(desc(`Initial grant rate`)) |>
+  arrange(desc(`Initial grant rate`)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent.csv")
 
 # ---- Initial grant rates, by quarter ----
@@ -270,3 +270,19 @@ asylum::returns_asylum |>
 asylum::returns_asylum |>
   mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
   summarise(sum(Total))
+
+# ---- Inadmissibility cases ----
+
+inadmissibility_cases_considered$Stage <- factor(inadmissibility_cases_considered$Stage , 
+levels=c('Total identified for consideration on inadmissibility grounds', 
+         'Notice of intent issued', 
+         'Inadmissibility decision served', 
+         'Removals', 
+         'Subsequently admitted into UK asylum process'))
+
+inadmissibility_cases_considered |>
+  filter(Stage != "Notice of intent issued") |>
+  group_by(Stage) |>
+  summarise(Total = sum(Cases)) |> 
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility.csv")
+
