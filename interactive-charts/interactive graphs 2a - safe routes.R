@@ -7,7 +7,7 @@ resettlement_grants_without_evacuation <-
   filter(`Case type` == "Resettlement Case" & `Case outcome group` == "Grant of Protection") |> 
   filter(!str_detect(`Case outcome`, "Relocation - ARAP")) |> 
   filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 1")) |> 
-  filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 3"))
+  filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 3")) 
 
 # ---- People arriving in the UK through resettlement ----
 resettlement_by_quarter <- 
