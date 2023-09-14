@@ -77,18 +77,18 @@ resettlement_scheme |>
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0, NA)) +
-  scale_fill_manual(values = c(brc_colours$red_dunant,
+  scale_fill_manual(values = c(brc_colours$red_mercer,
                                brc_colours$red_light,
-                               brc_colours$red_earth, 
+                               brc_colours$red_deep, 
                                brc_colours$teal,
                                brc_colours$sky, 
                                 brc_colours$steel,
                                brc_colours$duck)) +
   theme_brc() +
-  labs(title = "Number of people granted protection under a resettlement schemes from June 2010 to June 2023", 
+  labs(title = "Number of people granted protection under resettlement schemes, June 2010 to June 2023", 
        x = "Year",
        y = "Number of grants", 
-       caption = "British Red Cross analysis of Home Office data, year ending June 2023",
+       caption = "British Red Cross analysis of Home Office data, June 2010 to June 2023",
        fill = "Resettlement route")
 
 
@@ -170,10 +170,10 @@ FamilyReunion22 |>
        caption = "British Red Cross analysis of Home Office data, year ending June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 3500), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_deep,
-                               brc_colours$red_light,
                                brc_colours$red_dunant,
-                               brc_colours$red_mercer,
-                               brc_colours$red_earth))
+                               brc_colours$red_light,
+                               brc_colours$steel,
+                               brc_colours$teal))
 
 
 # ---- How many people have arrived from Ukraine through a safe route in the last 12 months? ----
@@ -193,18 +193,15 @@ ukraine |>
   ggplot(aes(fill = Scheme, x = Date, y = People)) +
   geom_area(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = str_wrap("Number of people arriving by Ukraine Family Scheme and Ukraine Sponsorship Scheme from April 2022 to August 2023"), 
+  labs(title = str_wrap("Number of people arriving by Ukraine Family Scheme and Ukraine Sponsorship Scheme from April 2022 to September 2023"), 
        x = "Date", 
        y = "Number of people", 
-       caption = "British Red Cross analysis of Home Office data, April 2022 to August 2023") +
+       caption = "British Red Cross analysis of Home Office data, April 2022 to September 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 200000), expand = c(0, NA)) +
   scale_x_date(date_labels = "%b/%Y") +
-  scale_fill_manual(values = c(brc_colours$sky,
-                               brc_colours$mustard))
+  scale_fill_manual(values = c(brc_colours$red_mercer,
+                               brc_colours$red_light))
   
-
-
-
 
 
 ########### To confirm with team if they want nationalities, age and sex for every resettlement scheme or if we just want to focus on the important ones?# # 
