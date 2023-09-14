@@ -48,46 +48,47 @@ resettlement_scheme <- resettlement_scheme |>
   filter(`Case outcome` != "Relocation - ARAP - Accommodation not recorded") |>
   filter(`Case outcome` != "Calais Leave") |>
   filter(`Case outcome` != "Exceptional Leave to Remain") |>
-  filter(`Case outcome` != "Non-Compliance Refusal") 
+  filter(`Case outcome` != "Non-Compliance Refusal") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 1 - Accommodation not recorded") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 1 - Temporary accommodation") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 3 - Settled accommodation") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 3 - Temporary accommodation") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 1 - Settled accommodation") |>
+  filter(`Case outcome` != "Resettlement - Afghan route not recorded - Settled accommodation") |>
+  filter(`Case outcome` != "Resettlement - Afghan route not recorded - Temporary accommodation") |>
+  filter(`Case outcome` != "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship") |>
+  filter(`Case outcome` != "Resettlement - Afghan route not recorded - Accommodation not recorded")
   
+
 resettlement_scheme |> 
   mutate(`Case outcome` = 
            case_match(
              `Case outcome`,
-             c("Resettlement - ACRS Pathway 1 - Accommodation not recorded",
-               "Resettlement - ACRS Pathway 1 - Temporary accommodation", 
-               "Resettlement - ACRS Pathway 2 - Settled accommodation",
-               "Resettlement - ACRS Pathway 3 - Settled accommodation", 
-               "Resettlement - ACRS Pathway 3 - Temporary accommodation",
-               "Resettlement - ACRS Pathway 1 - Settled accommodation",
-               "Resettlement - Afghan route not recorded - Settled accommodation",
-               "Resettlement - Afghan route not recorded - Temporary accommodation",
-               "Resettlement - ACRS Pathway 1 - Settled accommodation - Community Sponsorship",
-               "Resettlement - ACRS Pathway 2 - Settled accommodation - Community Sponsorship",
-               "Resettlement - Afghan route not recorded - Accommodation not recorded") ~ "Afghan resettlement route", 
+             c("Resettlement - ACRS Pathway 2 - Settled accommodation",
+               "Resettlement - ACRS Pathway 2 - Settled accommodation - Community Sponsorship") ~ "Afghan citizen resettlement scheme", 
              "Resettlement - Community Sponsorship Scheme" ~ "Community sponsorship scheme",
              "Resettlement - Mandate Scheme" ~ "Mandate resettlement scheme",
              "Resettlement - UK Resettlement Scheme" ~ "UK resettlement scheme",
              .default = `Case outcome`
              )
          ) |>
-  filter(Year > 2021) |>
+  #filter(Year > 2021) |>
   ggplot(aes(fill = `Case outcome`, x = Year, y = Total)) +
   geom_bar(position = "stack", stat = "identity") +
   scale_x_continuous(breaks = c(2010:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, 2000), expand = c(0, NA)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 8000), expand = c(0, NA)) +
   scale_fill_manual(values = c(brc_colours$red_dunant,
                                brc_colours$red_light,
                                brc_colours$red_earth, 
                                brc_colours$teal,
-                               brc_colours$sky,
-                               brc_colours$steel,
+                               brc_colours$sky, 
+                                brc_colours$steel,
                                brc_colours$duck)) +
   theme_brc() +
-  labs(title = "Number of people granted protection under a resettlement schemes as of June 2023", 
+  labs(title = "Number of people granted protection under a resettlement schemes from June 2010 to June 2023", 
        x = "Year",
        y = "Number of grants", 
-       caption = "British Red Cross analysis of Home Office data, March 2023 to June 2023",
+       caption = "British Red Cross analysis of Home Office data, year ending June 2023",
        fill = "Resettlement route")
 
 
