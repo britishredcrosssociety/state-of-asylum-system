@@ -55,7 +55,7 @@ children_entering_detention |>
   labs(title = "Number of children entering immigration detention from 2010 to 2022",
        x = "Year",
        y = "Number of children",
-       caption = "British Red Cross analysis of Home office data, March 2010 to March 2022") +
+       caption = "British Red Cross analysis of Home Office data, March 2010 to March 2022") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 600), expand = c(0,NA)) +
   scale_x_continuous(breaks = c(2010:2022)) 
 
@@ -75,10 +75,9 @@ people_leaving_detention |>
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
   labs(title = "Number of people leaving detention by reason from 2010 to 2023",
-       subtitle = str_wrap("Bailed includes bailed by immigration judge and Secretary of State. Other is defined as people returned to criminal detention, released unconditionally, those sectioned under the Mental Health Act, deaths, absconds and reasons unavailable when leaving detention"),
        x = "Year",
        y = "Number of people",
-       caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
+       caption = str_wrap("British Red Cross analysis of Home Office data, March 2010 to June 2023. Other includes people returned to criminal detention, released unconditionally, those sectioned under the Mental Health Act, deaths, absconds and reasons unavailable when leaving detention")) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 40000), expand = c(0,NA)) +
   scale_x_continuous(breaks = c(2010:2023)) +
   scale_fill_manual(values = c(brc_colours$steel,
@@ -149,7 +148,7 @@ OverallinDetention |>
   labs(title = "Number of people in immigration detention from 2010 to 2023",
        x = "Year",
        y = "Number of people", 
-       caption = "British Red Cross Analysis of Home Office data, March 2010 to March 2023") +
+       caption = "British Red Cross Analysis of Home Office data, March 2010 to June 2023") +
   scale_x_continuous(breaks = c(2010 : 2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 15000), expand = c(0,NA))
 
@@ -220,4 +219,4 @@ detention_cost_per_day |>
        y = "Average cost (£)",
        caption = "British Red Cross analysis of Home Office data, March 2013 to March 2023") +
   #scale_x_continuous(breaks = c(2013:2023)) +
-  scale_y_continuous(labels = scales::comma, limits = c(0, NA))
+  #scale_y_continuous(labels = scales::comma, limits = c(0, NA))

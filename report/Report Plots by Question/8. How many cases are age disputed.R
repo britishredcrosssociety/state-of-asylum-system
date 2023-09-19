@@ -39,11 +39,11 @@ ByOutcome <- AgeDispute %>%
 ggplot(ByOutcome, aes(fill = `Raised type / Resolved outcome`, y = TotalDispute, x = Year)) + 
   geom_bar(position="stack", stat="identity") +
   geom_text(aes(label = scales::comma(TotalDispute)),
-            position = position_stack(vjust = .5), size = 3) +
+            position = position_stack(vjust = .5), size = 3, colour = brc_colours$white_clarity) +
   theme_brc() +
   labs(title = "Outcome of age dispute cases from 2010 to 2023", 
        x = "Year", 
-       y = "Total cases",
+       y = "Number of cases",
        fill = 'Outcome of age dispute',
        caption = "British Red Cross analysis of Home Office data, March 2010 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 3500), expand = c(0, NA)) +

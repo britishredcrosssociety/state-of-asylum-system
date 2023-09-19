@@ -40,8 +40,8 @@ SupportType |>
   ggplot(aes(fill = `Support Type`, y = Total, x = Date)) +
   geom_bar(position ="stack", stat="identity") +
   theme_brc() +
-  labs(title = str_wrap("Number of people in receipt of asylum support from 2014 to 2023"),
-       subtitle = "Asylum support under section 4, 95 and 98 of the Immigration and Asylum Act 1999",
+  labs(title = str_wrap("Number of people in receipt of asylum support from 2014 to 2023, by quarter"),
+       subtitle = "Asylum support provided under section 4, 95 and 98 of the Immigration and Asylum Act 1999",
        x = "Year", 
        y = "Number of people", 
        caption = "British Red Cross analysis of Home Office data, March 2014 to June 2023") +
