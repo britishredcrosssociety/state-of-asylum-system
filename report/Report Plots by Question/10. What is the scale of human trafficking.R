@@ -40,7 +40,6 @@ NRMTotal |>
 
 # 70% of those referred to NRM is from Albania, the UK, Eritrea, Sudan, Vietnam and Iran. 
 
-
 NRMTotal |>
   group_by(Nationality) |>
   summarise(TotalN = sum(Total)) |>
@@ -56,6 +55,23 @@ NRMTotal |>
        caption = 'British Red Cross analysis of Home Office data, June 2022 to June 2023') +
   scale_y_continuous(labels = scales::comma, limits = c(0, 5000), expand = c(0, NA)) +
   theme(axis.text.x = element_text(angle = 80, vjust = 0.5, hjust=0.5))
+
+# ---- 1b. NRM Referral long-term ---- #
+nrm_referrals_longitudinal |>
+  filter(`Location of exploitation` == "Total") |>
+  group_by(Year) |>
+  summarise(Total = sum(`NRM referrals`)) |>
+  ggplot(aes(Year, Total)) +
+  geom_col(fill = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  theme_brc() +
+  labs(title = str_wrap("Number of referrals to the National Referral Mechanism (NRM) processed for year ending March 2023"),
+       x = "Year", 
+       y = 'Number of people', 
+       caption = 'British Red Cross analysis of Home Office data, January 2009 to March 2023') +
+  scale_x_continuous(breaks = c(2009:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 20000), expand = c(0, NA)) 
+
 
 # ---- 2. NRM referral by Sex and Age ----
 NRMTotal %>%
@@ -107,6 +123,23 @@ DTNTotal |>
        caption = "British Red Cross analysis of Home Office data, June 2022 to June 2023") +
   scale_y_continuous(labels = scales::comma, limits = c(0, 1000), expand = c(0,NA))
 
+# ---- 3a. Duty to Notify Long term ---- #
+
+nrm_duty_to_notify_longitudinal |>
+  filter(Quarter == "Total") |>
+  ggplot(aes(Year, Total)) +
+  geom_col(fill = brc_colours$red_dunant) +
+  geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3),  position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
+  theme_brc() +
+  labs(title = str_wrap("Number of reports to Duty to Notify process for year ending March 2023"),
+       x = "Year", 
+       y = 'Number of people', 
+       caption = 'British Red Cross analysis of Home Office data, January 2009 to March 2023') +
+  scale_x_continuous(breaks = c(2015:2023)) +
+  scale_y_continuous(labels = scales::comma, limits = c(0, 5000), expand = c(0, NA)) 
+
+  
+
 # ---- 4. NRM Reasonable Grounds ---- 
 view(nrm_reasonable_grounds)
 
@@ -135,9 +168,9 @@ nrm_reasonable_grounds |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Proportion of people who received positive reasonable grounds by age from 2014 to 2023", 
+  labs(title = "Number of positive reasonable grounds decisions by age, from 2014 to 2023", 
        x = "Year", 
-       y = "Number of people",
+       y = "Number of decisions",
        fill = "Reasonable grounds decision",
        caption = "British Red Cross analysis of Home Office data, March 2014 to June 2023") +
   scale_x_continuous(breaks = c(2014:2023)) +
@@ -170,9 +203,9 @@ nrm_conclusive_grounds |>
   ggplot(aes(x = Year, y = People, fill = `Age group`)) +
   geom_bar(position = "stack", stat = "identity") +
   theme_brc() +
-  labs(title = "Proportion of people who received positive conclusive grounds by age from 2014 to 2023", 
+  labs(title = "Number of poeple with positive conclusive grounds outcomes by age, from 2014 to 2023", 
        x = "Year", 
-       y = "Number of people",
+       y = "Number of decisions",
        caption = "British Red Cross analysis of Home Office data, March 2014 to June 2023") +
   scale_x_continuous(breaks = c(2014:2023)) +
   scale_y_continuous(labels = scales::comma, limits = c(0, 7000), expand = c(0,NA)) +
