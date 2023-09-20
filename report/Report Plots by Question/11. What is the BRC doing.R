@@ -156,35 +156,38 @@ RS_Actions_June_22_to_23 |>
   summarise(Total = sum(n))
 
 # ---- 3. By immigration status ----
-BRC_support_immigration <- 
-{
-RS_Actions_June_22_to_23 |> 
+brc_jun22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |> 
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
-  mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
+  #mutate(Main_Immigration_Status = str_to_sentence(Main_Immigration_Status)) |> 
   mutate(Main_Immigration_Status = case_match(
     Main_Immigration_Status,
-    "Indefinite leave to remain (ilr)" ~ "Indefinite leave to remain",
-    "Discretionary leave to remain (dlr)" ~ "Discretionary leave to remain",
-    "Homes for ukraine scheme" ~ "Homes for Ukraine Scheme",
-    "Ukraine family visa scheme" ~ "Ukraine Family Visa Scheme",
-    "Ukraine extension scheme" ~ "Ukraine Extension Scheme",
-    "Syrian resettlement scheme" ~ "Syrian Resettlement Scheme",
-    "Vulnerable children resettlement scheme" ~ "Vulnerable Children Resettlement Scheme",
-    "Fully refused - no further reps" ~ "Fully refused - no further legal representations",
-    "Fully refused - further reps submitted" ~ "Fully refused - further legal representations submitted",
-    "Asylum seeker" ~ "People seeking asylum",
-    "Uasc leave" ~ "Unaccompanied Asylum-Seeking Children",
-    "Eea national" ~ "EEA national",
+    c("Asylum Seeker",
+      "Fully Refused - Further Reps Submitted",
+      "Fully Refused - No Further Reps") ~ "People who have claimed asylum",
+    c("Refugee Status",
+      "Indefinite Leave to Remain (ILR)",
+      "Discretionary Leave to Remain (DLR)",
+      "Family Reunion Visa",
+      "Humanitarian Protection",
+      "UASC Leave",
+      "Leave to Remain") ~ "People who have been granted protection",
+    c("Spousal Visa", 
+      "British National", 
+      "EEA National") ~ "People with other forms of leave to remain",
+    c("Syrian Resettlement Scheme", 
+      "Homes for Ukraine Scheme",
+      "Ukraine Extension Scheme",
+      "Ukraine Family Visa Scheme",
+      "Vulnerable Children Resettlement Scheme") ~ "People arrived through resettlement scheme",
+    c("Overstayer",
+      "Irregular Migrant")~ "Other migrants",
     .default = Main_Immigration_Status
-  )) |>
-  rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |>
+  )) |> 
+  rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
   group_by(`Immigration status`) |>
-  summarise(Total = sum(`Number of people supported`))
-}
-
-BRC_support_immigration |>
+  summarise(Total = sum(`Number of people supported`)) |>
   ggplot(aes(x = reorder(`Immigration status`, desc(Total)), y = Total)) +
   geom_col(colour = brc_colours$red_dunant, fill = brc_colours$red_dunant) +
   geom_text(aes(label = scales::comma(Total)), show.legend = FALSE, size = rel(3), position = position_dodge(width=1), vjust=-0.25, colour = brc_colours$black_shadow) +
