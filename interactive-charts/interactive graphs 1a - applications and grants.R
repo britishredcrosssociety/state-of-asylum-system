@@ -168,21 +168,30 @@ applications_uasc <-
   asylum::applications |> 
   # Filter applications within the last 12 months
   filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(`Applicant type`== "Dependant") |>
+  filter(Age == "Under 18") |>
   group_by(UASC) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   rename(Category = UASC, Children = Applications) |> 
   mutate(Category = case_when(
     Category == "UASC" ~ "Unaccompanied children",
     Category == "Non-UASC" ~ "Accompanied children",
-  )) |> 
+  )) |>
   mutate(Type = "Children seeking asylum")
+
+applications_UASC_updated <- 
+  bind_rows(
+  applications_non_uasc,
+  applications_uasc
+)
 
 # Combine into a single dataframe and save
 bind_rows(
   applications_nationality,
   applications_age,
   applications_sex,
-  applications_uasc
+  applications_UASC_updated,
+  
 ) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category.csv")
 
