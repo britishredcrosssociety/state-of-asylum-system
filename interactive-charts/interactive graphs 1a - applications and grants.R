@@ -88,11 +88,27 @@ immigration |>
   ungroup() |> 
   mutate(Proportion = scales::percent(Total / sum(Total)))
 
-# ---- Total number of people applying for asylum each quarter ----
+# ---- Total number of people applying for asylum each year ----
 asylum::applications |> 
-  group_by(Date) |> 
+  group_by(Year) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total.csv")
+
+# ---- Total number of people applying for asylum year ending June ----
+
+applications_annual <- 
+  asylum::applications |> 
+  group_by(Date) |> 
+  filter(`Applicant type` == "Main applicant") |>
+  summarise(Applications = sum(Applications, na.rm = TRUE))
+
+# Use the `rolling_annual_sum()` function to calculate the total number of applications
+# for the year ending June 2023, June 2022, June 2021 etc.
+applications_year_ending_most_recent_quarter <- 
+  applications_annual |> 
+  rolling_annual_sum(Applications) |>
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total rolling sum 2.csv")
+
 
 # - CAPTION -
 # Number of people applying for asylum so far this year
@@ -100,8 +116,9 @@ asylum::applications |>
   filter(Year == max(Year)) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE))
 
-# ---- Asylum applications over time, by nationality ----
+# ---- Asylum applications over time, by nationality without 2023 ----
 asylum::applications |> 
+  filter(Year != "2023") |>
   group_by(Year, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -110,7 +127,15 @@ asylum::applications |>
   mutate(across(-(Year), as.character)) |> 
   mutate(across(-(Year), ~ replace_na(.x, ""))) |> 
   
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation wo 2023.csv")
+
+asylum::applications |>
+  filter(Year == "2023") |>
+  group_by(Nationality) |>
+  summarise(People = sum(Applications, na.rm = TRUE)) |>
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation only 2023.csv")
+
+  
 
 # - CAPTION -
 # Which nationalities are consistently in the top 5% of applications?

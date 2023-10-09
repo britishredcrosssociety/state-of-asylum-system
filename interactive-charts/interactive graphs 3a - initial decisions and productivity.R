@@ -206,6 +206,29 @@ asylum::asylum_costs_and_productivity |>
   select(`Financial Year`, `Total Asylum Costs`) |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost.csv")
 
+# ---- Cost and Backlog at Q2 ---- #
+
+asylum_cost <- asylum_costs_and_productivity |>
+  select(`Financial Year`, `Total Asylum Costs`) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost and backlog.csv")
+
+awaiting_decision <- awaiting_decision |>
+  mutate(Quarter = quarter(Date))
+
+backlog_q1_only <- awaiting_decision |>
+  filter(Quarter == "1") |> 
+  filter(`Application stage` == "Pending initial decision") |>
+  group_by(Date) |>
+  summarise(Total = sum(Applications)) 
+  
+# This only includes initial decisions, not futher review cases. Also includes dependants and main applicants
+
+asylum_cost_and_backlog <- data.frame(backlog_q1_only,asylum_cost)
+
+asylum_cost_and_backlog |>
+  select(Financial.Year, Total, Total.Asylum.Costs) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Cost and backlog.csv")
+
 
 # ---- % of decisions made in 6 months ---- #
 

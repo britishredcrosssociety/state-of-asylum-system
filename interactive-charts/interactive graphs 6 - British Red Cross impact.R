@@ -1,13 +1,11 @@
 library(tidyverse)
 library(readxl)
 
-brc_jun22_23 <- read_excel("C:/Users/040026704/Downloads/RS Actions June 22 to 23 (1).xlsx")
+RS_Actions_June_30_22_to_23_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions June 30 22 to 23 (1).xlsx")
 
-library(readxl)
-RS_Actions_June_22_to_23_2_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions June 22 to 23 (2).xlsx")
+View(RS_Actions_June_30_22_to_23_1_)
 
-brc_jun22_23 <- RS_Actions_June_22_to_23_2_
-
+brc_jun22_23 <- RS_Actions_June_30_22_to_23_1_
 
 # ---- Support by immigration status ----
 brc_jun22_23 |>
@@ -42,11 +40,9 @@ brc_jun22_23 |>
   rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
   group_by(`Immigration status`) |>
   summarise(Total = sum(`Number of people supported`)) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status 2.csv")
             
-
-
-BRC_immigration <- brc_jun22_23 |>
+BRC_immigration_updated <- brc_jun22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |>
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
@@ -93,7 +89,7 @@ brc_jun22_23 |>
   filter(Main_CountryofOrigin != "NULL") |> 
   rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
   slice(1:30) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin 2.csv")
 
 # How many nulls/unknowns?
 # brc_jun22_23 |> 
@@ -107,7 +103,7 @@ brc_jun22_23 |>
   distinct(MainPSN) |> 
   count()
 
-# 20,085 people have been helped through our refugee and anti-trafficking services.
+# 20,572 people have been helped through our refugee and anti-trafficking services.
 
 brc_jun22_23 |> 
   distinct(MainPSN, City = Main_City) |> 
