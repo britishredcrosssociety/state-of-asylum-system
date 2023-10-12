@@ -48,13 +48,14 @@ immigration <-
   bind_cols(immigration_British_EU) |> 
   mutate(
     `Other immigration` = `Other migration (non-EU)` + `British and EU nationals`,
-    `Small boat arrivals claiming asylum` = migration_small_boats,
-    `Asylum claims (not via small boats)` = Asylum - migration_small_boats
+    Asylum 
+    #`Small boat arrivals claiming asylum` = migration_small_boats,
+    #`Asylum claims (not via small boats)` = Asylum - migration_small_boats
   )
 
 immigration <- 
   immigration |> 
-  select(`Other immigration`, `Ukraine visas`, `British nationals (overseas)`, `Asylum claims (not via small boats)`, `Small boat arrivals claiming asylum`, `Resettlement and other safe routes`) |> 
+  select(`Other immigration`, `Ukraine visas`, `British nationals (overseas)`, `Asylum` , `Resettlement and other safe routes`) |> 
   pivot_longer(cols = everything(), names_to = "Migration type", values_to = "Number of people") |> 
   arrange(desc(`Number of people`)) |> 
   
