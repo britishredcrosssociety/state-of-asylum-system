@@ -176,21 +176,25 @@ brc_length_of_support <-
   select(BeneficiarySince) |> 
   na.omit() |> 
   
-  mutate(MonthsOfSupport = interval(start = BeneficiarySince, end = ymd("2023-07-31")) %/% months(1)) |> 
+  mutate(MonthsOfSupport = interval(start = BeneficiarySince, end = ymd("2023-06-30")) %/% months(1)) |> 
   
   # ggplot(aes(x = MonthsOfSupport)) + geom_histogram(binwidth = 12)
   
   mutate(`Length of British Red Cross support` = case_when(
-    MonthsOfSupport <= 12 ~ "1 year",
-    MonthsOfSupport > 12 & MonthsOfSupport <= 24 ~ "2 years",
+    MonthsOfSupport < 12 ~ "Less than 1 year",
+    #MonthsOfSupport >= 12 ~ "1 year",
+    MonthsOfSupport >= 12 & MonthsOfSupport <= 24 ~ "1-2 years",
     MonthsOfSupport > 24 & MonthsOfSupport <= (12*5) ~ "3-5 years",
     MonthsOfSupport > (12*5) & MonthsOfSupport <= (12*10) ~ "6-10 years",
     MonthsOfSupport > (12*10) ~ "More than 10 years"
   )) |> 
-  count(`Length of British Red Cross support`, name = "Number of people supported")
+  count(`Length of British Red Cross support`, name = "Number of people supported") 
+  #view()
+  
 
 brc_length_of_support |> 
-  write_csv("data-raw/flourish/6 - BRC/length of support.csv")
+  write_csv("data-raw/flourish/6 - BRC/length of support2.csv")
+
 
 # - CAPTION -
 brc_length_of_support |> 
