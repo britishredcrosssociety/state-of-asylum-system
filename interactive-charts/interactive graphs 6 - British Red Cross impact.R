@@ -239,6 +239,119 @@ DestitutionBRC |>
   write_csv("data-raw/flourish/6 - BRC/destitution by nationality.csv")
 
 
+# ---- Family Reunion Data ---- #
+
+## ---- Family Reunion Travel Assistance ---- ## 
+
+FRTA_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/FRTA (1).xlsx")
+
+View(FRTA_1_)
+
+FRTA_1_ <- FRTA_1_ |>
+  select(`Reference Number`, `Date of Birth`, Gender, `Country of Origin`, Age)
+
+FRTA_1_ |>
+  distinct(`Reference Number`) |> 
+  count()
+
+# 399 people were helped by the British Red Cross travel assistance program. 
+
+
+# Age and Gender of FRTA #
+
+BRC_family_reunion_travel |> 
+  distinct(`Reference Number`, Age, Gender) |> 
+  
+  filter(!is.na(Age)) |> 
+  filter(!is.na(Gender)) |> 
+  
+  # Make age groups
+  mutate(`Age` = case_when(
+    Age < 18 ~ "Under 18",
+    Age >= 18 & Age < 30 ~ "18-29",
+    Age >= 30 & Age < 50 ~ "30-49",
+    Age >= 50 & Age < 70 ~ "50-69",
+    Age >= 70 ~ "70+"
+  )) |> 
+  
+  mutate(Gender = if_else(!Gender %in% c("Female", "Male"), "Other", Gender)) |> 
+  
+  count(`Age`, Gender, sort = TRUE) |> 
+  
+  pivot_wider(names_from = Gender, values_from = n) |> 
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  arrange(match(`Age`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender.csv")
+
+# Country of Origin #
+
+BRC_family_reunion_travel |> 
+  distinct(`Reference Number`, `Country of Origin`) |> 
+  count(`Country of Origin`, sort = TRUE) |> 
+  filter(`Country of Origin`!= "NULL") |> 
+  rename(`Country of origin` = `Country of Origin`, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin.csv")
+
+
+## ---- Family Reunion Support Project ---- ## 
+
+FRSP_2_ <- read_excel("C:/Users/MathuraKugan/Downloads/FRSP (2).xlsx")
+
+View(FRSP_2_)
+
+FRSP_2_ <- FRSP_2_ |>
+  select(`Reference Number`, `Date of Birth`, Gender, `Country of Origin`, Age)
+
+FRSP_2_ |>
+  distinct(`Reference Number`) |> 
+  count()
+
+# 339 people were helped by the British Red Cross family reunion project . 
+
+
+BRC_family_reunion_support <- FRSP_2_
+
+# Age and Gender of FRTA #
+
+BRC_family_reunion_support |> 
+  distinct(`Reference Number`, Age, Gender) |> 
+  
+  filter(!is.na(Age)) |> 
+  filter(!is.na(Gender)) |> 
+  
+  # Make age groups
+  mutate(`Age` = case_when(
+    Age < 18 ~ "Under 18",
+    Age >= 18 & Age < 30 ~ "18-29",
+    Age >= 30 & Age < 50 ~ "30-49",
+    Age >= 50 & Age < 70 ~ "50-69",
+    Age >= 70 ~ "70+"
+  )) |> 
+  
+  mutate(Gender = if_else(!Gender %in% c("Female", "Male"), "Other", Gender)) |> 
+  
+  count(`Age`, Gender, sort = TRUE) |> 
+  
+  pivot_wider(names_from = Gender, values_from = n) |> 
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  arrange(match(`Age`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  
+  write_csv("data-raw/flourish/6 - BRC/Family reunion SUPPORT people supported by age and gender.csv")
+
+# Country of Origin #
+
+BRC_family_reunion_support |> 
+  distinct(`Reference Number`, `Country of Origin`) |> 
+  count(`Country of Origin`, sort = TRUE) |> 
+  filter(`Country of Origin`!= "NULL") |> 
+  rename(`Country of origin` = `Country of Origin`, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/Family reunion SUPPORT by country of origin.csv")
+
+
+
+
+
 # ALL RS BRM ACTIONS NO LONGER NEEDED AS PER REQUEST FROM POLICY #
 # ---- All RS BRM Actions ---- #
 
@@ -263,3 +376,6 @@ BRC_Actions_Summary |>
   filter(`Final Recommendation` != "Other") |>
   filter(`Final Recommendation` != "Workstream Specific") |>
   write_csv("data-raw/flourish/6 - BRC/Updated action summary.csv")
+
+
+

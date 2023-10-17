@@ -164,3 +164,26 @@ arrivals_small_boats <-
   group_by(Date) |>
   summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> view()
 ungroup()
+
+
+# ---- UNHCR Refugees Numbers ---- # 
+
+library(readxl)
+population_2 <- read_excel("C:/Users/MathuraKugan/OneDrive - British Red Cross Society/population 2.xlsx", 
+                             +     na = "0", skip = 14)
+View(population_2)
+
+UNHCR_2022 <- population_2 |>
+  select(`Country of asylum`, `Refugees under UNHCR's mandate`, `Asylum-seekers`, `IDPs of concern to UNHCR`, `Other people in need of international protection`) 
+
+UNHCR_2022|>
+ pivot_longer(cols = `Country of asylum`, `Refugees under UNHCR's mandate`, `Asylum-seekers`, `IDPs of concern to UNHCR`, `Other people in need of international protection`,
+              names_to = "UNHCR Group", 
+              values_to = "People")
+               
+view(UNHCR_2022)
+
+
+# Come back and determine why this is not working. 
+UNHCR_2022 |>
+  summarise(Total = sum())
