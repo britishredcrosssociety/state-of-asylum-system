@@ -1,14 +1,14 @@
 library(tidyverse)
 library(readxl)
 
-RS_Actions_June_30_22_to_23_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions June 30 22 to 23 (1).xlsx")
+RS_Actions_Sep_30_22_to_23_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions Sep 30 22 to 23 (1).xlsx", 
+                                            +     sheet = "Sheet1")
+View(RS_Actions_Sep_30_22_to_23_1_)
 
-View(RS_Actions_June_30_22_to_23_1_)
-
-brc_jun22_23 <- RS_Actions_June_30_22_to_23_1_
+brc_sep22_23 <- RS_Actions_Sep_30_22_to_23_1_
 
 # ---- Support by immigration status ----
-brc_jun22_23 |>
+brc_sep22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |> 
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
@@ -40,7 +40,7 @@ brc_jun22_23 |>
   rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
   group_by(`Immigration status`) |>
   summarise(Total = sum(`Number of people supported`)) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status 2.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status Sep 2023.csv")
             
 BRC_immigration_updated <- brc_jun22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |>
@@ -83,13 +83,13 @@ BRC_immigration_updated <- brc_jun22_23 |>
 #   count()
 
 # ---- Support by country of origin ----
-brc_jun22_23 |> 
+brc_sep22_23 |> 
   distinct(MainPSN, Main_CountryofOrigin) |> 
   count(Main_CountryofOrigin, sort = TRUE) |> 
   filter(Main_CountryofOrigin != "NULL") |> 
   rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
   slice(1:30) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin 2.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin Sep 2023.csv")
 
 # How many nulls/unknowns?
 # brc_jun22_23 |> 
@@ -99,13 +99,13 @@ brc_jun22_23 |>
 
 # ---- How many people have we supported through our refugee support and anti-trafficking services and where? ----
 # Total people supported
-brc_jun22_23 |> 
+brc_sep22_23 |> 
   distinct(MainPSN) |> 
   count()
 
-# 20,572 people have been helped through our refugee and anti-trafficking services.
+# 22,495 people have been helped through our refugee and anti-trafficking services.
 
-brc_jun22_23 |> 
+brc_sep22_23 |> 
   distinct(MainPSN, City = Main_City) |> 
   
   # Data cleaning
@@ -141,10 +141,10 @@ brc_jun22_23 |>
   filter(City != "Null") |> 
   filter(`Number of people supported` > 100) |> 
   
-  write_csv("data-raw/flourish/6 - BRC/people supported by location.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by location Sep 2023.csv")
 
 # ---- People supported by age and gender ----
-brc_jun22_23 |> 
+brc_sep22_23 |> 
   distinct(MainPSN, Age, Gender = Main_Gender) |> 
   
   filter(!is.na(Age)) |> 
@@ -167,16 +167,16 @@ brc_jun22_23 |>
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   
-  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender Sep 2023.csv")
 
 # ---- Length of support ----
-brc_length_of_support <- 
-  brc_jun22_23 |> 
+brc_length_of_support_Sep_23 <- 
+  brc_sep22_23 |> 
   distinct(MainPSN, BeneficiarySince) |> 
   select(BeneficiarySince) |> 
   na.omit() |> 
   
-  mutate(MonthsOfSupport = interval(start = BeneficiarySince, end = ymd("2023-06-30")) %/% months(1)) |> 
+  mutate(MonthsOfSupport = interval(start = BeneficiarySince, end = ymd("2023-09-30")) %/% months(1)) |> 
   
   # ggplot(aes(x = MonthsOfSupport)) + geom_histogram(binwidth = 12)
   
@@ -188,16 +188,16 @@ brc_length_of_support <-
     MonthsOfSupport > (12*5) & MonthsOfSupport <= (12*10) ~ "6-10 years",
     MonthsOfSupport > (12*10) ~ "More than 10 years"
   )) |> 
-  count(`Length of British Red Cross support`, name = "Number of people supported") 
-  #view()
+  count(`Length of British Red Cross support`, name = "Number of people supported") |> 
+  view()
   
 
-brc_length_of_support |> 
-  write_csv("data-raw/flourish/6 - BRC/length of support2.csv")
+brc_length_of_support_Sep_23 |> 
+  write_csv("data-raw/flourish/6 - BRC/length of support Sep 2023.csv")
 
 
 # - CAPTION -
-brc_length_of_support |> 
+brc_length_of_support_Sep_23 |> 
   mutate(`Proportion of people` = `Number of people supported` / sum(`Number of people supported`)) |> 
   arrange(`Number of people supported`) |> 
   mutate(`Cumulative proportion` = cumsum(`Proportion of people`))
@@ -226,40 +226,40 @@ rs_actions |>
 
 #---- BRC Destitution ---- #
 library(readxl)
-Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/Beneficiaries with destitution action by Top 10 Country of Origin (1).xlsx", 
-                                                                                     +     skip = 2)
-View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_)
+Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("C:/Users/MathuraKugan/Downloads/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
+                                                                                   +     skip = 2)
+View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_)
 
-DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_1_ 
+DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ 
 
 DestitutionBRC |>
   distinct(MainPSN, Main_CountryofOrigin) |> 
   count(Main_CountryofOrigin, sort = TRUE) |>
   rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
-  write_csv("data-raw/flourish/6 - BRC/destitution by nationality.csv")
+  write_csv("data-raw/flourish/6 - BRC/destitution by nationality Sep 2023.csv")
 
 
 # ---- Family Reunion Data ---- #
 
 ## ---- Family Reunion Travel Assistance ---- ## 
 
-FRTA_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/FRTA (1).xlsx")
+FRTA_2_ <- read_excel("C:/Users/MathuraKugan/Downloads/FRTA (2).xlsx")
 
-View(FRTA_1_)
+View(FRTA_2_)
 
-FRTA_1_ <- FRTA_1_ |>
+FRTA_Sep23_ <- FRTA_2_ |>
   select(`Reference Number`, `Date of Birth`, Gender, `Country of Origin`, Age)
 
-FRTA_1_ |>
+FRTA_Sep23_ |>
   distinct(`Reference Number`) |> 
   count()
 
-# 399 people were helped by the British Red Cross travel assistance program. 
+# 453 people were helped by the British Red Cross travel assistance program. 
 
 
 # Age and Gender of FRTA #
 
-BRC_family_reunion_travel |> 
+FRTA_Sep23_ |> 
   distinct(`Reference Number`, Age, Gender) |> 
   
   filter(!is.na(Age)) |> 
@@ -282,16 +282,16 @@ BRC_family_reunion_travel |>
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   arrange(match(`Age`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   
-  write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender.csv")
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender Sep 23.csv")
 
 # Country of Origin #
 
-BRC_family_reunion_travel |> 
+FRTA_Sep23_ |> 
   distinct(`Reference Number`, `Country of Origin`) |> 
   count(`Country of Origin`, sort = TRUE) |> 
   filter(`Country of Origin`!= "NULL") |> 
   rename(`Country of origin` = `Country of Origin`, `Number of people supported` = n) |> 
-  write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin.csv")
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin Sep 23.csv")
 
 
 ## ---- Family Reunion Support Project ---- ## 
