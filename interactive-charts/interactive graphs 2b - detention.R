@@ -16,7 +16,7 @@ people_in_detention_by_age_sex <-
   mutate(Female = Female * -1)
 
 people_in_detention_by_age_sex |> 
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex.csv")
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex spt 23.csv")
 
 # How many pregnant women are currently in detention?
 asylum::detention_pregnant_women |> 
@@ -56,7 +56,7 @@ detention_length <-
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
 
 detention_length |> 
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - by length.csv")
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by length sep 23.csv")
 
 # ---- Average cost per day to hold a person in immigration detention ----
 asylum::detention_cost_per_day |> 

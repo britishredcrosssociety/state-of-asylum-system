@@ -28,7 +28,7 @@ asylum::support_received |>
   group_by(Date, `Support Type`) |> 
   summarise(People = sum(People)) |> 
   pivot_wider(names_from = `Support Type`, values_from = People) |> 
-  write_csv("data-raw/flourish/4a - Asylum support/asylum support - longitudinal.csv")
+  write_csv("data-raw/flourish/4a - Asylum support/asylum support - longitudinal Sept 23.csv")
 
 # ---- Per cent of people awaiting a decision receiving asylum support ----
 # Total receiving destitution support
@@ -53,7 +53,7 @@ receiving_support |>
     Category = "Awaiting decision but not receiving asylum support", 
     People = backlog - sum(receiving_support$People)
   ) |> 
-  write_csv("data-raw/flourish/4a - Asylum support/destitution rate.csv")
+  write_csv("data-raw/flourish/4a - Asylum support/destitution rate Sept 23.csv")
 
 # - CHART TITLE AND CAPTION -
 # What percentage are receiving asylum support?
@@ -77,7 +77,7 @@ support_received_recently |>
     "Section 95" ~ "Support provided to people seeking asylum to prevent destitution while their asylum application is considered.",
     "Section 98" ~ "Emergency support for people seeking asylum while an application for section 95 support is being considered."
   )) |> 
-  write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent.csv")
+  write_csv("data-raw/flourish/4a - Asylum support/asylum support - most recent Sept 23.csv")
 
 # - CAPTION -
 # What proportion of people receiving asylum support are in hotels?

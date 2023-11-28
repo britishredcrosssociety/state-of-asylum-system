@@ -23,7 +23,7 @@ resettlement_by_quarter <-
   arrange(Date)
 
 resettlement_by_quarter |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total Sept 23.csv")
 
 # - CAPTION -
 # Number of people resettled over last 12 months
@@ -40,7 +40,7 @@ resettlement_by_quarter |>
   mutate(RollSum = rollsum(Arrivals, k = 4, na.pad = TRUE)) |> 
   
   # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
-  slice(seq(2, n(), by = 4))
+  slice(seq(1, n(), by = 4))
 
 # ---- Resettlement over the last 12 months ----
 bind_rows(
@@ -74,7 +74,7 @@ bind_rows(
     rename(Category = Sex, Sex = Decisions) |> 
     mutate(Type = "Sex")
 ) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category Sept 23.csv")
 
 # - CAPTION -
 # Proportions of resettlement cases by nationality
@@ -126,7 +126,7 @@ ukraine <-
   relocate(`Ukraine Sponsorship Scheme`, .before = `Ukraine Family Scheme`)
 
 ukraine |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine Sept 23.csv")
 
 # - CAPTION -
 ukraine |> 
@@ -193,7 +193,7 @@ arrivals_all <-
 arrivals_all |> 
   slice_max(Total, n = 10) |> 
   select(-Total) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/arrival routes.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/arrival routes Sept 23.csv")
 
 # - CAPTION -
 # What % of arrivals were through resettlement routes?
@@ -208,14 +208,14 @@ arrivals_all |>
 asylum::family_reunion |> 
   group_by(Date) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Sept 23.csv")
 
 # Family reunion under 18
 family_reunion |>
   filter(Age == "Under 18") |>
   group_by(Date) |>
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18 sept 23.csv")
 
 # - CAPTION -
 asylum::family_reunion |> 
