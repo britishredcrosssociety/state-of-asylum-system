@@ -270,7 +270,7 @@ family_reunion_rolling_sum <-
   mutate(RollSum = rollsum(`Visas granted`, k = 4, na.pad = TRUE)) |> 
   
   # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
-  slice(seq(2, n(), by = 4))
+  slice(seq(1, n(), by = 4))
 
 family_reunion_rolling_sum
 
