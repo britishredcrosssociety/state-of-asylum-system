@@ -159,12 +159,46 @@ arrivals_family_reunion <-
 # People arriving on small boats who claimed asylum
 arrivals_small_boats <- 
   asylum::small_boat_asylum_applications |> 
-  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(Date >= max(Date) - dmonths(11)) |> view()
   filter(`Asylum application` == "Asylum application raised") |> 
   group_by(Nationality) |> 
   summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
   ungroup()
 
+# - September 2023 irregular migration stats not updated to asylum package in r. 
+
+# - Downloaded and imported irregular migration stats for September 2023 via following link.. 
+
+# source: https://www.gov.uk/government/statistical-data-sets/irregular-migration-detailed-dataset-and-summary-tables
+
+# Revised code with updated September 2023 irregular migration: 
+
+library(readxl)
+irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023 <- read_excel("C:/Users/MathuraKugan/Downloads/irregular-migration-to-the-UK-detailed-dataset-year-ending-september-2023.xlsx", 
+                                                                                          +     sheet = "Data - Irr_D02", skip = 1)
+
+small_boat_asylum_0923 <- irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023
+
+small_boat_asylum_0923 <- small_boat_asylum_0923 [-3970,]
+
+# small_boat_asylum_0923 does not have dates, therefore,   filter(Date >= max(Date) - dmonths(11)) |> cannot work for 
+# this dataset. Following code is to check when filtered by quarter, the output matches the code above. It does. 
+
+small_boat_asylum_0923 |>
+  filter(Quarter > "2022 Q2") |> 
+  filter(Quarter < "2023 Q3") |> 
+  filter(`Asylum application` == "Asylum application raised") |> 
+  group_by(Nationality) |> 
+  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> view()
+
+arrivals_small_boats <- 
+small_boat_asylum_0923 |>
+  filter(Quarter > "2022 Q3") |>
+  filter(`Asylum application` == "Asylum application raised") |> 
+  group_by(Nationality) |> 
+  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
+  ungroup()
+  
 # People arriving to claim asylum (including small boats)
 arrivals_asylum <- 
   asylum::applications |> 
