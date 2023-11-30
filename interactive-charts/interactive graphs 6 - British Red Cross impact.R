@@ -1,8 +1,8 @@
 library(tidyverse)
 library(readxl)
 
-RS_Actions_Sep_30_22_to_23_1_ <- read_excel("C:/Users/MathuraKugan/Downloads/RS Actions Sep 30 22 to 23 (1).xlsx", 
-                                            +     sheet = "Sheet1")
+RS_Actions_Sep_30_22_to_23_1_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/RS Actions Sep 30 22 to 23 (1).xlsx", 
+                                                                             +     sheet = "Sheet1")
 View(RS_Actions_Sep_30_22_to_23_1_)
 
 brc_sep22_23 <- RS_Actions_Sep_30_22_to_23_1_
@@ -76,11 +76,11 @@ BRC_immigration_updated <- brc_jun22_23 |>
   #rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
   #write_csv("data-raw/flourish/6 - BRC/people supported by immigration status2.csv")
 
-# How many nulls/unknowns?
-# brc_jun22_23 |> 
-#   distinct(MainPSN, Main_Immigration_Status) |> 
-#   filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
-#   count()
+ #How many nulls/unknowns?
+brc_sep22_23 |> 
+  distinct(MainPSN, Main_Immigration_Status) |> 
+  filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
+  count()
 
 # ---- Support by country of origin ----
 brc_sep22_23 |> 
@@ -92,10 +92,10 @@ brc_sep22_23 |>
   write_csv("data-raw/flourish/6 - BRC/people supported by country of origin Sep 2023.csv")
 
 # How many nulls/unknowns?
-# brc_jun22_23 |> 
-#   distinct(MainPSN, Main_CountryofOrigin) |> 
-#   filter(Main_CountryofOrigin %in% c("NULL", "Unknown")) |> 
-#   count()
+ brc_sep22_23 |> 
+   distinct(MainPSN, Main_CountryofOrigin) |> 
+   filter(Main_CountryofOrigin %in% c("NULL", "Unknown")) |> 
+   count()
 
 # ---- How many people have we supported through our refugee support and anti-trafficking services and where? ----
 # Total people supported
@@ -169,6 +169,7 @@ brc_sep22_23 |>
   
   write_csv("data-raw/flourish/6 - BRC/people supported by age and gender Sep 2023.csv")
 
+
 # ---- Length of support ----
 brc_length_of_support_Sep_23 <- 
   brc_sep22_23 |> 
@@ -226,8 +227,9 @@ rs_actions |>
 
 #---- BRC Destitution ---- #
 library(readxl)
-Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("C:/Users/MathuraKugan/Downloads/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
-                                                                                   +     skip = 2)
+
+Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
+                                                                                     +     skip = 2)
 View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_)
 
 DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ 
@@ -243,9 +245,9 @@ DestitutionBRC |>
 
 ## ---- Family Reunion Travel Assistance ---- ## 
 
-FRTA_2_ <- read_excel("C:/Users/MathuraKugan/Downloads/FRTA (2).xlsx")
+FRTA_2_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/FRTA (2).xlsx")
 
-View(FRTA_2_)
+ View(FRTA_2_)
 
 FRTA_Sep23_ <- FRTA_2_ |>
   select(`Reference Number`, `Date of Birth`, Gender, `Country of Origin`, Age)

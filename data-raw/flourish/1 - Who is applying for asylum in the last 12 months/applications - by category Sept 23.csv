@@ -1,0 +1,21 @@
+Category,Nationality,Type,Age,Sex,Children
+Afghanistan,11892,Nationality,NA,NA,NA
+Iran,8962,Nationality,NA,NA,NA
+Albania,6190,Nationality,NA,NA,NA
+India,5419,Nationality,NA,NA,NA
+Iraq,5114,Nationality,NA,NA,NA
+Bangladesh,4707,Nationality,NA,NA,NA
+Pakistan,4570,Nationality,NA,NA,NA
+Turkey,4104,Nationality,NA,NA,NA
+Syria,4053,Nationality,NA,NA,NA
+Eritrea,3939,Nationality,NA,NA,NA
+Under 18,NA,Age,18154,NA,NA
+18-29,NA,Age,43071,NA,NA
+30-49,NA,Age,28356,NA,NA
+50-69,NA,Age,3292,NA,NA
+70+,NA,Age,419,NA,NA
+Unknown Age,NA,Age,4,NA,NA
+Female,NA,Sex,NA,24502,NA
+Male,NA,Sex,NA,68600,NA
+Accompanied children,NA,Children seeking asylum,NA,NA,13498
+Unaccompanied children,NA,Children seeking asylum,NA,NA,4656

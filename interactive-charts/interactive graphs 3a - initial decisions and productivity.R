@@ -11,7 +11,7 @@ backlog_total <-
     Duration == "N/A - Further review" ~ "Pending further review"
   )) |> 
   group_by(Date, Stage) |> 
-  summarise(Backlog = sum(Applications)) |> 
+  summarise(Backlog = sum(Applications)) |> view()
   ungroup() |> 
   mutate(Nationality = "Total")
 
@@ -248,16 +248,18 @@ asylum_cost_and_backlog |>
 # ---- % of decisions made in 6 months ---- #
 
 library(readxl)
- Immigration_and_protection_Q2_2023 <- read_excel("C:/Users/MathuraKugan/Downloads/Immigration_and_protection_Q2_2023.xlsx", 
-                                                   +     sheet = "ASY_01", skip = 3)
- View(Immigration_and_protection_Q2_2023)
 
-Apps_6_months <- Immigration_and_protection_Q2_2023 |>
+ UKVI_IP_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/UKVI_IP_Q3_2023_Background_Published.xlsx", 
+                                                     +     sheet = "ASY_01", skip = 3)
+ View(UKVI_IP_Q3_2023_Background_Published)
+
+
+Apps_6_months <- UKVI_IP_Q3_2023_Background_Published |>
   select(`Quarter Application Received`, `Of those Applications received, the percentage completed within 6 Months`) |>
   rename(`Date` = `Quarter Application Received`, `Percentage Completed` = `Of those Applications received, the percentage completed within 6 Months`)
 
 Apps_6_months |>
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Percentage Completed 6 months.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Percentage Completed 6 months Sept 23.csv")
 
 
 # Plot asylum caseworking staff and principal stages completed side by side to check trends

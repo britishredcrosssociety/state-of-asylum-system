@@ -174,10 +174,11 @@ arrivals_small_boats <-
 # Revised code with updated September 2023 irregular migration: 
 
 library(readxl)
-irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023 <- read_excel("C:/Users/MathuraKugan/Downloads/irregular-migration-to-the-UK-detailed-dataset-year-ending-september-2023.xlsx", 
-                                                                                          +     sheet = "Data - Irr_D02", skip = 1)
 
-small_boat_asylum_0923 <- irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023
+irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023_1_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/irregular-migration-to-the-UK-detailed-dataset-year-ending-september-2023 (1).xlsx", 
+                                                                                               +     sheet = "Data - Irr_D02", skip = 1)
+
+small_boat_asylum_0923 <- irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023_1_
 
 small_boat_asylum_0923 <- small_boat_asylum_0923 [-3970,]
 
@@ -272,7 +273,9 @@ family_reunion_rolling_sum <-
   # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
   slice(seq(1, n(), by = 4))
 
-family_reunion_rolling_sum
+family_reunion_rolling_sum 
+
+view(family_reunion_rolling_sum)
 
 # Check trend in rolling sum
 # ggplot(family_reunion_rolling_sum, aes(x = Date, y = RollSum)) +

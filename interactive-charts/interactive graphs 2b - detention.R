@@ -18,6 +18,10 @@ people_in_detention_by_age_sex <-
 people_in_detention_by_age_sex |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex spt 23.csv")
 
+# Pregnant women in detention not updated in R asylum package. 
+
+# From transparency data published for Sept 2023, there are no women in detention for this quarter. 
+
 # How many pregnant women are currently in detention?
 asylum::detention_pregnant_women |> 
   filter(Date == max(Date))
@@ -57,6 +61,21 @@ detention_length <-
 
 detention_length |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - by length sep 23.csv")
+
+# Average cost per day for immigration detention not updated in R asylum package for September 2023 stats. 
+
+# Updated for September only: 
+library(readxl)
+
+IE_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/IE__Q3_2023_Background_Published.xlsx", 
+                                              +     sheet = "DT_02", skip = 3)
+
+Detention_cost_per_day_0923 <- IE_Q3_2023_Background_Published |>
+  select_if(~ !any(is.na(.)))
+
+Detention_cost_per_day_0923 |>
+  select(Quarter, Cost) |>
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day Sept 23.csv")
 
 # ---- Average cost per day to hold a person in immigration detention ----
 asylum::detention_cost_per_day |> 
