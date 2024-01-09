@@ -124,7 +124,7 @@ asylum::applications |>
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total.csv")
 
-# ---- Total number of people applying for asylum year ending June ----
+# ---- Total number of people applying for asylum year ending September ----
 
 applications_annual <- 
   asylum::applications |> 
