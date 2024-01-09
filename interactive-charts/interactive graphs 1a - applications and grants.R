@@ -121,7 +121,7 @@ immigration |>
 # ---- Total number of people applying for asylum each year ----
 asylum::applications |> 
   group_by(Year) |> 
-  summarise(Applications = sum(Applications, na.rm = TRUE)) |> view()
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total.csv")
 
 # ---- Total number of people applying for asylum year ending June ----
@@ -347,4 +347,16 @@ inadmissibility_cases_considered |>
   group_by(Stage) |>
   summarise(Total = sum(Cases)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility Sep 2023.csv")
+
+
+
+
+
+
+# ----# Deno example on GitHub use, please ignore.#
+asylum::applications |>
+  filter(Year != "2023") |>
+  group_by(Year) |>
+  summarise(Applications = sum(Applications, na.rm = TRUE)) |>
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications only until 2022 - total.csv")
 
