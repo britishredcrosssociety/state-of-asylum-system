@@ -31,7 +31,8 @@ rolling_annual_sum <- function(df, variable) {
     select(Date, RollingSum)
 }
 
-# ---- Immigration to the UK ----
+# ---- Flourish- Section 1, Slide 3: Immigration to the UK 2022 ----
+
 # People arriving on small boats who claimed asylum
 migration_small_boats <- 
   asylum::small_boat_asylum_applications |> 
@@ -124,7 +125,7 @@ asylum::applications |>
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total.csv")
 
-# ---- Total number of people applying for asylum year ending September ----
+# ---- Flourish- Section 1, Slide 4: Total number of people applying for asylum each year (rolling sum) ----
 
 applications_annual <- 
   asylum::applications |> 
@@ -146,7 +147,8 @@ asylum::applications |>
   filter(Year == max(Year)) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE))
 
-# ---- Asylum applications over time, by nationality without 2023 ----
+# ---- Flourish- Section 1, Slide 5: People claiming asylum over time, by nationality (without 2023) ----
+
 asylum::applications |> 
   filter(Year != "2023") |>
   group_by(Year, Nationality) |> 
@@ -159,12 +161,14 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation wo 2023.csv")
 
+# ---- Flourish- Section 1, Slide 6: People claiming asylum, by nationality from January 2023 to September 2023 ----
+# PLEASE NOTE, for February 2024 data release, you will not need to have a separate chart. 
+
 asylum::applications |>
   filter(Year == "2023") |>
   group_by(Nationality) |>
   summarise(People = sum(Applications, na.rm = TRUE)) |>
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation only 2023.csv")
-
 
 # - CAPTION -
 # Which nationalities are consistently in the top 5% of applications?
@@ -185,7 +189,7 @@ asylum::applications |>
   mutate(proportion_of_years = n / num_years) |> 
   filter(proportion_of_years > 0.8)
 
-# ---- Applications for asylum over the last 12 months ----
+# ---- Flourish- Section 1, Slide 7: People applying for asylum over the last 12 months ----
 applications_nationality <- 
   asylum::applications |> 
   # Filter applications within the last 12 months
@@ -259,7 +263,7 @@ applications_uasc |>
   filter(Category == "Unaccompanied children") |> 
   pull(Children)
 
-# ---- Top five nationalities applying for asylum over time ----
+# ---- Flourish- Section 1, Slide 8: Top five nationalities applying for asylum over time ----
 asylum::applications |> 
   group_by(Quarter, Region, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
@@ -272,7 +276,7 @@ asylum::applications |>
   
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations Sept 2023.csv")
 
-# ---- Change in initial grant rates ----
+# ---- Flourish- Section 1, Slide 9: Change in initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
 top_ten_nations <-
   grant_rates_initial_annual |>
@@ -288,7 +292,7 @@ grant_rates_initial_annual |>
   arrange(desc(`Initial grant rate`)) |> 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent Sep 23.csv")
 
-# ---- Initial grant rates, by quarter ----
+# ---- Flourish- Section 1, Slide 10: Initial grant rates, by quarter ----
 grant_rates_initial_quarterly |>
   
   mutate(
@@ -308,7 +312,7 @@ grant_rates_initial_quarterly |>
 
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial grant rates - by quarter Sep 2023.csv")
 
- # ---- Asylum-related and non asylum-related returns ----
+ # ---- Flourish- Section 1, Slide 11 & 12: Asylum-related and non asylum-related returns ----
 asylum::returns_asylum |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum Sept 23.csv")
@@ -334,7 +338,7 @@ asylum::returns_asylum |>
   mutate(Total = `Enforced returns` + `Voluntary returns` + `Refused entry at port and subsequently departed`) |> 
   summarise(sum(Total))
 
-# ---- Inadmissibility cases ----
+# ---- Flourish- Section 1, Slide 13: Inadmissibility cases ----
 inadmissibility_cases_considered$Stage <- factor(inadmissibility_cases_considered$Stage , 
 levels=c('Total identified for consideration on inadmissibility grounds', 
          'Notice of intent issued', 
@@ -350,10 +354,7 @@ inadmissibility_cases_considered |>
 
 
 
-
-
-
-# ----# Deno example on GitHub use, please ignore.#
+# ----# Demo example on GitHub use, please ignore. Jenny please delete after#
 asylum::applications |>
   filter(Year != "2023") |>
   group_by(Year) |>
