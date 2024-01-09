@@ -1,7 +1,7 @@
 library(tidyverse)
 library(asylum)
 
-# ---- Asylum backlog ----
+# ---- Flourish- Section 4, Slide 3: Asylum backlog ----
 backlog <- 
   asylum::awaiting_decision |> 
   mutate(Stage = case_when(
@@ -23,7 +23,7 @@ backlog |>
   filter(Date == max(Date)) |> 
   summarise(Backlog = sum(Backlog))
 
-# ---- Asylum support payments ----
+# ---- Flourish- Section 4, Slide 4: Asylum support payments ----
 asylum::support_received |> 
   group_by(Date, `Support Type`) |> 
   summarise(People = sum(People)) |> 
@@ -59,7 +59,7 @@ receiving_support |>
 # What percentage are receiving asylum support?
 scales::percent(sum(receiving_support$People) / backlog)
 
-# ---- Asylum support payments ----
+# ---- Flourish- Section 4, Slide 5: Asylum support payments ----
 support_received_recently <- 
   asylum::support_received |> 
   filter(Date == max(Date)) |> 

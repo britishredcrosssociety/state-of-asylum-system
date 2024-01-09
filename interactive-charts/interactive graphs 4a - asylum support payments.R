@@ -1,6 +1,7 @@
 library(tidyverse)
 library(lubridate)
 
+# ---- Flourish- Section 4, Slide 6: Asylum support payment ----
 # Load consumer price index from https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7bt/mm23
 cpi <- read_csv("https://www.ons.gov.uk/generator?format=csv&uri=/economy/inflationandpriceindices/timeseries/d7bt/mm23", skip = 8, col_names = c("Date", "CPI"))
 

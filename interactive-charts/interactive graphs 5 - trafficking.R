@@ -2,7 +2,7 @@ library(tidyverse)
 library(asylum)
 library(zoo)
 
-# ---- Referrals to the National Referral Mechanism ----
+# ---- Flourish- Section 5, Slide 3: Referrals to the National Referral Mechanism ----
 nrm_referrals_longitudinal |> 
   mutate(Date = paste0(Year, " ", Quarter)) |> 
   relocate(Date) |> 
@@ -27,7 +27,7 @@ nrm_referrals <-
     asylum::nrm_referrals_2022_q4,
   )
 
-# ---- National Referral Mechanism referrals, by first responder ----
+# ---- Flourish- Section 5, Slide 4: National Referral Mechanism referrals, by first responder ----
 nrm_referrals_first_responder <- 
   nrm_referrals |> 
   filter(`Exploitation type` == "Total" & `Age at exploitation` == "Total" & Gender == "Total" & Nationality != "Total") |> 
@@ -57,7 +57,7 @@ nrm_referrals_first_responder |>
   ungroup() |> 
   mutate(Proportion = Total / sum(Total))
 
-# ---- National Referral Mechanism referrals, by nationality ----
+# ---- Flourish- Section 5, Slide 5: National Referral Mechanism referrals, by nationality ----
 nrm_referrals |> 
   filter(Nationality != "Total") |> 
   
@@ -79,7 +79,7 @@ nrm_referrals |>
 
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality Sept 23.csv")
 
-# ---- National Referral Mechanism referrals, by nationality ----
+# ---- Flourish- Section 5, Slide 6: National Referral Mechanism referrals, by age and sex ----
 nrm_referrals |> 
   filter(`Age at exploitation` != "Total" & Nationality == "Total") |> 
   filter(Gender %in% c("Female", "Male")) |> 
@@ -110,7 +110,7 @@ nrm_referrals |>
 
 
 # People receiving reasonable ground and conclusive ground not updated?? 
-# ---- People receiving a positive reasonable grounds decision ----
+# ---- Flourish- Section 5, Slide 7: People receiving a positive reasonable grounds decision ----
 
 nrm_reasonable_grounds |> 
   filter(Quarter != "Total") |> 
@@ -144,7 +144,7 @@ nrm_reasonable_grounds |>
 nrm_reasonable_grounds 
 
 
-# ---- People receiving a positive conclusive grounds decision ----
+# ---- Flourish- Section 5, Slide 8: People receiving a positive conclusive grounds decision ----
 nrm_conclusive_grounds |> 
   filter(Quarter != "Total") |> 
   
@@ -172,14 +172,14 @@ nrm_conclusive_grounds |>
   
   write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age Sept 23.csv")
 
-# ---- Referrals through the Duty to Notify process ----
+# ---- Flourish- Section 5, Slide 9: Referrals through the Duty to Notify process ----
 nrm_duty_to_notify_longitudinal |> 
   filter(Quarter != "Total") |> 
   mutate(Date = zoo::as.Date(as.yearqtr(paste(Year, Quarter), format = "%Y Q%q"), frac = 1)) |>
   select(Date, `Referrals through Duty to Notify process` = Total) |> 
   write_csv("data-raw/flourish/5 - Trafficking/duty to notify - longitudinal Sept 23.csv")
 
-# ---- Referrals through the Duty to Notify process, by nationality ----
+# ---- Flourish- Section 5, Slide 10:Referrals through the Duty to Notify process, by nationality ----
 dtn <- 
   bind_rows(
     nrm_duty_to_notify_2022_q4,
