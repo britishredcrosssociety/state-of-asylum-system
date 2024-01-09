@@ -2,7 +2,7 @@ library(tidyverse)
 library(asylum)
 library(zoo)
 
-# ---- Asylum backlog over time, by nationality ----
+# ---- Flourish- Section 3, Slide 1: Asylum backlog over time, by nationality ----
 backlog_total <- 
   asylum::awaiting_decision |> 
   mutate(Stage = case_when(
@@ -49,7 +49,7 @@ backlog_total |>
   filter(Date == max(Date)) |> 
   summarise(Total = sum(Backlog))
 
-# ---- Asylum applications and backlog ----
+# ---- Flourish- Section 3, Slide 4: Asylum applications and backlog ----
 quarterly_applications <- 
   asylum::applications |> 
   group_by(Date) |> 
@@ -86,7 +86,7 @@ backlog_total |>
 
 26775/9883
 
-# ---- Asylum backlog, by nationality ----
+# ---- Flourish- Section 3, Slide 5: Asylum backlog, by nationality ----
 awaiting_decision_by_nationality <- 
   asylum::awaiting_decision |> 
   filter(Date == max(Date)) |>
@@ -124,7 +124,7 @@ asylum::awaiting_decision |>
   ungroup() |> 
   mutate(Proportion = Applications / sum(Applications))
 
-# ---- Asylum claims granted, refused, and withdrawn ----
+# ---- Flourish- Section 3, Slide 6: Asylum claims granted, refused, and withdrawn ----
 asylum::decisions_resettlement |> 
   filter(`Case type` == "Asylum Case") |>
   filter(`Applicant type` == "Main applicant") |>
@@ -175,7 +175,7 @@ asylum::decisions_resettlement |>
   slice(seq(1, n(), by = 4)) |> 
   arrange(desc(Withdrawn))
 
-# ---- Grant rate at initial decision and number of appeals lodged ----
+# ---- Flourish- Section 3, Slide 7: Grant rate at initial decision and number of appeals lodged ----
 grant_rate_overall <- 
   asylum::grant_rates_initial_quarterly |> 
   group_by(Date) |> 
@@ -197,7 +197,7 @@ asylum::appeals_lodged |>
   
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates Sept 23.csv")
 
-# ---- Asylum caseworker productivity ----
+# ---- Flourish- Section 3, Slide 8: Asylum caseworker productivity ----
 asylum::asylum_costs_and_productivity |> 
   select(`Financial Year`, Productivity) |> 
   drop_na() |> 
@@ -215,43 +215,13 @@ asylum::asylum_costs_and_productivity |>
     `Average Principal Stages Completed Per Month (% change year on year)` = (`Average Principal Stages Completed Per Month` - lag(`Average Principal Stages Completed Per Month`)) / lag(`Average Principal Stages Completed Per Month`)
   )
 
-# ---- Cost of Asylum System ----
-
-asylum::asylum_costs_and_productivity |>
-  select(`Financial Year`, `Total Asylum Costs`) |>
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost.csv")
-
-# ---- Cost and Backlog at Q2 ---- #
-
-asylum_cost <- asylum_costs_and_productivity |>
-  select(`Financial Year`, `Total Asylum Costs`) |>
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost and backlog.csv")
-
-awaiting_decision <- awaiting_decision |>
-  mutate(Quarter = quarter(Date))
-
-backlog_q1_only <- awaiting_decision |>
-  filter(Quarter == "1") |> 
-  filter(`Application stage` == "Pending initial decision") |>
-  group_by(Date) |>
-  summarise(Total = sum(Applications)) 
-  
-# This only includes initial decisions, not futher review cases. Also includes dependants and main applicants
-
-asylum_cost_and_backlog <- data.frame(backlog_q1_only,asylum_cost)
-
-asylum_cost_and_backlog |>
-  select(Financial.Year, Total, Total.Asylum.Costs) |>
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Cost and backlog.csv")
-
-
-# ---- % of decisions made in 6 months ---- #
+# ---- Flourish- Section 3, Slide 9: Percentage of decisions made in 6 months ---- #
 
 library(readxl)
 
- UKVI_IP_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/UKVI_IP_Q3_2023_Background_Published.xlsx", 
-                                                     +     sheet = "ASY_01", skip = 3)
- View(UKVI_IP_Q3_2023_Background_Published)
+UKVI_IP_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/UKVI_IP_Q3_2023_Background_Published.xlsx", 
+                                                   +     sheet = "ASY_01", skip = 3)
+View(UKVI_IP_Q3_2023_Background_Published)
 
 
 Apps_6_months <- UKVI_IP_Q3_2023_Background_Published |>
@@ -281,3 +251,33 @@ Apps_6_months |>
 #   labs(
 #     title = "More asylum caseworking staff are completing fewer principal stages per month, on average"
 #   )
+
+
+# ---- Cost of Asylum System ----
+
+asylum::asylum_costs_and_productivity |>
+  select(`Financial Year`, `Total Asylum Costs`) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost.csv")
+
+# ---- Flourish- Section 3, Slide 10: Cost and Backlog at Q2 ---- #
+
+asylum_cost <- asylum_costs_and_productivity |>
+  select(`Financial Year`, `Total Asylum Costs`) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office Cost and backlog.csv")
+
+awaiting_decision <- awaiting_decision |>
+  mutate(Quarter = quarter(Date))
+
+backlog_q1_only <- awaiting_decision |>
+  filter(Quarter == "1") |> 
+  filter(`Application stage` == "Pending initial decision") |>
+  group_by(Date) |>
+  summarise(Total = sum(Applications)) 
+  
+# This only includes initial decisions, not futher review cases. Also includes dependants and main applicants
+
+asylum_cost_and_backlog <- data.frame(backlog_q1_only,asylum_cost)
+
+asylum_cost_and_backlog |>
+  select(Financial.Year, Total, Total.Asylum.Costs) |>
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Cost and backlog.csv")
