@@ -42,7 +42,7 @@ brc_sep22_23 |>
   summarise(Total = sum(`Number of people supported`)) |> 
   write_csv("data-raw/flourish/6 - BRC/people supported by immigration status Sep 2023.csv")
             
-BRC_immigration_updated <- brc_jun22_23 |>
+BRC_immigration_updated <- brc_sep22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |>
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
@@ -204,7 +204,7 @@ brc_length_of_support_Sep_23 |>
 
 # ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
 rs_actions <- 
-  brc_jun22_23 |> 
+  brc_sep22_23 |> 
   filter(ActionStatusName == "Completed - Successful") |> 
   mutate(
     Response_Type = str_remove(Response_Type, " - RFC") |> 
