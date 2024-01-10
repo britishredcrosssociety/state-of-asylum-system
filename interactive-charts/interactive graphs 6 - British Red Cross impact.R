@@ -7,7 +7,7 @@ View(RS_Actions_Sep_30_22_to_23_1_)
 
 brc_sep22_23 <- RS_Actions_Sep_30_22_to_23_1_
 
-# ---- Support by immigration status ----
+# ---- Flourish- Section 6, Slide 3: Support by immigration status ----
 brc_sep22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |> 
   count(Main_Immigration_Status, sort = TRUE) |> 
@@ -82,7 +82,7 @@ brc_sep22_23 |>
   filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
   count()
 
-# ---- Support by country of origin ----
+# ---- Flourish- Section 6, Slide 4: Support by country of origin ----
 brc_sep22_23 |> 
   distinct(MainPSN, Main_CountryofOrigin) |> 
   count(Main_CountryofOrigin, sort = TRUE) |> 
@@ -97,7 +97,7 @@ brc_sep22_23 |>
    filter(Main_CountryofOrigin %in% c("NULL", "Unknown")) |> 
    count()
 
-# ---- How many people have we supported through our refugee support and anti-trafficking services and where? ----
+# ---- Flourish- Section 6, Slide 5: How many people have we supported through our refugee support and anti-trafficking services and where? ----
 # Total people supported
 brc_sep22_23 |> 
   distinct(MainPSN) |> 
@@ -143,7 +143,7 @@ brc_sep22_23 |>
   
   write_csv("data-raw/flourish/6 - BRC/people supported by location Sep 2023.csv")
 
-# ---- People supported by age and gender ----
+# ---- Flourish- Section 6, Slide 6: People supported by age and gender ----
 brc_sep22_23 |> 
   distinct(MainPSN, Age, Gender = Main_Gender) |> 
   
@@ -169,8 +169,7 @@ brc_sep22_23 |>
   
   write_csv("data-raw/flourish/6 - BRC/people supported by age and gender Sep 2023.csv")
 
-
-# ---- Length of support ----
+# ---- Flourish- Section 6, Slide 7: Length of support ----
 brc_length_of_support_Sep_23 <- 
   brc_sep22_23 |> 
   distinct(MainPSN, BeneficiarySince) |> 
@@ -225,7 +224,7 @@ rs_actions |>
   filter(str_detect(`Type of response`, "General")) |> 
   summarise(sum(`Number of actions in last year`))
 
-#---- BRC Destitution ---- #
+#---- Flourish- Section 6, Slide 10: BRC Destitution ---- #
 library(readxl)
 
 Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
@@ -286,7 +285,7 @@ FRTA_Sep23_ |>
   
   write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender Sep 23.csv")
 
-# Country of Origin #
+# ---- Flourish- Section 6, Slide 8: :Country of Origin ---- #
 
 FRTA_Sep23_ |> 
   distinct(`Reference Number`, `Country of Origin`) |> 

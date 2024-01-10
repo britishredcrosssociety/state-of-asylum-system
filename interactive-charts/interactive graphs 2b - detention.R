@@ -1,7 +1,7 @@
 library(tidyverse)
 library(asylum)
 
-# ---- People in detention, by age and sex ----
+# ---- Flourish- Section 2, Slide 10: People in detention, by age and sex ----
 people_in_detention_by_age_sex <- 
   asylum::people_in_detention |> 
   filter(Date == max(Date)) |> 
@@ -37,7 +37,7 @@ people_in_detention_by_age_sex |>
   ) |> 
   mutate(Proportion = Male / (Male + Female))
 
-# ---- Length of detention ----
+# ---- Flourish- Section 2, Slide 11: Length of detention ----
 detention_length <- 
   asylum::people_leaving_detention |>
   filter(Date >= max(Date) - dmonths(11)) |> 
@@ -77,7 +77,7 @@ Detention_cost_per_day_0923 |>
   select(Quarter, Cost) |>
   write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day Sept 23.csv")
 
-# ---- Average cost per day to hold a person in immigration detention ----
+# ---- Flourish- Section 2, Slide 12: Average cost per day to hold a person in immigration detention ----
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 
   write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")

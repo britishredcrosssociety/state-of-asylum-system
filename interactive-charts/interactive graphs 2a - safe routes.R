@@ -9,7 +9,7 @@ resettlement_grants_without_evacuation <-
   filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 1")) |> 
   filter(!str_detect(`Case outcome`, "Resettlement - ACRS Pathway 3")) 
 
-# ---- People arriving in the UK through resettlement ----
+# ---- Flourish- Section 2, Slide 4: People arriving in the UK through resettlement ----
 resettlement_by_quarter <- 
   resettlement_grants_without_evacuation |> 
   group_by(Date) |> 
@@ -42,7 +42,7 @@ resettlement_by_quarter |>
   # Keep the 2nd row (rolling sum for the past 12 months) and every 4th row after that
   slice(seq(1, n(), by = 4))
 
-# ---- Resettlement over the last 12 months ----
+# ---- Flourish- Section 2, Slide 5: Resettlement over the last 12 months ----
 bind_rows(
   resettlement_grants_without_evacuation |> 
     # Filter applications within the last 12 months
@@ -114,7 +114,7 @@ resettlement_grants_without_evacuation |>
   mutate(Sex = Sex / sum(Sex)) |> 
   pivot_wider(names_from = Category, values_from = Sex)
 
-# ---- Arrivals from Ukraine via the UK Ukraine Visa Schemes ----
+# ---- Flourish- Section 2, Slide 6: Arrivals from Ukraine via the UK Ukraine Visa Schemes ----
 source("https://github.com/britishredcrosssociety/ukraine-analyses/raw/main/R/load%20Ukraine%20visa%20data%20-%20scraped.R")
 
 ukraine <- 
@@ -134,7 +134,7 @@ ukraine |>
   mutate(Total = `Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`) |> 
   mutate(Proportion_Sponsorship = `Ukraine Sponsorship Scheme` / (`Ukraine Sponsorship Scheme` + `Ukraine Family Scheme`))
 
-# ---- Arrivals through resettlement routes and other routes ----
+# ---- Flourish- Section 2, Slide 7: Arrivals through resettlement routes and other routes ----
 # Stacked bar chart by nationality, showing the proportion of people who arrived 
 # through resettlement routes and proportion of those who arrived outside of them. 
 # For the last 12 months.
@@ -239,7 +239,7 @@ arrivals_all |>
   pull(Proportion) |> 
   scales::percent()  
 
-# ---- Family reunion visas granted ----
+# ---- Flourish- Section 2, Slide 8 & 9: Family reunion visas granted ----
 asylum::family_reunion |> 
   group_by(Date) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 

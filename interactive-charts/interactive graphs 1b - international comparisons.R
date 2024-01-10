@@ -45,7 +45,7 @@ case_country_lookup <- function(country_code) {
   )
 }
 
-# ---- European countries with the highest numbers of people applying for asylum ----
+# ---- Flourish- Section 1, Slide 14: European countries with the highest numbers of people applying for asylum ----
 # Download "Asylum and first time asylum applicants - annual aggregated data (tps00191)"
 # Source: https://ec.europa.eu/eurostat/web/migration-asylum/asylum/database
 tf <- download_file("https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00191.tsv.gz", file_extension = ".tsv.gz")
@@ -113,7 +113,7 @@ eu_asylum <-
 eu_asylum |> 
   write_csv("data-raw/flourish/1b - International comparisons/Europe comparison - applications.csv")
 
-# ---- International displacement ----
+# ---- Flourish- Section 1, Slide 16: International displacement ----
 # Source: https://www.unhcr.org/refugee-statistics/download/?url=705UgZ
 tf <- compositr::download_file("https://api.unhcr.org/population/v1/population/?limit=20&dataset=population&displayType=totals&columns%5B%5D=refugees&columns%5B%5D=asylum_seekers&columns%5B%5D=idps&columns%5B%5D=oip&columns%5B%5D=stateless&columns%5B%5D=hst&columns%5B%5D=ooc&yearFrom=2001&yearTo=2022&coo_all=true&coa_all=true&download=true&_gl=1*yos0bt*_rup_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_rup_ga_EVDQTJ4LMY*MTY4ODcyNjEyMi40LjEuMTY4ODcyODUzMy4wLjAuMA..*_ga*MjAwNzY4ODg5OS4xNjg3ODY0NjI1*_ga_X2YZPJ1XWR*MTY4ODcyNjEyMi40LjEuMTY4ODcyODUzMy4wLjAuMA..", ".zip")
 
