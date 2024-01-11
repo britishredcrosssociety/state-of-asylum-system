@@ -42,7 +42,7 @@ brc_sep22_23 |>
   summarise(Total = sum(`Number of people supported`)) |> 
   write_csv("data-raw/flourish/6 - BRC/people supported by immigration status Sep 2023.csv")
             
-BRC_immigration_updated <- brc_jun22_23 |>
+BRC_immigration_updated <- brc_sep22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |>
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
@@ -172,6 +172,48 @@ brc_length_of_support_Sep_23 |>
   mutate(`Proportion of people` = `Number of people supported` / sum(`Number of people supported`)) |> 
   arrange(`Number of people supported`) |> 
   mutate(`Cumulative proportion` = cumsum(`Proportion of people`))
+<<<<<<< HEAD
+=======
+
+# ---- How have we supported people in the last 12 months (is it CBA and destitution support, advice, referrals to LA for housing etc?) ----
+rs_actions <- 
+  brc_sep22_23 |> 
+  filter(ActionStatusName == "Completed - Successful") |> 
+  mutate(
+    Response_Type = str_remove(Response_Type, " - RFC") |> 
+      str_replace("&", "and") |> 
+      str_to_sentence()
+  ) |> 
+  count(Response_Type, sort = TRUE) |> 
+  filter(Response_Type != "Null") |> 
+  rename(`Type of response` = Response_Type, `Number of actions in last year` = n)
+  
+rs_actions |> 
+  filter(!str_detect(`Type of response`, "General")) |> 
+  write_csv("data-raw/flourish/6 - BRC/types of actions.csv")
+
+# How many general actions?
+rs_actions |> 
+  filter(str_detect(`Type of response`, "General")) |> 
+  summarise(sum(`Number of actions in last year`))
+
+#---- Flourish- Section 6, Slide 10: BRC Destitution ---- #
+library(readxl)
+
+Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
+                                                                                     +     skip = 2)
+View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_)
+
+DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ 
+
+DestitutionBRC |>
+  distinct(MainPSN, Main_CountryofOrigin) |> 
+  count(Main_CountryofOrigin, sort = TRUE) |>
+  rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/destitution by nationality Sep 2023.csv")
+
+
+>>>>>>> b3e699cb11c25c97f7b434c3f782cf900530ee80
 # ---- Family Reunion Data ---- #
 
 #---- Flourish- Section 6: Family Reunion Travel Assistance ----
