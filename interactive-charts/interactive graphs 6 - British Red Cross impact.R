@@ -264,7 +264,7 @@ FRTA_Dec23_ |>
   distinct(`Reference Number`, `Country of Origin`) |> 
   count(`Country of Origin`, sort = TRUE) |> 
   filter(`Country of Origin`!= "NULL") |> 
-  rename(`Country of origin` = `Country of Origin`, `Number of people supported` = n) |> 
+  rename(`Country of origin` = `Country of Origin`, `Sponsors supported` = n) |> 
   write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin Dec 23.csv")
 
 
