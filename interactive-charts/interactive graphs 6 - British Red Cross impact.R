@@ -217,23 +217,23 @@ DestitutionBRC |>
 
 #---- Flourish- Section 6: Family Reunion Travel Assistance ----
 
-FRTA_2_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/FRTA (2).xlsx")
+FRTA_2_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/FRTA 31 Dec 2022 to 31 Dec 2023.xlsx")
 
 View(FRTA_2_)
 
-FRTA_Sep23_ <- FRTA_2_ |>
+FRTA_Dec23_ <- FRTA_2_ |>
   select(`Reference Number`, `Date of Birth`, Gender, `Country of Origin`, Age)
 
-FRTA_Sep23_ |>
+FRTA_Dec23_ |>
   distinct(`Reference Number`) |> 
   count()
 
-# 453 people were helped by the British Red Cross travel assistance program. 
+# 465 people were helped by the British Red Cross travel assistance program. 
 
 
 # Age and Gender of FRTA #
 
-FRTA_Sep23_ |> 
+FRTA_Dec23_ |> 
   distinct(`Reference Number`, Age, Gender) |> 
   
   filter(!is.na(Age)) |> 
@@ -256,16 +256,16 @@ FRTA_Sep23_ |>
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   arrange(match(`Age`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
   
-  write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender Sep 23.csv")
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel people supported by age and gender Dec 23.csv")
 
 #---- Flourish- Section 6, Slide 8: Family Reunion Travel Assistance BRC ---- 
 
-FRTA_Sep23_ |> 
+FRTA_Dec23_ |> 
   distinct(`Reference Number`, `Country of Origin`) |> 
   count(`Country of Origin`, sort = TRUE) |> 
   filter(`Country of Origin`!= "NULL") |> 
   rename(`Country of origin` = `Country of Origin`, `Number of people supported` = n) |> 
-  write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin Sep 23.csv")
+  write_csv("data-raw/flourish/6 - BRC/Family reunion travel by country of origin Dec 23.csv")
 
 
 ## ---- Family Reunion Support Project ---- ## 
