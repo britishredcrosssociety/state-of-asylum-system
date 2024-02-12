@@ -140,6 +140,7 @@ ukraine |>
 # For the last 12 months.
 # The nationalities we select can be the 10 most common when considering both means of arrival?
 
+
 # People arriving through resettlement routes
 arrivals_resettlement <- 
   resettlement_grants_without_evacuation |> 
@@ -172,11 +173,12 @@ arrivals_small_boats <-
 # source: https://www.gov.uk/government/statistical-data-sets/irregular-migration-detailed-dataset-and-summary-tables
 
 # Revised code with updated September 2023 irregular migration: 
+  
 
 library(readxl)
 
 irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023_1_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/irregular-migration-to-the-UK-detailed-dataset-year-ending-september-2023 (1).xlsx", 
-                                                                                               +     sheet = "Data - Irr_D02", skip = 1)
+                                                                                                  sheet = "Data - Irr_D02", skip = 1)
 
 small_boat_asylum_0923 <- irregular_migration_to_the_UK_detailed_dataset_year_ending_september_2023_1_
 
@@ -194,11 +196,24 @@ small_boat_asylum_0923 |>
 
 arrivals_small_boats <- 
 small_boat_asylum_0923 |>
+  filter(Quarter > "2022 Q2") |> 
   filter(Quarter > "2022 Q3") |>
   filter(`Asylum application` == "Asylum application raised") |> 
   group_by(Nationality) |> 
   summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
   ungroup()
+
+
+# Jenny added this in - produces correct figures for small boat arrivals 12 months to June 2023 (HO stats not updated in Nov 23) 
+arrivals_small_boats <- 
+small_boat_asylum_0923 |>
+  filter(Quarter > "2022 Q2") |> 
+  filter(Quarter < "2023 Q3") |> 
+  filter(`Asylum application` == "Asylum application raised") |> 
+  group_by(Nationality) |> 
+  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE))
+
+
   
 # People arriving to claim asylum (including small boats)
 arrivals_asylum <- 
