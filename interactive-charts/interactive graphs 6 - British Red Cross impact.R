@@ -1,14 +1,14 @@
 library(tidyverse)
 library(readxl)
 
-RS_Actions_Sep_30_22_to_23_1_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/RS Actions Sep 30 22 to 23 (1).xlsx", 
-                                                                             +     sheet = "Sheet1")
-View(RS_Actions_Sep_30_22_to_23_1_)
+RS_Actions_Dec_22_23 <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/RS Actions Dec 31 22 to 23.xlsx", 
+                                                                               sheet = "Sheet2")
+View(RS_Actions_Dec_22_23)
 
-brc_sep22_23 <- RS_Actions_Sep_30_22_to_23_1_
+brc_dec22_23 <- RS_Actions_Dec_22_23
 
 # ---- Flourish- Section 6, Slide 3: Support by immigration status ----
-brc_sep22_23 |>
+brc_dec22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |> 
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
@@ -40,19 +40,28 @@ brc_sep22_23 |>
   rename(`Immigration status` = Main_Immigration_Status, `Number of people supported` = n) |> 
   group_by(`Immigration status`) |>
   summarise(Total = sum(`Number of people supported`)) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status Sep 2023.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by immigration status dec 2023.csv")
             
-BRC_immigration_updated <- brc_sep22_23 |>
+BRC_immigration_updated <- brc_dec22_23 |>
   distinct(MainPSN, Main_Immigration_Status) |>
   count(Main_Immigration_Status, sort = TRUE) |> 
   filter(Main_Immigration_Status != "NULL") |> 
   rename(`Immigration Status` = Main_Immigration_Status, `Number of people supported` = n) 
     
  #How many nulls/unknowns?
-brc_sep22_23 |> 
+brc_dec22_23 |> 
   distinct(MainPSN, Main_Immigration_Status) |> 
   filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
   count()
+
+
+#How many people supported
+brc_dec22_23 |> 
+  distinct(MainPSN,Main_Immigration_Status, na.rm = FALSE) |> 
+    n_distinct()
+  
+  
+
 
 # ---- Flourish- Section 6, Slide 4: Support by country of origin ----
 brc_sep22_23 |> 
