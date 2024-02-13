@@ -64,29 +64,29 @@ brc_dec22_23 |>
 
 
 # ---- Flourish- Section 6, Slide 4: Support by country of origin ----
-brc_sep22_23 |> 
+brc_dec22_23 |> 
   distinct(MainPSN, Main_CountryofOrigin) |> 
   count(Main_CountryofOrigin, sort = TRUE) |> 
   filter(Main_CountryofOrigin != "NULL") |> 
   rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
   slice(1:30) |> 
-  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin Sep 2023.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by country of origin dec 2023.csv")
 
 # How many nulls/unknowns?
- brc_sep22_23 |> 
+ brc_dec22_23 |> 
    distinct(MainPSN, Main_CountryofOrigin) |> 
    filter(Main_CountryofOrigin %in% c("NULL", "Unknown")) |> 
    count()
 
 # ---- Flourish- Section 6, Slide 5: How many people have we supported through our refugee support and anti-trafficking services and where? ----
 # Total people supported
-brc_sep22_23 |> 
+brc_dec22_23 |> 
   distinct(MainPSN) |> 
   count()
 
-# 22,495 people have been helped through our refugee and anti-trafficking services.
+# 24732 people have been helped through our refugee and anti-trafficking services in 2023.
 
-brc_sep22_23 |> 
+brc_dec22_23 |> 
   distinct(MainPSN, City = Main_City) |> 
   
   # Data cleaning
@@ -122,10 +122,36 @@ brc_sep22_23 |>
   filter(City != "Null") |> 
   filter(`Number of people supported` > 100) |> 
   
-  write_csv("data-raw/flourish/6 - BRC/people supported by location Sep 2023.csv")
+  write_csv("data-raw/flourish/6 - BRC/people supported by location dec 2023.csv")
 
 # ---- Flourish- Section 6, Slide 6: People supported by age and gender ----
-brc_sep22_23 |> 
+brc_dec22_23 |> 
+  distinct(MainPSN, Age, Gender = Main_Gender) |> 
+  
+  filter(!is.na(Age)) |> 
+  filter(!is.na(Gender)) |> 
+  
+  # Make age groups
+  mutate(`Age group` = case_when(
+    Age < 18 ~ "Under 18",
+    Age >= 18 & Age < 30 ~ "18-29",
+    Age >= 30 & Age < 50 ~ "30-49",
+    Age >= 50 & Age < 70 ~ "50-69",
+    Age >= 70 ~ "70+"
+  )) |> 
+  
+  mutate(Gender = if_else(!Gender %in% c("Female", "Male"), "Other", Gender)) |> 
+
+  count(`Age group`, Gender, sort = TRUE) |> 
+  
+  pivot_wider(names_from = Gender, values_from = n) |> 
+  mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
+  arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
+  rename(`Women` = 'Female', `Men` = 'Male') |> 
+  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender dec 2023.csv")
+
+
+df <- brc_dec22_23 |> 
   distinct(MainPSN, Age, Gender = Main_Gender) |> 
   
   filter(!is.na(Age)) |> 
@@ -147,12 +173,15 @@ brc_sep22_23 |>
   pivot_wider(names_from = Gender, values_from = n) |> 
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
-  
-  write_csv("data-raw/flourish/6 - BRC/people supported by age and gender Sep 2023.csv")
+  rename(`Women` = 'Female', `Men` = 'Male')
+
+as.table (df)
+
+
 
 # ---- Flourish- Section 6, Slide 7: Length of support ----
-brc_length_of_support_Sep_23 <- 
-  brc_sep22_23 |> 
+brc_length_of_support_dec_23 <- 
+  brc_dec22_23 |> 
   distinct(MainPSN, BeneficiarySince) |> 
   select(BeneficiarySince) |> 
   na.omit() |> 
@@ -172,12 +201,12 @@ brc_length_of_support_Sep_23 <-
   count(`Length of British Red Cross support`, name = "Number of people supported") |> 
   view()
   
-brc_length_of_support_Sep_23 |> 
-  write_csv("data-raw/flourish/6 - BRC/length of support Sep 2023.csv")
+brc_length_of_support_dec_23 |> 
+  write_csv("data-raw/flourish/6 - BRC/length of support dec 2023.csv")
 
 
 # - CAPTION -
-brc_length_of_support_Sep_23 |> 
+brc_length_of_support_dec_23 |> 
   mutate(`Proportion of people` = `Number of people supported` / sum(`Number of people supported`)) |> 
   arrange(`Number of people supported`) |> 
   mutate(`Cumulative proportion` = cumsum(`Proportion of people`))
@@ -334,19 +363,22 @@ FRTA_Dec23_ |>
 #---- Flourish- Section 6, Slide 10: BRC Destitution ---- #
 library(readxl)
 
-Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/Beneficiaries with destitution action by Top 10 Country of Origin (5).xlsx", 
-                                                                                     +     skip = 2)
-View(Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_)
+DestitutionBRC <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/Destitution_Dec23.xlsx")
 
-DestitutionBRC <- Beneficiaries_with_destitution_action_by_Top_10_Country_of_Origin_5_ 
+View(DestitutionBRC)
+
 
 DestitutionBRC |>
-  distinct(MainPSN, Main_CountryofOrigin) |> 
-  count(Main_CountryofOrigin, sort = TRUE) |>
-  rename(`Country of origin` = Main_CountryofOrigin, `Number of people supported` = n) |> 
-  write_csv("data-raw/flourish/6 - BRC/destitution by nationality Sep 2023.csv")
+  distinct(MainPSN, Main_CountryofOrigin...1) |> 
+  count(Main_CountryofOrigin...1, sort = TRUE) |>
+  rename(`Country of origin` = Main_CountryofOrigin...1, `Number of people supported` = n) |> 
+  write_csv("data-raw/flourish/6 - BRC/destitution by nationality dec 2023.csv")
 
-
+#CAPTION: How many people supported?
+DestitutionBRC |>
+  distinct(MainPSN, Main_CountryofOrigin...1, na.rm = FALSE) |> 
+  n_distinct()
+#5099
 
 #---- OLD CODE ---- 
 ## OLD CODE FROM MATT BEFORE RENAMED BY BRC OPS##
