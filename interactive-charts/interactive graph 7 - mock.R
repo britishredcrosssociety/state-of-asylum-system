@@ -8,6 +8,9 @@
 #Source : https://www.gov.uk/government/statistics/statistics-relating-to-the-illegal-migration-bill#documents
 
 library(readxl)
+install.packages("lubridate")
+
+library(lubridate)
 
 statistics_relating_to_the_illegal_migration_act_data_tables_to_dec_2023 <- read_excel("C:/Users/JennyR/Downloads/statistics-relating-to-the-illegal-migration-act-data-tables-to-dec-2023.xlsx", 
                                                                                          sheet = "IMB_02", skip = 3, n_max = 33)
@@ -21,6 +24,11 @@ IMA_backlog <- IMA_backlog |>
 
 # Change character to date in the dataset to read better. 
 IMA_backlog$Date <- dmy(IMA_backlog$Date)
+
+# Create a new column with the month and year only
+IMA_backlog$MonthYear <- format(IMA_backlog$Date, "%B-%Y")
+
+
 
 #Filter out records prior to March 2022
 IMA_backlog <-   IMA_backlog |> filter(Date >= "2022-03-31")
