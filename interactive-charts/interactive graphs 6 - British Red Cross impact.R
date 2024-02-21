@@ -159,7 +159,6 @@ brc_dec22_23 |>
   pivot_wider(names_from = Gender, values_from = n) |> 
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
   arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
-  rename(`Women` = 'Female', `Men` = 'Male') |> 
   write_csv("data-raw/flourish/6 - BRC/people supported by age and gender dec 2023.csv")
 
 
@@ -184,8 +183,7 @@ df <- brc_dec22_23 |>
   
   pivot_wider(names_from = Gender, values_from = n) |> 
   mutate(across(where(is.integer), ~replace_na(.x, 0))) |> 
-  arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) |> 
-  rename(`Women` = 'Female', `Men` = 'Male')
+  arrange(match(`Age group`, c("Under 18", "18-29", "30-49", "50-69", "70+"))) 
 
 as.table (df)
 
