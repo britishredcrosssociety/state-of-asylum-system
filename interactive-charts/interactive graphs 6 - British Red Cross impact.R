@@ -42,16 +42,16 @@ brc_dec22_23 |>
   summarise(Total = sum(`Number of people supported`)) |> 
   write_csv("data-raw/flourish/6 - BRC/people supported by immigration status dec 2023.csv")
             
-BRC_immigration_updated <- brc_dec22_23 |>
-  distinct(MainPSN, Main_Immigration_Status) |>
-  count(Main_Immigration_Status, sort = TRUE) |> 
-  filter(Main_Immigration_Status != "NULL") |> 
-  rename(`Immigration Status` = Main_Immigration_Status, `Number of people supported` = n) 
+#BRC_immigration_updated <- brc_dec22_23 |>
+#  distinct(MainPSN, Main_Immigration_Status) |>
+#  count(Main_Immigration_Status, sort = TRUE) |> 
+#  filter(Main_Immigration_Status != "NULL") |> 
+#  rename(`Immigration Status` = Main_Immigration_Status, `Number of people supported` = n) 
     
  #How many nulls/unknowns?
 brc_dec22_23 |> 
   distinct(MainPSN, Main_Immigration_Status) |> 
-  filter(Main_Immigration_Status %in% c("NULL", "Unknown")) |> 
+  filter(Main_Immigration_Status %in% c("NULL", "Unknown", "Other")) |> 
   count()
 
 
@@ -59,6 +59,18 @@ brc_dec22_23 |>
 brc_dec22_23 |> 
   distinct(MainPSN,Main_Immigration_Status, na.rm = FALSE) |> 
     n_distinct()
+
+#Remove 'other' row from dataframe, rename 'Other migrants as 'other'  & overwrite previous csv file
+revised_output <- read_csv("~/GitHub/state-of-asylum-system/data-raw/flourish/6 - BRC/people supported by immigration status dec 2023.csv")
+
+revised_output <- revised_output |> 
+  filter(`Immigration status`!= "Other") 
+
+revised_output[1, "Immigration status"] <- "Other"
+
+
+write_csv(revised_output, "data-raw/flourish/6 - BRC/people supported by immigration status dec 2023.csv")
+
   
   
 
