@@ -8,12 +8,32 @@
 #Source : https://www.gov.uk/government/statistics/statistics-relating-to-the-illegal-migration-bill#documents
 
 library(readxl)
-install.packages("lubridate")
-
+library(tidyverse)
 library(lubridate)
+library (httr2)
+install.packages("readODS")
+library(readODS)
 
-statistics_relating_to_the_illegal_migration_act_data_tables_to_dec_2023 <- read_excel("C:/Users/JennyR/Downloads/statistics-relating-to-the-illegal-migration-act-data-tables-to-dec-2023.xlsx", 
-                                                                                         sheet = "IMB_02", skip = 3, n_max = 33)
+# Create temporary file
+
+url = "https://assets.publishing.service.gov.uk/media/658ebf5f01760d000d5cf922/statistics-relating-to-the-illegal-migration-act-data-tables-to-dec-2023.ods"
+
+download <- tempfile(fileext = ".odt")
+
+# Download file
+request(url) |>
+  req_perform(download)
+  
+
+# read the ods file
+statistics_relating_to_the_illegal_migration_act_data_tables_to_dec_2023  <-
+  read_ods(
+    download,
+    sheet = "IMB_02",
+    skip = 3, n_max = 36
+  )
+
+
 View(statistics_relating_to_the_illegal_migration_act_data_tables_to_dec_2023)
 
 IMA_backlog <- statistics_relating_to_the_illegal_migration_act_data_tables_to_dec_2023
@@ -36,5 +56,5 @@ IMA_backlog <-   IMA_backlog |> filter(Date >= "2022-03-31")
 
 # save the data as a csv to upload to Flourish. 
 IMA_backlog |>
-  write_csv("data-raw/flourish/7 - other and mock/mock IMA.csv")
+  write_csv("data-raw/flourish/7 - other and mock/IMA.csv")
 
