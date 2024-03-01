@@ -1,6 +1,11 @@
 # Install our {compositr} package if you haven't already
 devtools::install_github("humaniverse/compositr")
 
+# install.packages("devtools")
+devtools::install_github("humaniverse/asylum")
+
+install.packages("asylum")
+
 library(tidyverse)
 library(asylum)
 library(compositr)
@@ -138,7 +143,7 @@ applications_annual <-
 applications_year_ending_most_recent_quarter <- 
   applications_annual |> 
   rolling_annual_sum(Applications) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total rolling sum Sept 23.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - total rolling sum Dec 23.csv")
 
 
 # - CAPTION -
@@ -147,10 +152,9 @@ asylum::applications |>
   filter(Year == max(Year)) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE))
 
-# ---- Flourish- Section 1, Slide 5: People claiming asylum over time, by nationality (without 2023) ----
+# ---- Flourish- Section 1, Slide 5: People claiming asylum over time, by nationality (including 2023)----
 
 asylum::applications |> 
-  filter(Year != "2023") |>
   group_by(Year, Nationality) |> 
   summarise(Applications = sum(Applications, na.rm = TRUE)) |> 
   ungroup() |> 
@@ -159,7 +163,7 @@ asylum::applications |>
   mutate(across(-(Year), as.character)) |> 
   mutate(across(-(Year), ~ replace_na(.x, ""))) |> 
   
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation wo 2023.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by nation year end dec 2023.csv")
 
 # ---- Flourish- Section 1, Slide 6: People claiming asylum, by nationality from January 2023 to September 2023 ----
 # PLEASE NOTE, for February 2024 data release, you will not need to have a separate chart. 
