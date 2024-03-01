@@ -255,7 +255,7 @@ bind_rows(
   applications_uasc,
   
 ) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category Sept 23.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - by category Dec 23.csv")
 
 # - CAPTION - 
 # Percentage of applications by age group
@@ -278,7 +278,7 @@ asylum::applications |>
   pivot_wider(names_from = Quarter, values_from = Applications) |> 
   mutate(across(-(Region:Nationality), ~ replace_na(.x, ""))) |> 
   
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations Sept 2023.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications - top five nations Dec 2023.csv")
 
 # ---- Flourish- Section 1, Slide 9: Change in initial grant rates ----
 # Top ten nations, by number of grants and grant rate in the most recent year
@@ -294,9 +294,10 @@ grant_rates_initial_annual |>
   filter(Nationality %in% top_ten_nations) |>
   select(Nationality, Year, `Initial grant rate`, `Number of grants` = Grant) |>
   arrange(desc(`Initial grant rate`)) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent Sep 23.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent Dec 23.csv")
 
 # ---- Flourish- Section 1, Slide 10: Initial grant rates, by quarter ----
+#WArnign message was coming up: 'Values from `Initial grant rate` are not uniquely identified; output will contain list-cols.' So added line in to filter out suplicated rows =  2023-12-31 2023 Q4 Other and unknown     2
 grant_rates_initial_quarterly |>
   
   mutate(
@@ -306,6 +307,7 @@ grant_rates_initial_quarterly |>
   mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
   
   select(Date, Quarter, Nationality, `Initial grant rate`) |>
+  filter(Nationality != 'Other and unknown')|>
   pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |>
 
   # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
@@ -314,17 +316,17 @@ grant_rates_initial_quarterly |>
   # Remove columns that contain only NAs
   select(where(~!all(is.na(.x)))) |>
 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial grant rates - by quarter Sep 2023.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial grant rates - by quarter Dec 2023.csv")
 
  # ---- Flourish- Section 1, Slide 11 & 12: Asylum-related and non asylum-related returns ----
 asylum::returns_asylum |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum Sept 23.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum Dec 23.csv")
 
 asylum::returns_asylum |> 
   filter(Category == "Asylum-related") |> 
   relocate(`Voluntary returns`, .after = Nationality) |>  # Reorder so voluntary returns comes first in the stacked bars
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only Sept 23.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/returns - by asylum only Dec 23.csv")
 
 # - CAPTION -
 # What % of all returns were asylum-related?
@@ -354,14 +356,5 @@ inadmissibility_cases_considered |>
   filter(Stage != "Notice of intent issued") |>
   group_by(Stage) |>
   summarise(Total = sum(Cases)) |> 
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility Sep 2023.csv")
-
-
-
-# ----# Demo example on GitHub use, please ignore. Jenny please delete after#
-asylum::applications |>
-  filter(Year != "2023") |>
-  group_by(Year) |>
-  summarise(Applications = sum(Applications, na.rm = TRUE)) |>
-  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/applications only until 2022 - total.csv")
+  write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/inadmissibility Dec 2023.csv")
 
