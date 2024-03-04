@@ -16,7 +16,7 @@ people_in_detention_by_age_sex <-
   mutate(Female = Female * -1)
 
 people_in_detention_by_age_sex |> 
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex spt 23.csv")
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by age and sex Dec 23.csv")
 
 # Pregnant women in detention not updated in R asylum package. 
 
@@ -60,27 +60,27 @@ detention_length <-
   mutate(`Length of detention` = str_remove(`Length of detention`, "^[A-Z]:\\s"))
 
 detention_length |> 
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - by length sep 23.csv")
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - by length Dec 23.csv")
 
 # Average cost per day for immigration detention not updated in R asylum package for September 2023 stats. 
 
 # Updated for September only: 
-library(readxl)
+#library(readxl)
 
-IE_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/IE__Q3_2023_Background_Published.xlsx", 
+#IE_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/IE__Q3_2023_Background_Published.xlsx", 
                                               +     sheet = "DT_02", skip = 3)
 
-Detention_cost_per_day_0923 <- IE_Q3_2023_Background_Published |>
-  select_if(~ !any(is.na(.)))
+#Detention_cost_per_day_0923 <- IE_Q3_2023_Background_Published |>
+#  select_if(~ !any(is.na(.)))
 
-Detention_cost_per_day_0923 |>
-  select(Quarter, Cost) |>
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day Sept 23.csv")
+#Detention_cost_per_day_0923 |>
+#  select(Quarter, Cost) |>
+#  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day Dec 23.csv")
 
 # ---- Flourish- Section 2, Slide 12: Average cost per day to hold a person in immigration detention ----
 asylum::detention_cost_per_day |> 
   select(Date, Cost) |> 
-  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day.csv")
+  write_csv("data-raw/flourish/2b - Detention/2b - detention - cost per day Dec 23.csv")
 
 # - CAPTION -
 # calculate % increase since April 2021

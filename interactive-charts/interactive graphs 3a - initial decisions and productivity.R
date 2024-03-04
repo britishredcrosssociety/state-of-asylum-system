@@ -11,7 +11,7 @@ backlog_total <-
     Duration == "N/A - Further review" ~ "Pending further review"
   )) |> 
   group_by(Date, Stage) |> 
-  summarise(Backlog = sum(Applications)) |> view()
+  summarise(Backlog = sum(Applications)) |> 
   ungroup() |> 
   mutate(Nationality = "Total")
 
@@ -35,7 +35,7 @@ bind_rows(backlog_total, backlog_nationality) |>
                   `Pending initial decision (6 months or less)` = "",
                   `Pending initial decision (more than 6 months)` = "")) |> 
   select(Date, Nationality, `Pending initial decision (more than 6 months)`, `Pending initial decision (6 months or less)`, `Pending further review`) |> 
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality Dec 23.csv")
 
 # - CAPTION -
 # Proportion of people currently waiting for a decision who have been waiting more than three months
@@ -69,7 +69,7 @@ applications_and_backlog <-
 
 applications_and_backlog |>
   pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications") |> 
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog Dec 23.csv")
 
 # - CAPTION -
 
@@ -105,7 +105,7 @@ awaiting_decision_by_nationality <-
   select(-Total)
   
 awaiting_decision_by_nationality |> 
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality Dec 23.csv")
 
 # - CAPTION -
 # Which nationalities have a grant rate > 80%?
@@ -135,7 +135,7 @@ asylum::decisions_resettlement |>
   
   pivot_wider(names_from = `Case outcome group`, values_from = Decisions) |> 
   
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/granted, refused, withdrawn Dec 23.csv")
 
 # - CAPTION -/
 # Proportion of claims withdrawn over last 12 months
@@ -195,13 +195,13 @@ asylum::appeals_lodged |>
   left_join(grant_rate_overall) |> 
   relocate(`Grant rate at initial decision`, .after = Date) |> 
   
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/appeals and grant rates Dec 23.csv")
 
 # ---- Flourish- Section 3, Slide 8: Asylum caseworker productivity ----
 asylum::asylum_costs_and_productivity |> 
   select(`Financial Year`, Productivity) |> 
   drop_na() |> 
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office productivity Sept 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Home Office productivity Dec 23.csv")
 
 # - CAPTION -
 # Calculate % changes in caseworking staff and principal stages completed since 2015

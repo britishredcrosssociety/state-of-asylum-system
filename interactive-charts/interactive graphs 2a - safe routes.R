@@ -23,7 +23,7 @@ resettlement_by_quarter <-
   arrange(Date)
 
 resettlement_by_quarter |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total Sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - total Dec 23.csv")
 
 # - CAPTION -
 # Number of people resettled over last 12 months
@@ -74,7 +74,7 @@ bind_rows(
     rename(Category = Sex, Sex = Decisions) |> 
     mutate(Type = "Sex")
 ) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category Sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - resettlement - by category Dec 23.csv")
 
 # - CAPTION -
 # Proportions of resettlement cases by nationality
@@ -126,7 +126,7 @@ ukraine <-
   relocate(`Ukraine Sponsorship Scheme`, .before = `Ukraine Family Scheme`)
 
 ukraine |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine Sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Arrivals from Ukraine Dec 23.csv")
 
 # - CAPTION -
 ukraine |> 
@@ -144,7 +144,8 @@ ukraine |>
 # People arriving through resettlement routes
 arrivals_resettlement <- 
   resettlement_grants_without_evacuation |> 
-  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(Quarter > "2022 Q2") |> 
+  filter(Quarter < "2023 Q3") |> 
   group_by(Nationality) |> 
   summarise(`People resettled` = sum(Decisions, na.rm = TRUE)) |> 
   ungroup()
@@ -152,7 +153,7 @@ arrivals_resettlement <-
 # People arriving through family reunion
 arrivals_family_reunion <- 
   family_reunion |> 
-  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(Date >= as.Date("2022-07-01") & Date <= as.Date("2023-06-30")) |> 
   group_by(Nationality) |> 
   summarise(`Family reunion visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
   ungroup()
@@ -160,7 +161,7 @@ arrivals_family_reunion <-
 # People arriving on small boats who claimed asylum
 arrivals_small_boats <- 
   asylum::small_boat_asylum_applications |> 
-  filter(Date >= max(Date) - dmonths(11)) |> view()
+  filter(Date >= max(Date) - dmonths(11)) |> 
   filter(`Asylum application` == "Asylum application raised") |> 
   group_by(Nationality) |> 
   summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
@@ -185,26 +186,26 @@ small_boat_asylum_0923 <- irregular_migration_to_the_UK_detailed_dataset_year_en
 small_boat_asylum_0923 <- small_boat_asylum_0923 [-3970,]
 
 # small_boat_asylum_0923 does not have dates, therefore,   filter(Date >= max(Date) - dmonths(11)) |> cannot work for 
-# this dataset. Following code is to check when filtered by quarter, the output matches the code above. It does. 
+#this dataset. Following code is to check when filtered by quarter, the output matches the code above. It does. 
 
-small_boat_asylum_0923 |>
+ small_boat_asylum_0923 |>
   filter(Quarter > "2022 Q2") |> 
   filter(Quarter < "2023 Q3") |> 
   filter(`Asylum application` == "Asylum application raised") |> 
   group_by(Nationality) |> 
   summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> view()
 
-arrivals_small_boats <- 
-small_boat_asylum_0923 |>
-  filter(Quarter > "2022 Q2") |> 
-  filter(Quarter > "2022 Q3") |>
-  filter(`Asylum application` == "Asylum application raised") |> 
-  group_by(Nationality) |> 
-  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
-  ungroup()
+#arrivals_small_boats <- 
+#small_boat_asylum_0923 |>
+#  filter(Quarter > "2022 Q2") |> 
+#  filter(Quarter > "2022 Q3") |>
+#  filter(`Asylum application` == "Asylum application raised") |> 
+#  group_by(Nationality) |> 
+#  summarise(`People arriving via small boat and claiming asylum` = sum(Applications, na.rm = TRUE)) |> 
+#  ungroup()
 
 
-# Jenny added this in - produces correct figures for small boat arrivals 12 months to June 2023 (HO stats not updated in Nov 23) 
+# Jenny added this in - produces correct figures for small boat arrivals 12 months to June 2023 (HO stats not updated in Nov 23 or Feb 24) 
 arrivals_small_boats <- 
 small_boat_asylum_0923 |>
   filter(Quarter > "2022 Q2") |> 
@@ -218,7 +219,8 @@ small_boat_asylum_0923 |>
 # People arriving to claim asylum (including small boats)
 arrivals_asylum <- 
   asylum::applications |> 
-  filter(Date >= max(Date) - dmonths(11)) |> 
+  filter(Quarter > "2022 Q2") |> 
+  filter(Quarter < "2023 Q3") |> 
   group_by(Nationality) |> 
   summarise(`People applying for asylum` = sum(Applications, na.rm = TRUE)) |> 
   ungroup()
@@ -243,7 +245,7 @@ arrivals_all <-
 arrivals_all |> 
   slice_max(Total, n = 10) |> 
   select(-Total) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/arrival routes Sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/arrival routes Dec 23.csv")
 
 # - CAPTION -
 # What % of arrivals were through resettlement routes?
@@ -258,14 +260,14 @@ arrivals_all |>
 asylum::family_reunion |> 
   group_by(Date) |> 
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Dec 23.csv")
 
 # Family reunion under 18
 family_reunion |>
   filter(Age == "Under 18") |>
   group_by(Date) |>
   summarise(`Visas granted` = sum(`Visas granted`, na.rm = TRUE)) |> 
-  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18 sept 23.csv")
+  write_csv("data-raw/flourish/2a - Safe routes/2a - Family reunion Under 18 Dec 23.csv")
 
 # - CAPTION -
 asylum::family_reunion |> 

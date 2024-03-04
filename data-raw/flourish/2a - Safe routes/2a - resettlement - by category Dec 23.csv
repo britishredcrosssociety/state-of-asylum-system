@@ -1,0 +1,19 @@
+Category,Nationality,Type,Age,Sex
+Syria,302,Nationality,NA,NA
+Afghanistan,108,Nationality,NA,NA
+Somalia,76,Nationality,NA,NA
+Refugee,70,Nationality,NA,NA
+Sudan,48,Nationality,NA,NA
+Iraq,44,Nationality,NA,NA
+Ethiopia,20,Nationality,NA,NA
+Pakistan,17,Nationality,NA,NA
+South Sudan,14,Nationality,NA,NA
+Congo (Democratic Republic),12,Nationality,NA,NA
+Under 18,NA,Age,258,NA
+18-29,NA,Age,126,NA
+30-49,NA,Age,214,NA
+50-69,NA,Age,58,NA
+70+,NA,Age,7,NA
+under 18,NA,Age,73,NA
+Female,NA,Sex,NA,384
+Male,NA,Sex,NA,352
