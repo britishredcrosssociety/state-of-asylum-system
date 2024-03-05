@@ -31,11 +31,13 @@ people_in_detention_by_age_sex |>
   ungroup() |> 
   mutate(Female = Female * -1) |> 
   summarise(
-    Female = sum(Female),
-    Male = sum(Male),
+    Female = sum(Female, na.rm = TRUE),
+    Male = sum(Male, na.rm = TRUE),
     Total = sum(Female) + sum(Male)
   ) |> 
   mutate(Proportion = Male / (Male + Female))
+
+asylum::people_in_detention
 
 # ---- Flourish- Section 2, Slide 11: Length of detention ----
 detention_length <- 

@@ -38,7 +38,7 @@ bind_rows(backlog_total, backlog_nationality) |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/backlog trends - by nationality Dec 23.csv")
 
 # - CAPTION -
-# Proportion of people currently waiting for a decision who have been waiting more than three months
+# Proportion of people currently waiting for a decision who have been waiting more than six months
 backlog_total |> 
   ungroup() |>
   filter(Date == max(Date)) |> 
