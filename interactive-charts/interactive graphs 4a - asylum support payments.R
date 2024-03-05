@@ -72,7 +72,7 @@ real_asylum_payments <-
 real_asylum_payments |> 
   select(Date, `Inflation-adjusted` = `Real asylum payment (2015 GBP)`, `Nominal` = Weekly_nominal) |> 
   pivot_longer(cols = -Date, names_to = "Adjusted", values_to = "Asylum support payment (£)") |> 
-  write_csv("data-raw/flourish/4a - Asylum support/asylum support - inflation adjusted.csv")
+  write_csv("data-raw/flourish/4a - Asylum support/asylum support - inflation adjusted dec 23.csv")
 
 # - CAPTION -
 # Calculate % change since 2000
