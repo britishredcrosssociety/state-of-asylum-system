@@ -285,6 +285,8 @@ asylum::applications |>
 top_ten_nations <-
   grant_rates_initial_annual |>
   filter(Year == max(Year)) |>
+  #filter out 'refugee' category
+  filter(!Nationality %in% c("Refugee")) |>
   arrange(desc(Grant), desc(`Initial grant rate`)) |> 
   slice(1:10) |>
   pull(Nationality) 
