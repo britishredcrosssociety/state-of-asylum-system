@@ -67,8 +67,17 @@ applications_and_backlog <-
   left_join(quarterly_backlog) |> 
   drop_na()
 
-applications_and_backlog |>
-  pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications") |> 
+applications_and_backlog <-
+  applications_and_backlog  |> 
+  rename (`People waiting for an initial decision ` = `Applicants waiting for an initial decision `)|> 
+  rename (`'People applying for asylum for the first time` = `New asyulum applicants`)
+
+
+applications_and_backlog <- applications_and_backlog |>
+  pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications")
+
+applications_and_backlog  |> 
+  rename (`Number of people` = `Number of applications`)|> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog Dec 23.csv")
 
 # - CAPTION -
