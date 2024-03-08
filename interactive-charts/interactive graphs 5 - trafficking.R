@@ -9,7 +9,7 @@ nrm_referrals_longitudinal |>
   pivot_wider(names_from = `Location of exploitation`, values_from = `NRM referrals`) |> 
   filter(!str_detect(`Age at exploitation`, "unknown")) |> 
   select(-Total, -Year, -Quarter) |> 
-  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals over time Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals over time Dec 23.csv")
 
 # - CAPTION -
 nrm_referrals_longitudinal |> 
@@ -21,10 +21,10 @@ nrm_referrals_longitudinal |>
 # ---- Prep NRM data ----
 nrm_referrals <- 
   bind_rows(
+    asylum::nrm_referrals_2023_q4,
     asylum::nrm_referrals_2023_q3,
     asylum::nrm_referrals_2023_q2,
     asylum::nrm_referrals_2023_q1,
-    asylum::nrm_referrals_2022_q4,
   )
 
 # ---- Flourish- Section 5, Slide 4: National Referral Mechanism referrals, by first responder ----
@@ -45,7 +45,7 @@ nrm_referrals_first_responder <-
   pivot_wider(names_from = `UK national?`, values_from = People)
 
 nrm_referrals_first_responder |> 
-  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by first responder Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by first responder Dec 23.csv")
 
 # - CAPTION -
 # Proportin of referrals over last 12 months that were from Home Office
@@ -77,7 +77,7 @@ nrm_referrals |>
   
   slice(1:40) |> 
 
-  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality Dec 23.csv")
 
 # ---- Flourish- Section 5, Slide 6: National Referral Mechanism referrals, by age and sex ----
 nrm_referrals |> 
@@ -92,7 +92,7 @@ nrm_referrals |>
   pivot_wider(names_from = Gender, values_from = People) |> 
   mutate(Female = Female * -1) |> 
   
-  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by age and sex Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by age and sex Dec 23.csv")
 
 # - CAPTION -
 
@@ -137,7 +137,7 @@ nrm_reasonable_grounds |>
   # Change order of columns
   select(Date, Age, `Positive reasonable grounds`, `Negative reasonable grounds`) |> 
   
-  write_csv("data-raw/flourish/5 - Trafficking/reasonable grounds by age Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/reasonable grounds by age Dec 23.csv")
 
 # - CAPTION -
 
@@ -170,22 +170,22 @@ nrm_conclusive_grounds |>
   # Change order of columns
   select(Date, Age, `Positive conclusive grounds`, `Negative conclusive grounds`) |>  
   
-  write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/conclusive grounds by age Dec 23.csv")
 
 # ---- Flourish- Section 5, Slide 9: Referrals through the Duty to Notify process ----
 nrm_duty_to_notify_longitudinal |> 
   filter(Quarter != "Total") |> 
   mutate(Date = zoo::as.Date(as.yearqtr(paste(Year, Quarter), format = "%Y Q%q"), frac = 1)) |>
   select(Date, `Referrals through Duty to Notify process` = Total) |> 
-  write_csv("data-raw/flourish/5 - Trafficking/duty to notify - longitudinal Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/duty to notify - longitudinal Dec 23.csv")
 
 # ---- Flourish- Section 5, Slide 10:Referrals through the Duty to Notify process, by nationality ----
 dtn <- 
   bind_rows(
-    nrm_duty_to_notify_2022_q4,
     nrm_duty_to_notify_2023_q1,
     nrm_duty_to_notify_2023_q2,
-    nrm_duty_to_notify_2023_q3
+    nrm_duty_to_notify_2023_q3,
+    nrm_duty_to_notify_2023_q4
   ) |> 
   group_by(Nationality) |> 
   summarise(Total = sum(Total)) |> 
@@ -196,7 +196,7 @@ dtn <-
 
 dtn |> 
   slice(1:20) |> 
-  write_csv("data-raw/flourish/5 - Trafficking/duty to notify - nationality Sept 23.csv")
+  write_csv("data-raw/flourish/5 - Trafficking/duty to notify - nationality Dec 23.csv")
 
 # - CAPTION -
 # What proportion of DtNs are from the top four nationalities?
