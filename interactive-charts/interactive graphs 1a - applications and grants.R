@@ -299,7 +299,7 @@ grant_rates_initial_annual |>
   write_csv("data-raw/flourish/1 - Who is applying for asylum in the last 12 months/initial-grant-rates-annual-recent Dec 23.csv")
 
 # ---- Flourish- Section 1, Slide 10: Initial grant rates, by quarter ----
-#WArnign message was coming up: 'Values from `Initial grant rate` are not uniquely identified; output will contain list-cols.' So added line in to filter out suplicated rows =  2023-12-31 2023 Q4 Other and unknown     2
+
 grant_rates_initial_quarterly |>
   
   mutate(
@@ -309,8 +309,9 @@ grant_rates_initial_quarterly |>
   mutate(`Initial grant rate` = Grant / (Grant + Refused)) |> 
   
   select(Date, Quarter, Nationality, `Initial grant rate`) |>
-  filter(Nationality != 'Other and unknown')|>
-  pivot_wider(names_from = Nationality, values_from = `Initial grant rate`) |>
+  # take the mean of the duplicates values (to preserve the data from the unknown nationalities causing error message)
+  pivot_wider(names_from = Nationality, values_from = `Initial grant rate`, values_fn = mean) |>
+
 
   # Move the ten nations with the highest number of grants and highest grant rates to the left, so they get shown on the chart by default
   relocate(Date, Quarter, any_of(top_ten_nations)) |>
