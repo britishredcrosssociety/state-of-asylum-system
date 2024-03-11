@@ -67,17 +67,8 @@ applications_and_backlog <-
   left_join(quarterly_backlog) |> 
   drop_na()
 
-applications_and_backlog <-
-  applications_and_backlog  |> 
-  rename (`People waiting for an initial decision ` = `Applicants waiting for an initial decision `)|> 
-  rename (`'People applying for asylum for the first time` = `New asyulum applicants`)
-
-
-applications_and_backlog <- applications_and_backlog |>
-  pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications")
-
-applications_and_backlog  |> 
-  rename (`Number of people` = `Number of applications`)|> 
+applications_and_backlog |>
+  pivot_longer(cols = -Date, names_to = "Type", values_to = "Number of applications") |> 
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/applications and backlog Dec 23.csv")
 
 # - CAPTION -
@@ -117,11 +108,11 @@ awaiting_decision_by_nationality |>
   write_csv("data-raw/flourish/3a - Initial decisions and productivity/waiting - by nationality Dec 23.csv")
 
 # - CAPTION -
-# Which nationalities have a grant rate > 80%?
+# Which nationalities have a grant rate > 85%?
 high_grant_nationalities <- 
   asylum::grant_rates_initial_annual |> 
   filter(Year == max(Year)) |> 
-  filter(`Initial grant rate` > 0.8) |> 
+  filter(`Initial grant rate` > 0.85) |> 
   pull(Nationality)
 
 # How many and what proportion of people from high-grant-rate nationalities are waiting for a decision?
@@ -228,17 +219,17 @@ asylum::asylum_costs_and_productivity |>
 
 library(readxl)
 
-UKVI_IP_Q4_2023 <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/UKVI_IP_Q4_2023.xlsx", 
-                                                    sheet = "ASY_01", skip = 3)
-View(UKVI_IP_Q4_2023)
+UKVI_IP_Q3_2023_Background_Published <- read_excel("~/GitHub/state-of-asylum-system/data-raw/data source/UKVI_IP_Q3_2023_Background_Published.xlsx", 
+                                                   +     sheet = "ASY_01", skip = 3)
+View(UKVI_IP_Q3_2023_Background_Published)
 
 
-Apps_6_months <- UKVI_IP_Q4_2023 |>
+Apps_6_months <- UKVI_IP_Q3_2023_Background_Published |>
   select(`Quarter Application Received`, `Of those Applications received, the percentage completed within 6 Months`) |>
   rename(`Date` = `Quarter Application Received`, `Percentage Completed` = `Of those Applications received, the percentage completed within 6 Months`)
 
 Apps_6_months |>
-  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Percentage Completed 6 months Dec 23.csv")
+  write_csv("data-raw/flourish/3a - Initial decisions and productivity/Percentage Completed 6 months Sept 23.csv")
 
 
 # Plot asylum caseworking staff and principal stages completed side by side to check trends
