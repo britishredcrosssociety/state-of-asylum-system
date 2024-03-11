@@ -60,21 +60,24 @@ nrm_referrals_first_responder |>
 # ---- Flourish- Section 5, Slide 5: National Referral Mechanism referrals, by nationality ----
 nrm_referrals |> 
   filter(Nationality != "Total") |> 
-  
+  filter(`First responder` %in% c("Government agency total", 
+                                  "NGO and third sector total", 
+                                  "Local Authority total", 
+                                  "Police total"
+  )) |>
+  filter(Gender == "Total") |>
+  filter(`Exploitation type` == "Total") |>
+  filter(`Age at exploitation` == "Total") |>
   group_by(Nationality, `First responder type`) |> 
   summarise(People = sum(People)) |> 
   ungroup() |> 
-  
   pivot_wider(names_from = `First responder type`, values_from = People) |> 
-  
   mutate(across(where(is.double), ~replace_na(.x, 0))) |> 
-  
   rowwise() |> 
   mutate(Total = sum(c_across(`Government agency`:Police))) |> 
   ungroup() |> 
   arrange(desc(Total)) |> 
   select(-Total) |> 
-  
   slice(1:40) |> 
 
   write_csv("data-raw/flourish/5 - Trafficking/NRM referrals by nationality Dec 23.csv")
