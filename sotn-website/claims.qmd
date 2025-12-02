@@ -1,0 +1,65 @@
+# Claiming asylum in the UK
+
+```{r}
+#| label: Process asylum claim trends
+#| message: false
+#| warning: false
+#| include: false
+library(tidyverse)
+library(asylum)
+library(plotly)
+
+source("brc_colours.R")
+source("theme_brc.R")
+
+date_formatter <- function(d) {
+  paste0(month.name[month(d)], " ", year(d))
+}
+
+claims <- fetch_applications()
+
+claims_rolling_total <- 
+    claims |>
+    mutate(Quarter = quarter(Date)) |> 
+    group_by(Date, Quarter, Type = `Applicant type`) |>
+    summarise(Claims = sum(Claims)) |>
+    ungroup() |>
+    
+    pivot_wider(names_from = Type, values_from = Claims) |> 
+    mutate(
+        `Main applicant` = replace_na(`Main applicant`, 0),
+        Dependant = replace_na(Dependant, 0),
+        People = `Main applicant` + Dependant
+    ) |> 
+
+    rolling_year_totals(Date, `Main applicant`, out_col = Total_claims) |> 
+    rolling_year_totals(Date, People, out_col = Total_people)
+
+claims_latest <- claims_rolling_total |> 
+    filter(Date == max(Date))
+```
+
+There were `r scales::comma(claims_latest$Total_claims)` asylum applications relating to `r scales::comma(claims_latest$Total_people)` people in the year ending `r date_formatter(claims_latest$Date)`.
+
+```{r}
+#| label: Chart of trends in asylum claims
+#| echo: false
+#| message: false
+#| warning: false
+plt_claims <- 
+    ggplot(claims_rolling_total, aes(x = Date, y = Total_claims)) +
+    geom_line(colour = brc_colours$red_dunant) +
+    geom_point(
+        aes(text = str_glue("{scales::comma(Total_claims)} asylum claims relating to {scales::comma(Total_people)} people in the year ending {date_formatter(claims_latest$Date)}")),
+        colour = brc_colours$red_dunant
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    theme_brc() +
+    labs(
+        title = "Total number of people applying for asylum each year",
+        x = "Year ending",
+        y = "Number of asylum claims"
+    )
+
+ggplotly(plt_claims, tooltip = "text")
+```
