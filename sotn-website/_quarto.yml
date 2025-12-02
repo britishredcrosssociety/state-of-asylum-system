@@ -1,0 +1,22 @@
+project:
+  type: book
+
+book:
+  title: "State of the Nation: The UK asylum system"
+  author: "Matthew Gwynfryn Thomas"
+  date: "02/12/2025"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+
